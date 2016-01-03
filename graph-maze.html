@@ -264,7 +264,7 @@ function addlight(){
 }
 
 function lightsquare(x,y,i,j,x1,y1,x2,y2){
-	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>10*dx){
+	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>10*dx||i<1||i>xs.length-2||j<1||j>xs[0].length-2){
 		return;
 	}
 	var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
