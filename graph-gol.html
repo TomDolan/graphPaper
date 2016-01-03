@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+<div id = "canvasbox">
+<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+<p style = "text-align: center;">info</p>
+<p id = "fps">info</p>
+<h1>Game of Life</h1>
+<p>Draw alive cells and press the right arrow key to play</p>
+<p>Grid size:</p>
+<div style="width:300px;height:100px;">
+<p class = "hoverbutton" id = "reset" >reset</p>
+<p class = "hoverbutton" id = "bb" >2</p>
+<p class = "hoverbutton" id = "cc" >5</p>
+<p class = "hoverbutton" id = "dd" >10</p>
+<p class = "hoverbutton" id = "ee" >20</p>
+<p class = "hoverbutton" id = "ff">50</p>
+</div>
+<!--<p>Depending on the number of neighbours, a cell will die, survive, or be born.</p>
+<p>Choose which cells survive and are born:</p>
+<!--<p class = "radiobutton"> 0: <input type="radio" name="0" value="dead" checked="checked" onclick="does[0] = 0;"> death <input type="radio" name="0" value="alive" onclick="does[0] = 1;"> survival <input type="radio" name="0" value="born" onclick="does[0] = 2;"> birth</p>
+<p class = "radiobutton"> 1: <input type="radio" name="1" value="dead" checked="checked" onclick="does[1] = 0;"> death <input type="radio" name="1" value="alive" onclick="does[1] = 1;"> survival <input type="radio" name="1" value="born" onclick="does[1] = 2;"> birth</p>
+<p class = "radiobutton"> 2: <input type="radio" name="2" value="dead" onclick="does[2] = 0;"> death <input type="radio" name="2" value="alive" checked="checked" onclick="does[2] = 1;"> survival <input type="radio" name="2" value="born" onclick="does[2] = 2;"> birth</p>
+<p class = "radiobutton"> 3: <input type="radio" name="3" value="dead" onclick="does[3] = 0;"> death <input type="radio" name="3" value="alive" onclick="does[3] = 1;"> survival <input type="radio" name="3" value="born" checked="checked" onclick="does[3] = 2;"> birth</p>
+<p class = "radiobutton"> 4: <input type="radio" name="4" value="dead" checked="checked" onclick="does[4] = 0;"> death <input type="radio" name="4" value="alive" onclick="does[4] = 1;"> survival <input type="radio" name="4" value="born" onclick="does[4] = 2;"> birth</p>
+<p class = "radiobutton"> 5: <input type="radio" name="5" value="dead" checked="checked" onclick="does[5] = 0;"> death <input type="radio" name="5" value="alive" onclick="does[5] = 1;"> survival <input type="radio" name="5" value="born" onclick="does[5] = 2;"> birth</p>
+<p class = "radiobutton"> 6: <input type="radio" name="6" value="dead" checked="checked" onclick="does[6] = 0;"> death <input type="radio" name="6" value="alive" onclick="does[6] = 1;"> survival <input type="radio" name="6" value="born" onclick="does[6] = 2;"> birth</p>
+<p class = "radiobutton"> 7: <input type="radio" name="7" value="dead" checked="checked" onclick="does[7] = 0;"> death <input type="radio" name="7" value="alive" onclick="does[7] = 1;"> survival <input type="radio" name="7" value="born" onclick="does[7] = 2;"> birth</p>
+<p class = "radiobutton"> 8: <input type="radio" name="8" value="dead" checked="checked" onclick="does[8] = 0;"> death <input type="radio" name="8" value="alive" onclick="does[8] = 1;"> survival <input type="radio" name="8" value="born" onclick="does[8] = 2;"> birth</p>-->
+<!--<p style="float:left;">survival: </p>
+<div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">0</p>
+	<input type="checkbox" value="None" id="squaredFour0" name="check0" />
+	<label for="squaredFour0"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">1</p>
+	<input type="checkbox" value="None" id="squaredFour1" name="check1" />
+	<label for="squaredFour1"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">2</p>
+	<input type="checkbox" value="None" id="squaredFour2" name="check2" />
+	<label for="squaredFour2"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">3</p>
+	<input type="checkbox" value="None" id="squaredFour3" name="check3" />
+	<label for="squaredFour3"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">4</p>
+	<input type="checkbox" value="None" id="squaredFour4" name="check4" />
+	<label for="squaredFour4"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">5</p>
+	<input type="checkbox" value="None" id="squaredFour5" name="check5" />
+	<label for="squaredFour5"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">6</p>
+	<input type="checkbox" value="None" id="squaredFour6" name="check6" />
+	<label for="squaredFour6"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">7</p>
+	<input type="checkbox" value="None" id="squaredFour7" name="check7" />
+	<label for="squaredFour7"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">8</p>
+	<input type="checkbox" value="None" id="squaredFour8" name="check8" />
+	<label for="squaredFour8"></label>
+</div></div>
+
+<p style="float:left;">birth: </p>
+<div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">0</p>
+	<input type="checkbox" value="None" id="squaredFour0" name="check0" />
+	<label for="squaredFour0"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">1</p>
+	<input type="checkbox" value="None" id="squaredFour1" name="check1" />
+	<label for="squaredFour1"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">2</p>
+	<input type="checkbox" value="None" id="squaredFour2" name="check2" />
+	<label for="squaredFour2"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">3</p>
+	<input type="checkbox" value="None" id="squaredFour3" name="check3" />
+	<label for="squaredFour3"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">4</p>
+	<input type="checkbox" value="None" id="squaredFour4" name="check4" />
+	<label for="squaredFour4"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">5</p>
+	<input type="checkbox" value="None" id="squaredFour5" name="check5" />
+	<label for="squaredFour5"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">6</p>
+	<input type="checkbox" value="None" id="squaredFour6" name="check6" />
+	<label for="squaredFour6"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">7</p>
+	<input type="checkbox" value="None" id="squaredFour7" name="check7" />
+	<label for="squaredFour7"></label>
+</div>
+<div class="squaredFour">
+	<p style="margin-left:5px;height: 5px;">8</p>
+	<input type="checkbox" value="None" id="squaredFour8" name="check8" />
+	<label for="squaredFour8"></label>
+</div>
+</div>-->
+</div>
+
+<div id="winner">
+	<h1>you win!</h1>
+	<p><a href="graph-maze.html">next</a></p>
+</div>
+
+<div id = "footer">
+<p style = "text-align:center;"><a href="graph-fluid.html">previous</a> | <a href="graph-maze.html">next</a> </p>
+</div>
+
+<script>
+var c = document.getElementById("graph");
+var paper = c.getContext("2d");
+W=window.innerWidth;
+H=window.innerHeight;
+dx = 20;
+c.width = W;
+c.height = H;
+var t = 0;
+var dt = .001;
+
+var does = [0,0,1,2,0,0,0,0,0];
+xs = [];
+ys = [];
+life = [];
+pastlife = [];
+for (var i = 0; i < W/dx+1; i++){
+	xs[i]=[];
+	ys[i]=[];
+	life[i] = [];
+	pastlife[i] = [];
+	for (var j = 0; j < H/dx+1; j++){
+		xs[i][j] = (i-1)*dx+dx/2+.5;
+		ys[i][j] = (j-1)*dx+dx/2+.5;
+		life[i][j] =0;
+		pastlife[i][j] =0;
+	}
+}
+
+paper.fillStyle="#679";
+paper.strokeStyle="#bce";
+//drawpoints(xs,ys,W,H,dx)
+//drawlines(xs,ys,W,H,dx)
+
+var upkey = 0;
+var downkey = 0;
+var leftkey = 0;
+var rightkey = 0;
+var xold = -1;
+var yold = -1;
+var xpos = -1;
+var ypos = -1;
+var clicked = 0;
+
+draw(dt);
+animate(draw);
+
+function init(){
+	xs = [];
+	ys = [];
+	life = [];
+	pastlife = [];
+	for (var i = 0; i < W/dx+1; i++){
+		xs[i]=[];
+		ys[i]=[];
+		life[i] = [];
+		pastlife[i] = [];
+		for (var j = 0; j < H/dx+1; j++){
+			xs[i][j] = (i-1)*dx+dx/2+.5;
+			ys[i][j] = (j-1)*dx+dx/2+.5;
+			life[i][j] =0;
+			pastlife[i][j] =0;
+		}
+	}
+
+	paper.fillStyle="#679";
+	paper.strokeStyle="#bce";
+	//drawpoints(xs,ys,W,H,dx)
+	//drawlines(xs,ys,W,H,dx)
+
+	var upkey = 0;
+	var downkey = 0;
+	var leftkey = 0;
+	var rightkey = 0;
+	var xold = -1;
+	var yold = -1;
+	var xpos = -1;
+	var ypos = -1;
+	var clicked = 0;
+
+	draw(dt);
+	animate(draw);
+}
+
+function addhole(x,y){
+paper.fillStyle="#679";
+paper.beginPath();
+paper.arc(x, y, dx/1.5, 0, 2 * Math.PI);
+paper.stroke();
+paper.fill();
+paper.beginPath();
+paper.arc(x+1, y+1, dx/1.5, 0, 2 * Math.PI);
+paper.stroke();
+paper.fillStyle="white";
+paper.fill();
+}
+
+function drawpoints(xs,ys,W,H,dx){
+	for (var i = 0; i < W/dx+1; i++){
+		for (var j = 0; j < H/dx+1; j++){
+			paper.beginPath();
+			paper.arc(xs[i][j], ys[i][j], 1, 0, 2 * Math.PI);
+			paper.stroke();
+			paper.fill();
+		}
+	}
+}
+
+function drawlines(xs,ys,W,H,dx){
+	paper.strokeStyle="#bce";
+	for (var i = 0; i < W/dx; i++){
+		for (var j = 0; j < H/dx; j++){	
+			paper.beginPath();
+			paper.moveTo(xs[i][j],ys[i][j]);
+			paper.lineTo(xs[i+1][j], ys[i+1][j]);
+			paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
+			paper.stroke();
+		}
+	}
+}
+
+function drawlife(xs,ys,W,H,dx){
+	paper.fillStyle="#bce";
+	for (var i = 0; i < W/dx; i++){
+		for (var j = 0; j < H/dx; j++){
+			if(life[i][j]){
+				paper.beginPath();
+				paper.moveTo(xs[i][j],ys[i][j]);
+				paper.lineTo(xs[i+1][j], ys[i+1][j]);
+				paper.lineTo(xs[i+1][j+1], ys[i+1][j+1]);
+				paper.lineTo(xs[i][j+1],ys[i][j+1]);
+				paper.moveTo(xs[i][j],ys[i][j]);
+				paper.fill();
+			}
+		}
+	}
+}
+
+function draw(dt){
+	paper.clearRect(0,0,W,H);
+	paper.fillStyle="#679";
+	paper.strokeStyle="#bce";
+	if(clicked){
+		gridi = parseInt((xpos-(dx/2+.5))/dx+1);
+		gridj = parseInt((ypos-(dx/2+.5))/dx+1);
+		life[gridi][gridj] = 1;
+	}
+	xold = xpos
+	yold = ypos
+	copy(life,pastlife);
+	if(rightkey){
+		for (var i = 1; i < W/dx-1; i++){
+			for (var j = 1; j < H/dx-1; j++){
+				evolve(i,j);
+			}
+		}
+	}
+	drawlife(xs,ys,W,H,dx);
+	if(dx>=10){
+		drawlines(xs,ys,W,H,dx);
+	}
+}
+
+function copy(from,to){
+	for (var i = 1; i < W/dx-1; i++){
+		for (var j = 1; j < H/dx-1; j++){
+			to[i][j] = from[i][j];
+		}
+	}
+}
+
+function evolve(i,j){
+	var count = 0;
+	for (var k = i-1;k<=i+1;k++){
+		for (var l = j-1; l<=j+1; l++){
+			if (pastlife[k][l]){
+				count ++;
+			}
+		}
+	}
+	count-=pastlife[i][j];
+	if(does[count] == 1 && pastlife[i][j]){
+		life[i][j]=1;
+	} else if (does[count] == 2) {
+		life[i][j]=1;
+	} else{
+		life[i][j] = 0;
+	}
+}
+
+document.onmousemove = coords;
+document.onmousedown = click;
+document.onmouseup = click;
+
+function coords(e){
+	xpos = e.clientX;
+	ypos = e.clientY;
+}
+
+function click (){
+	clicked = !clicked;
+}
+
+document.onkeydown = keypressed;
+document.onkeyup = keydepressed;
+
+function keypressed(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '87'||e.keyCode == '38') {
+        // up arrow
+		upkey = 1;
+    }
+    else if (e.keyCode == '83'||e.keyCode == '40') {
+        // down arrow
+		downkey = 1;
+    }
+    else if (e.keyCode == '65'||e.keyCode == '37') {
+       // left arrow
+		leftkey = 1;
+    }
+    else if (e.keyCode == '68'||e.keyCode == '39') {
+       // right arrow
+		rightkey = 1;
+    }
+    else if (e.keyCode == '13'&&won) {
+       // right arrow
+		window.open('graph-maze.html',"_self");
+    }
+}
+function keydepressed(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '87'||e.keyCode == '38') {
+        // up arrow
+		upkey = 0;
+    }
+    else if (e.keyCode == '83'||e.keyCode == '40') {
+        // down arrow
+		downkey = 0;
+    }
+    else if (e.keyCode == '65'||e.keyCode == '37') {
+       // left arrow
+		leftkey = 0;
+    }
+    else if (e.keyCode == '68'||e.keyCode == '39') {
+       // right arrow
+		rightkey = 0;
+    }
+}
+
+function animate( render ) {
+    var running, lastFrame = +new Date;
+    function loop( now ) {
+        // stop the loop if render returned false
+        if ( running !== false ) {
+            requestAnimationFrame( loop );
+            var deltaT = now - lastFrame;
+			document.getElementById("fps").innerHTML = "fps: " + deltaT;
+
+            // do not render frame when deltaT is too high
+            if ( deltaT < 160) {
+                running = render( deltaT );
+            }
+            lastFrame = now;
+        } else {			
+			var el = document.getElementById("winner");
+			el.style.display = 'block';
+			won =1;
+		}
+    }
+    loop( lastFrame );
+	
+window.onload = function() {
+	reset.onmousedown = function() {
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	bb.onmousedown = function() {
+		dx = 2;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	cc.onmousedown = function() {
+		dx = 5;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	dd.onmousedown = function() {
+		dx = 10;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	ee.onmousedown = function() {
+		dx = 20;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	ff.onmousedown = function() {
+		dx = 50;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+}
+}
+</script>
+
+</body>
+</html>
+
+
