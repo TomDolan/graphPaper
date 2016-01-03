@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+<div id = "canvasbox">
+<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+<p style = "text-align: center;">info</p>
+<h1 style = "text-align: center;">Dragon Curve</h1>
+<a class = "hoverbutton" id = "aa" href = "graph-dragon.html">3</a>
+<a class = "hoverbutton" id = "bb" href = "graph-dragon.html">5</a>
+<a class = "hoverbutton" id = "cc" href = "graph-dragon.html">9</a>
+<a class = "hoverbutton" id = "dd" href = "graph-dragon.html">17</a>
+<a class = "hoverbutton" id = "ee" href = "graph-dragon.html">33</a>
+<a class = "hoverbutton" id = "ff" href = "graph-dragon.html">65</a>
+<a class = "hoverbutton" id = "gg" href = "graph-dragon.html">129</a>
+<a class = "hoverbutton" id = "hh" href = "graph-dragon.html">257</a>
+<a class = "hoverbutton" id = "ii" href = "graph-dragon.html">513</a>
+<a class = "hoverbutton" id = "jj" href = "graph-dragon.html">1025</a>
+<a class = "hoverbutton" id = "kk" href = "graph-dragon.html">2049</a>
+<a class = "hoverbutton" id = "ll" href = "graph-dragon.html">4097</a>
+<a class = "hoverbutton" id = "mm" href = "graph-dragon.html">8193</a>
+<a class = "hoverbutton" id = "nn" href = "graph-dragon.html">16385</a>
+</div>
+
+<div id = "footer">
+<p style = "text-align:center;"><a href="graph-paper.html">previous</a> | <a href="graph-fluid.html">next</a> </p>
+</div>
+
+<script>
+var c = document.getElementById("graph");
+var paper = c.getContext("2d");
+W=window.innerWidth;
+H=window.innerHeight;
+dx = 20;
+c.width = W;
+c.height = H;
+
+paper.strokeStyle="#bce";
+paper.lineCap = 'square';
+paper.lineWidth=1;
+for (var i = dx/2+.5; i < W; i+=dx){
+	paper.moveTo(i,0);
+	paper.lineTo(i,H);
+	paper.stroke();
+}
+for (var i = dx/2+.5; i < H; i+=dx){
+	paper.moveTo(0,i);
+	paper.lineTo(W,i);
+	paper.stroke();
+}
+paper.beginPath()
+paper.strokeStyle="#FF5254";
+paper.lineWidth=3;
+paper.moveTo(0,0);
+paper.lineTo(0,H);
+paper.stroke();
+
+paper.beginPath();
+paper.strokeStyle="#bce";
+paper.lineWidth=1;
+addhole(40,H/5);
+addhole(40,H/5+50);
+
+addhole(40,4*H/5);
+addhole(40,4*H/5-50);
+
+if (W-380>H){
+	var x0 = (W-380-H/3)/2+60;
+	var y0 = 7*H/18;
+	var xl = H/3;
+	var yl = H/3;
+} else {
+	var x0 = 3*W/8;
+	var y0 = H/2-W/12;//(H-2*W/4)/2+2*W/12;
+	var xl = W/4;
+	var yl = W/4;
+}
+
+var x = [0,1,1];
+var y = [0,0,1];
+n = 3;
+n2 = 4097;
+//paper.beginPath();
+//paper.moveTo(x0+x[0]*xl,y0+y[0]*yl);
+//for (var i = 1; i < n; i ++){
+//	paper.lineTo(x0+x[i]*xl,y0+y[i]*yl);
+//}
+//paper.strokeStyle = "red";
+//paper.stroke();
+
+//var x = [0,.5,1,.5,1];
+//var y = [0,-.5,0,.5,1];
+//trace(x,y,5,"blue");
+//var x = [0,0,.5,.5,1,1,.5,.5,1];
+//var y = [0,-.5,-.5,0,0,.5,.5,1,1];
+//trace(x,y,9,"green");
+
+
+
+
+//var x0 = 850;
+//var y0 = 250;
+//var xl = 300;
+//var yl = 300;
+
+//var x = [0,1,1];
+//var y = [0,0,1];
+//trace(x,y,3,"black");
+
+//for (var i = 0; i < 1; i ++){
+//alert(x)
+//alert(y)
+//addvertex(x,y,n);
+//n = 5;
+//alert(x)
+//alert(y)
+//trace(x,y,n,"blue");
+//addvertex(x,y,n);
+//n = 9;
+//trace(x,y,n,"green");
+//addvertex(x,y,n);
+//n = 17;
+//trace(x,y,n,"red");
+//}
+
+for (i = 1; i < 14; i++){
+	addvertex(x,y,n);
+	n = 2*n-1;
+}
+trace(x,y,n,"#124")
+redraw();
+
+/*paper.beginPath();
+paper.strokeStyle = "#000";
+paper.rect(x0,y0,xl,yl);
+paper.stroke();
+paper.beginPath();
+paper.strokeStyle = "#000";
+paper.rect(x0-xl/2,y0-yl/1.5,xl*2,yl*2);
+paper.stroke();*/
+
+
+function addhole(x,y){
+	paper.fillStyle="#679";
+	paper.beginPath();
+	paper.arc(x, y, dx/1.5, 0, 2 * Math.PI);
+	paper.stroke();
+	paper.fill();
+	paper.beginPath();
+	paper.arc(x+1, y+1, dx/1.5, 0, 2 * Math.PI);
+	paper.stroke();
+	paper.fillStyle="white";
+	paper.fill();
+}
+
+function trace(x,y,n,colour){
+	paper.beginPath();
+	paper.lineWidth=1.5;
+	paper.moveTo(x0+x[0]*xl,y0+y[0]*yl);
+	for (var i = 1; i < n; i ++){
+		paper.lineTo(x0+x[i]*xl,y0+y[i]*yl);
+	}
+	paper.strokeStyle = colour;
+	paper.stroke();
+}
+
+function addvertex(x,y,n){
+	var i = 1;
+	var sign = 1;
+	while(i<n){
+		
+		var x0 = x[i-1];
+		var x1 = x[i];
+		var y0 = y[i-1];
+		var y1 = y[i];
+		var r = Math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+		var theta = Math.acos((x1-x0)/r);
+		if (y0<y1){
+			theta = -theta;
+		}
+		//alert("position, angle, magnitude: " + x0 + ", " + x1 + ", " + y0 + ", " + y1 + ", "+ theta + ", "+ r)
+		var newx = x0+r/Math.sqrt(2)*Math.cos(theta+sign*Math.PI/4);
+		var newy = y0-r/Math.sqrt(2)*Math.sin(theta+sign*Math.PI/4);
+		insert(x,newx,i,n);
+		insert(y,newy,i,n);
+		n++;
+		i +=2;
+		sign*=-1;
+	}
+}
+
+function insert(x,newx,i,n){
+	var temp1 = x[i];
+	x[i] = newx;
+	for(var j = n; j > i; j--){
+		x[j]=x[j-1];
+	}
+	x[i+1]=temp1;
+}
+
+function redraw(){
+	paper.clearRect(0,0,W,H);
+	
+	paper.beginPath();
+	paper.strokeStyle="#bce";
+	paper.lineWidth=1;
+	for (var i = dx/2+.5; i < W; i+=dx){
+		paper.moveTo(i,0);
+		paper.lineTo(i,H);
+		paper.stroke();
+	}
+	for (var i = dx/2+.5; i < H; i+=dx){
+		paper.moveTo(0,i);
+		paper.lineTo(W,i);
+		paper.stroke();
+	}
+	paper.beginPath()
+	paper.strokeStyle="#FF5254";
+	paper.lineWidth=3;
+	paper.moveTo(0,0);
+	paper.lineTo(0,H);
+	paper.stroke();
+
+	paper.beginPath();
+	paper.strokeStyle="#bce";
+	paper.lineWidth=1;
+	addhole(40,H/5);
+	addhole(40,H/5+50);
+
+	addhole(40,4*H/5);
+	addhole(40,4*H/5-50);
+	
+	x2 = [x[0]];
+	y2 = [y[0]];
+	for (var i = 1; i < n2; i ++){
+		x2[i] = x[i*(n-1)/(n2-1)];
+		y2[i] = y[i*(n-1)/(n2-1)];
+	}
+	trace(x2,y2,n2,"#124")
+	
+/*paper.beginPath();
+paper.strokeStyle = "#000";
+paper.rect(x0,y0,xl,yl);
+paper.stroke();
+paper.beginPath();
+paper.strokeStyle = "#000";
+paper.rect(x0-xl/2,y0-yl/1.5,xl*2,yl*2);
+paper.stroke();*/
+}
+
+window.onload = function() {
+	aa.onmouseover = function() {
+		n2 = 3;
+		redraw();
+		return false;
+	}
+	bb.onmouseover = function() {
+		n2 = 5;
+		redraw();
+		return false;
+	}
+	cc.onmouseover = function() {
+		n2 = 9;
+		redraw();
+		return false;
+	}
+	dd.onmouseover = function() {
+		n2 = 17;
+		redraw();
+		return false;
+	}
+	ee.onmouseover = function() {
+		n2 = 33;
+		redraw();
+		return false;
+	}
+	ff.onmouseover = function() {
+		n2 = 65;
+		redraw();
+		return false;
+	}
+	gg.onmouseover = function() {
+		n2 = 129;
+		redraw();
+		return false;
+	}
+	hh.onmouseover = function() {
+		n2 = 257;
+		redraw();
+		return false;
+	}
+	ii.onmouseover = function() {
+		n2 = 513;
+		redraw();
+		return false;
+	}
+	jj.onmouseover = function() {
+		n2 = 1025;
+		redraw();
+		return false;
+	}
+	kk.onmouseover = function() {
+		n2 = 2049;
+		redraw();
+		return false;
+	}
+	ll.onmouseover = function() {
+		n2 = 4097;
+		redraw();
+		return false;
+	}
+	mm.onmouseover = function() {
+		n2 = 8193;
+		redraw();
+		return false;
+	}
+	nn.onmouseover = function() {
+		n2 = 16385;
+		redraw();
+		return false;
+	}
+}
+
+</script>
+
+</body>
+</html>
