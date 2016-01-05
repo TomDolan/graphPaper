@@ -353,7 +353,7 @@ function evolve(i,j){
 
 document.onmousemove = coords;
 document.onmousedown = click;
-document.onmouseup = click;
+document.onmouseup = declick;
 
 function coords(e){
 	xpos = e.clientX;
@@ -361,7 +361,10 @@ function coords(e){
 }
 
 function click (){
-	clicked = !clicked;
+	clicked = 1;
+}
+function declick (){
+	clicked = 0;
 }
 
 document.onkeydown = keypressed;
