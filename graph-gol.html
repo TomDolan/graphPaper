@@ -16,7 +16,7 @@
 <p style = "text-align: center;">info</p>
 <p id = "fps">info</p>
 <h1>Game of Life</h1>
-<p>Draw alive cells and press the q,w,e,r,t,y keys to choose the play speed. </p>
+<p>Draw alive cells and press the q,w,e,r,t,y keys to choose the play speed and p to pause. </p>
 <p>Grid size:</p>
 <div style="width:300px;height:100px;">
 <p class = "hoverbutton" id = "reset" >reset</p>
@@ -420,6 +420,13 @@ function keypressed(e) {
 			qwerty = 1;
 			clearInterval(setint);
 			setint = setInterval(runlife, qwerty);
+		//}
+    }
+    else if (e.keyCode == '80') {
+       // y
+		//if(qwerty==0){
+			qwerty = 0;
+			clearInterval(setint);
 		//}
     }
 }
