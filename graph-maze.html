@@ -51,21 +51,31 @@ for (var i = 0; i < W/dx+1; i++){
 	for (var j = 0; j < H/dx+1; j++){
 		xs[i][j] = (i-1)*dx+dx/2+.5;
 		ys[i][j] = (j-1)*dx+dx/2+.5;
-		hwall[i][j] = parseInt(Math.random()*2);
-		vwall[i][j] = parseInt(Math.random()*2);
+		hwall[i][j] = 0;//parseInt(Math.random()*2);
+		vwall[i][j] = 0;//parseInt(Math.random()*2);
 		//if(j == 19){
 		//	vwall[i][j] = 0;
 		//}
 	}
 }
 
+for (var i = 1; i < xs.length-2; i++){
+	hwall[i][1] = 1;
+	hwall[i][xs[0].length-2] = 1;
+}
+for (var j = 1; j < xs[0].length-2; j++){
+	vwall[1][j] = 1;
+	vwall[xs.length-2][j] = 1;
+}
+split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,2);
+
 paper.fillStyle="#679";
 paper.strokeStyle="#bce";
 //drawpoints(xs,ys,W,H,dx)
 //drawlines(xs,ys,W,H,dx)
 
-var ballx = xs[34][19]+dx/2;
-var bally = ys[34][19]+dx/2;
+var ballx = xs[1][1]+dx/2;
+var bally = ys[1][1]+dx/2;
 var newballx = ballx;
 var newbally = bally;
 var upkey = 0;
@@ -76,15 +86,40 @@ var speed = dx/20;
 
 var found = 0;
 var won = 0;
-var goali = 33;
-var goalj = 20;
-var goalx = xs[33][20]+dx/2;
-var goaly = ys[33][20]+dx/2;
+var goali = 1+Math.floor((xs.length-3)*Math.random());
+var goalj = 1+Math.floor((xs[0].length-3)*Math.random());
+var goalx = xs[goali][goalj]+dx/2;
+var goaly = ys[goali][goalj]+dx/2;
 
 drawball(ballx,bally);
 addlight();
 //setTimeout(animate, 500);
 animate(draw);
+
+function split(x,y,xleft,yup,xright,ydown,hoz,width){
+	if (xright-xleft<=width||ydown-yup<=width){
+		return;
+	}
+	if (hoz){
+		var splith = Math.floor(1+yup+(ydown-yup-2)*Math.random());
+		for (var i = xleft; i<xright; i++){
+			hwall[i][splith]=1;
+		}
+		var gaph = Math.floor(xleft+(xright-xleft)*Math.random());
+		hwall[gaph][splith]=0;
+		split(x,y,xleft,yup,xright,splith,0,width)
+		split(x,y,xleft,splith,xright,ydown,0,width)
+	}else{
+		var splitv = Math.floor(1+xleft+(xright-xleft-2)*Math.random());
+		for (var j = yup; j<ydown; j++){
+			vwall[splitv][j]=1;
+		}
+		var gapv = Math.floor(yup+(ydown-yup)*Math.random());
+		vwall[splitv][gapv]=0;
+		split(x,y,xleft,yup,splitv,ydown,1,width)
+		split(x,y,splitv,yup,xright,ydown,1,width)
+	}
+}
 
 function addhole(x,y){
 paper.fillStyle="#679";
@@ -264,17 +299,17 @@ function addlight(){
 }
 
 function lightsquare(x,y,i,j,x1,y1,x2,y2){
-	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>10*dx||i<1||i>xs.length-2||j<1||j>xs[0].length-2){
+	var tol = 0.00001;
+	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>30*dx||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
 		return;
 	}
-	var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
+	//var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
 	var colour = 'rgba(200,200,200,.5)';//'rgba('+rgb+','+rgb+','+rgb+',.5)'//;
 	//alert(colour)
 	var up = ys[i][j];
 	var down = ys[i][j+1];
 	var left = xs[i][j];
 	var right = xs[i+1][j];
-	var tol = 0.00001;
 	//alert("x1: " + x1 + ", y1: "+y1 + ", x2: "+x2 + ", y2: "+y2+ ", up: "+up + ", down: "+down+ ", left: "+left + ", right: "+right)
 	if (y1 == up && y2 == up){
 		//entering from the top
