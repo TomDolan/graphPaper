@@ -967,6 +967,10 @@ function draw(dt){
 	paper.fillStyle="#679";
 	paper.strokeStyle="#bce";
 	drawball(ballx,bally);
+		paper.beginPath();
+		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
+		paper.fill();
+		found = 0;
 	//paper.fillStyle = "#0f0";
 	//drawball(xs[gridi][gridj],ys[gridi][gridj])
 	
