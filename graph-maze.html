@@ -16,6 +16,23 @@
 <p style = "text-align: center;">info</p>
 <p id = "fps">info</p>
 <h1>maze</h1>
+<p>Navigate the maze to find the exit. Also try different maze parameters. </p>
+<p>corridor width:</p>
+<div style="width:300px;height:100px;">
+<p class = "hoverbutton" id = "reset" >reset</p>
+<p class = "hoverbutton" id = "bb" >10</p>
+<p class = "hoverbutton" id = "cc" >20</p>
+<p class = "hoverbutton" id = "dd" >30</p>
+<p class = "hoverbutton" id = "ee" >40</p>
+<p class = "hoverbutton" id = "ff">50</p>
+</div>
+<p>Maximum room width (in number of corridor widths):
+<p class = "hoverbutton" id = "gg" >1</p>
+<p class = "hoverbutton" id = "hh" >2</p>
+<p class = "hoverbutton" id = "ii" >3</p>
+<p class = "hoverbutton" id = "jj" >4</p>
+<p class = "hoverbutton" id = "kk">5</p>
+<p class = "hoverbutton" id = "ll">6</p>
 </div>
 
 <div id="winner">
@@ -37,12 +54,13 @@ c.width = W;
 c.height = H;
 var t = 0;
 var dt = .001;
+var initialising = 0;
 
 
-xs = [];
-ys = [];
-hwall = [];
-vwall = [];
+var xs = [];
+var ys = [];
+var hwall = [];
+var vwall = [];
 for (var i = 0; i < W/dx+1; i++){
 	xs[i]=[];
 	ys[i]=[];
@@ -67,7 +85,8 @@ for (var j = 1; j < xs[0].length-2; j++){
 	vwall[1][j] = 1;
 	vwall[xs.length-2][j] = 1;
 }
-split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,1);
+roomwidth = 1;
+split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
 
 paper.fillStyle="#679";
 paper.strokeStyle="#bce";
@@ -95,6 +114,56 @@ drawball(ballx,bally);
 addlight();
 //setTimeout(animate, 500);
 animate(draw);
+
+function init(){
+	initialising = 1;
+	xs = [];
+	ys = [];
+	hwall = [];
+	vwall = [];
+	for (var i = 0; i < W/dx+1; i++){
+		xs[i]=[];
+		ys[i]=[];
+		hwall[i] = [];
+		vwall[i] = [];
+		for (var j = 0; j < H/dx+1; j++){
+			xs[i][j] = (i-1)*dx+dx/2+.5;
+			ys[i][j] = (j-1)*dx+dx/2+.5;
+			hwall[i][j] = 0;//parseInt(Math.random()*2);
+			vwall[i][j] = 0;//parseInt(Math.random()*2);
+			//if(j == 19){
+			//	vwall[i][j] = 0;
+			//}
+		}
+	}
+
+	for (var i = 1; i < xs.length-2; i++){
+		hwall[i][1] = 1;
+		hwall[i][xs[0].length-2] = 1;
+	}
+	for (var j = 1; j < xs[0].length-2; j++){
+		vwall[1][j] = 1;
+		vwall[xs.length-2][j] = 1;
+	}
+	split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
+
+	ballx = xs[1][1]+dx/2;
+	bally = ys[1][1]+dx/2;
+	newballx = ballx;
+	newbally = bally;
+	upkey = 0;
+	downkey = 0;
+	leftkey = 0;
+	rightkey = 0;
+
+	found = 0;
+	won = 0;
+	goali = 1+Math.floor((xs.length-3)*Math.random());
+	goalj = 1+Math.floor((xs[0].length-3)*Math.random());
+	goalx = xs[goali][goalj]+dx/2;
+	goaly = ys[goali][goalj]+dx/2;
+	setTimeout(initialising = 0,200);
+}
 
 function split(x,y,xleft,yup,xright,ydown,hoz,width){
 	if (xright-xleft<=width||ydown-yup<=width){
@@ -229,7 +298,7 @@ function addlight(){
 	
 	paper.beginPath();
 	paper.fillStyle = 'rgba(200,200,200,.5)';//'rgba(255,255,255,.5)';//
-		var colour=paper.createRadialGradient(ballx,bally,50,ballx,bally,200);
+		var colour=paper.createRadialGradient(ballx,bally,5,ballx,bally,300);
 		colour.addColorStop(0,"rgb(220,220,220)");
 		colour.addColorStop(1,"white");
 	paper.fillStyle =colour;
@@ -311,13 +380,13 @@ function addlight(){
 
 function lightsquare(x,y,i,j,x1,y1,x2,y2){
 	var tol = 0.01;
-	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>10*dx||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
+	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>300||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
 		return;
 	}
 	//var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
 	var colour = 'rgba(200,200,200,.5)';//'rgba('+rgb+','+rgb+','+rgb+',.5)'//;
 	//alert(colour)
-		var colour=paper.createRadialGradient(x,y,50,x,y,200);
+		var colour=paper.createRadialGradient(x,y,5,x,y,300);
 		colour.addColorStop(0,"rgb(220,220,220)");
 		colour.addColorStop(1,"white");
 		paper.strokeStyle = colour;
@@ -967,7 +1036,7 @@ function animate( render ) {
 			document.getElementById("fps").innerHTML = "fps: " + deltaT;
 
             // do not render frame when deltaT is too high
-            if ( deltaT < 160 ) {
+            if ( deltaT < 160 && initialising == 0) {
                 running = render( deltaT );
 				drawlines(xs,ys,W,H,dx);
             }
@@ -979,6 +1048,105 @@ function animate( render ) {
 		}
     }
     loop( lastFrame );
+}
+
+
+window.onload = function() {
+	reset.onmousedown = function() {
+		initialising = 1;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	bb.onmousedown = function() {
+		initialising = 1;
+		dx = 10;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	cc.onmousedown = function() {
+		initialising = 1;
+		dx = 20;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	dd.onmousedown = function() {
+		initialising = 1;
+		dx = 30;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	ee.onmousedown = function() {
+		initialising = 1;
+		dx = 40;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	ff.onmousedown = function() {
+		initialising = 1;
+		dx = 50;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	gg.onmousedown = function() {
+		initialising = 1;
+		roomwidth = 1;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	hh.onmousedown = function() {
+		initialising = 1;
+		roomwidth = 2;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	ii.onmousedown = function() {
+		initialising = 1;
+		roomwidth = 3;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	jj.onmousedown = function() {
+		initialising = 1;
+		roomwidth = 4;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	kk.onmousedown = function() {
+		initialising = 1;
+		roomwidth = 5;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
+	ll.onmousedown = function() {
+		initialising = 1;
+		roomwidth = 6;
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		setTimeout(init, 500);
+		return false;
+	}
 }
 </script>
 
