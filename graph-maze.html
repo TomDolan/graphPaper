@@ -49,7 +49,7 @@ var c = document.getElementById("graph");
 var paper = c.getContext("2d");
 W=window.innerWidth;
 H=window.innerHeight;
-dx = 20;
+dx = 40;
 c.width = W;
 c.height = H;
 var t = 0;
@@ -85,7 +85,7 @@ for (var j = 1; j < xs[0].length-2; j++){
 	vwall[1][j] = 1;
 	vwall[xs.length-2][j] = 1;
 }
-roomwidth = 1;
+roomwidth = 4;
 split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
 
 paper.fillStyle="#679";
@@ -111,7 +111,7 @@ var goalx = xs[goali][goalj]+dx/2;
 var goaly = ys[goali][goalj]+dx/2;
 
 drawball(ballx,bally);
-addlight();
+//addlight();
 //setTimeout(animate, 500);
 animate(draw);
 
@@ -963,7 +963,7 @@ function draw(dt){
 	paper.clearRect(0,0,W,H);
 	ballx = newballx;
 	bally = newbally;
-	addlight();
+	//addlight();
 	paper.fillStyle="#679";
 	paper.strokeStyle="#bce";
 	drawball(ballx,bally);
