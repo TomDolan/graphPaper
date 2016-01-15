@@ -41,7 +41,7 @@
 </div>
 
 <div id = "footer">
-<p style = "text-align:center;"><a href="graph-gol.html">previous</a> | <a href="graph-mazedark.html">lights off</a> </p>
+<p style = "text-align:center;"><a href="graph-maze.html">lights on</a> | next </p>
 </div>
 
 <script>
@@ -49,13 +49,14 @@ var c = document.getElementById("graph");
 var paper = c.getContext("2d");
 W=window.innerWidth;
 H=window.innerHeight;
-dx = 20;
+dx = 40;
 c.width = W;
 c.height = H;
 var t = 0;
 var dt = .001;
 var initialising = 0;
-
+paper.fillStyle = 'rgba(0,17,44,1)';
+paper.fillRect(0,0,W,H);
 
 var xs = [];
 var ys = [];
@@ -85,7 +86,7 @@ for (var j = 1; j < xs[0].length-2; j++){
 	vwall[1][j] = 1;
 	vwall[xs.length-2][j] = 1;
 }
-roomwidth = 1;
+roomwidth = 4;
 split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
 
 paper.fillStyle="#679";
@@ -101,7 +102,7 @@ var upkey = 0;
 var downkey = 0;
 var leftkey = 0;
 var rightkey = 0;
-var speed = dx/20;
+var speed = dx/40;
 
 var found = 0;
 var won = 0;
@@ -263,7 +264,7 @@ function drawpoints(xs,ys,W,H,dx){
 }
 
 function drawlines(xs,ys,W,H,dx){
-	paper.strokeStyle="#bce";
+	paper.strokeStyle="#567";//"#bce";
 	for (var i = 0; i < W/dx; i++){
 		for (var j = 0; j < H/dx; j++){
 			if(hwall[i][j]){	
@@ -298,9 +299,17 @@ function addlight(){
 	
 	paper.beginPath();
 	paper.fillStyle = 'rgba(200,200,200,.5)';//'rgba(255,255,255,.5)';//
-		var colour=paper.createRadialGradient(ballx,bally,5,ballx,bally,300);
-		colour.addColorStop(0,"rgb(220,220,220)");
-		colour.addColorStop(1,"white");
+		var colour=paper.createRadialGradient(ballx,bally,0,ballx,bally,300);
+		colour.addColorStop(0,"#F57741");
+		colour.addColorStop(.3,"#C04848");
+		colour.addColorStop(.5,"#251030");
+		colour.addColorStop(1,"#00112c");
+		
+		
+		//colour.addColorStop(0,"#E2C974");
+		//colour.addColorStop(.5,"#965D62");
+		//colour.addColorStop(.7,"#5E4352");
+		//colour.addColorStop(1,"#2B222C");
 	paper.fillStyle =colour;
 	paper.strokeStyle = colour;
 	paper.moveTo(xs[gridi][gridj],ys[gridi][gridj]);
@@ -311,14 +320,17 @@ function addlight(){
 	paper.fill(); 
 	paper.stroke();
 	
+	
+	lightx = ballx + Math.random()*8-4;
+	lighty = bally + Math.random()*8-4;
 	if(hwall[gridi][gridj]==0){
-		lightsquare(ballx,bally,gridi,gridj-1,xs[gridi+1][gridj],ys[gridi+1][gridj],xs[gridi][gridj],ys[gridi][gridj]);
+		lightsquare(lightx,lighty,gridi,gridj-1,xs[gridi+1][gridj],ys[gridi+1][gridj],xs[gridi][gridj],ys[gridi][gridj]);
 	}if(hwall[gridi][gridj+1]==0){
-		lightsquare(ballx,bally,gridi,gridj+1,xs[gridi][gridj+1],ys[gridi][gridj+1],xs[gridi+1][gridj+1],ys[gridi+1][gridj+1]);
+		lightsquare(lightx,lighty,gridi,gridj+1,xs[gridi][gridj+1],ys[gridi][gridj+1],xs[gridi+1][gridj+1],ys[gridi+1][gridj+1]);
 	}if(vwall[gridi][gridj]==0){
-		lightsquare(ballx,bally,gridi-1,gridj,xs[gridi][gridj],ys[gridi][gridj],xs[gridi][gridj+1],ys[gridi][gridj+1]);
+		lightsquare(lightx,lighty,gridi-1,gridj,xs[gridi][gridj],ys[gridi][gridj],xs[gridi][gridj+1],ys[gridi][gridj+1]);
 	}if(vwall[gridi+1][gridj]==0){
-		lightsquare(ballx,bally,gridi+1,gridj,xs[gridi+1][gridj+1],ys[gridi+1][gridj+1],xs[gridi+1][gridj],ys[gridi+1][gridj]);
+		lightsquare(lightx,lighty,gridi+1,gridj,xs[gridi+1][gridj+1],ys[gridi+1][gridj+1],xs[gridi+1][gridj],ys[gridi+1][gridj]);
 	}
 	
 	/*for(var i = 0; i < 2*3.141593; i +=2*3.141593/60){
@@ -371,7 +383,7 @@ function addlight(){
 		paper.beginPath();
 		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
 		paper.stroke();
-		paper.fillStyle="#fff";
+		paper.fillStyle="#00112c";
 		paper.fill();
 		found = 0;
 	}
@@ -380,15 +392,22 @@ function addlight(){
 
 function lightsquare(x,y,i,j,x1,y1,x2,y2){
 	var tol = 0.01;
-	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>300||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
+	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>300+dx||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
 		return;
 	}
 	//var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
 	var colour = 'rgba(200,200,200,.5)';//'rgba('+rgb+','+rgb+','+rgb+',.5)'//;
 	//alert(colour)
-		var colour=paper.createRadialGradient(x,y,5,x,y,300);
-		colour.addColorStop(0,"rgb(220,220,220)");
-		colour.addColorStop(1,"white");
+		var colour=paper.createRadialGradient(x,y,0,x,y,300);
+		colour.addColorStop(0,"#F57741");
+		colour.addColorStop(.3,"#C04848");
+		colour.addColorStop(.7,"#251030");
+		colour.addColorStop(1,"#00112c");
+		
+		//colour.addColorStop(0,"#F2D974");
+		//colour.addColorStop(.5,"#965D62");
+		//colour.addColorStop(.7,"#5E4352");
+		//colour.addColorStop(1,"#012");
 		paper.strokeStyle = colour;
 	var up = ys[i][j];
 	var down = ys[i][j+1];
@@ -900,7 +919,7 @@ function lightsquare(x,y,i,j,x1,y1,x2,y2){
 	if (i == goali && j == goalj){
 		paper.beginPath();
 		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
-		paper.fillStyle="#fff";
+		paper.fillStyle="#00112c";
 		paper.fill();
 		found = 0;
 	}
@@ -957,14 +976,14 @@ function draw(dt){
 		newbally = bally;
 	}
 
-	//paper.fillStyle = '#000';//'rgba(255,255,255,1)';//"#124";//
-	//paper.fillRect(0,0,W,H);
+	paper.fillStyle = 'rgba(0,17,44,.05)';//'#00112c';//'rgba(255,255,255,1)';//"#124";//
+	paper.fillRect(0,0,W,H);
 	//drawlines(xs,ys,W,H,dx);
-	paper.clearRect(0,0,W,H);
+	//paper.clearRect(0,0,W,H);
 	ballx = newballx;
 	bally = newbally;
 	addlight();
-	paper.fillStyle="#679";
+	paper.fillStyle="#bce";
 	paper.strokeStyle="#bce";
 	drawball(ballx,bally);
 	//paper.fillStyle = "#0f0";
@@ -1038,7 +1057,7 @@ function animate( render ) {
             // do not render frame when deltaT is too high
             if ( deltaT < 160 && initialising == 0) {
                 running = render( deltaT );
-				drawlines(xs,ys,W,H,dx);
+				//drawlines(xs,ys,W,H,dx);
             }
             lastFrame = now;
         } else {			
@@ -1054,7 +1073,7 @@ function animate( render ) {
 window.onload = function() {
 	reset.onmousedown = function() {
 		initialising = 1;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1062,7 +1081,7 @@ window.onload = function() {
 	bb.onmousedown = function() {
 		initialising = 1;
 		dx = 10;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1070,7 +1089,7 @@ window.onload = function() {
 	cc.onmousedown = function() {
 		initialising = 1;
 		dx = 20;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1078,7 +1097,7 @@ window.onload = function() {
 	dd.onmousedown = function() {
 		initialising = 1;
 		dx = 30;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1086,7 +1105,7 @@ window.onload = function() {
 	ee.onmousedown = function() {
 		initialising = 1;
 		dx = 40;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1094,7 +1113,7 @@ window.onload = function() {
 	ff.onmousedown = function() {
 		initialising = 1;
 		dx = 50;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1102,7 +1121,7 @@ window.onload = function() {
 	gg.onmousedown = function() {
 		initialising = 1;
 		roomwidth = 1;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1110,7 +1129,7 @@ window.onload = function() {
 	hh.onmousedown = function() {
 		initialising = 1;
 		roomwidth = 2;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1118,7 +1137,7 @@ window.onload = function() {
 	ii.onmousedown = function() {
 		initialising = 1;
 		roomwidth = 3;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1126,7 +1145,7 @@ window.onload = function() {
 	jj.onmousedown = function() {
 		initialising = 1;
 		roomwidth = 4;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1134,7 +1153,7 @@ window.onload = function() {
 	kk.onmousedown = function() {
 		initialising = 1;
 		roomwidth = 5;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
@@ -1142,7 +1161,7 @@ window.onload = function() {
 	ll.onmousedown = function() {
 		initialising = 1;
 		roomwidth = 6;
-		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillStyle = 'rgba(0,17,44,1)';
 		paper.fillRect(0,0,W,H);
 		setTimeout(init, 500);
 		return false;
