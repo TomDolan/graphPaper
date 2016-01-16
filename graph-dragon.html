@@ -43,6 +43,8 @@ H=window.innerHeight;
 dx = 20;
 c.width = W;
 c.height = H;
+paper.fillStyle = '#fff';
+paper.fillRect(0,0,W,H);
 
 paper.strokeStyle="#bce";
 paper.lineCap = 'square';
@@ -208,7 +210,8 @@ function insert(x,newx,i,n){
 }
 
 function redraw(){
-	paper.clearRect(0,0,W,H);
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
 	
 	paper.beginPath();
 	paper.strokeStyle="#bce";

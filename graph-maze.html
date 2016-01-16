@@ -55,6 +55,8 @@ c.height = H;
 var t = 0;
 var dt = .001;
 var initialising = 0;
+paper.fillStyle = 'rgba(255,255,255,1)';
+paper.fillRect(0,0,W,H);
 
 
 var xs = [];
@@ -908,6 +910,8 @@ function lightsquare(x,y,i,j,x1,y1,x2,y2){
 }
 
 function draw(dt){
+	paper.fillStyle = 'rgba(255,255,255,1)';
+	paper.fillRect(0,0,W,H);
 	newballx -= (leftkey-rightkey)*speed/(1+.5*Math.abs(upkey-downkey))*dt/12;
 	newbally -= (upkey-downkey)*speed/(.5*Math.abs(leftkey+rightkey)+1)*dt/12;
 	up = 0;
@@ -960,7 +964,6 @@ function draw(dt){
 	//paper.fillStyle = '#000';//'rgba(255,255,255,1)';//"#124";//
 	//paper.fillRect(0,0,W,H);
 	//drawlines(xs,ys,W,H,dx);
-	paper.clearRect(0,0,W,H);
 	ballx = newballx;
 	bally = newbally;
 	//addlight();

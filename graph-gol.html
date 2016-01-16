@@ -154,6 +154,8 @@ c.width = W;
 c.height = H;
 var t = 0;
 var dt = .001;
+paper.fillStyle = 'rgba(255,255,255,1)';
+paper.fillRect(0,0,W,H);
 
 document.getElementById("survival2").checked = true;
 document.getElementById("survival3").checked = true;
@@ -290,7 +292,8 @@ function drawlife(xs,ys,W,H,dx){
 }
 
 function draw(dt){
-	paper.clearRect(0,0,W,H);
+	paper.fillStyle = 'rgba(255,255,255,1)';
+	paper.fillRect(0,0,W,H);
 	paper.fillStyle="#679";
 	paper.strokeStyle="#bce";
 	if(clicked){

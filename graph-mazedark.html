@@ -37,9 +37,9 @@
 </div>
 </div>
 
-<div id="winner">
+<div id="winner" style = "background-color:rgba(51,68,102,.5);">
 	<h1>you win!</h1>
-	<p><a href="graph-mazedark.html">next</a></p>
+	<p><a href="graph-mazedark.html"style = "color:#FF5254;">next</a></p>
 </div>
 
 <div id = "footer" style = "background-color:rgba(51,68,102,.5);box-shadow: 2px 2px 5px #568;">
@@ -104,7 +104,7 @@ var upkey = 0;
 var downkey = 0;
 var leftkey = 0;
 var rightkey = 0;
-var speed = dx/40;
+var speed = dx/30;
 
 var found = 0;
 var won = 0;
@@ -295,13 +295,24 @@ function drawball(ballx,bally){
 function addlight(){
 	found = 0;
 	
-	gridi = parseInt((ballx-(dx/2+.5))/dx+1);
-	gridj = parseInt((bally-(dx/2+.5))/dx+1);
+	ballgridi = parseInt((ballx-(dx/2+.5))/dx+1);
+	ballgridj = parseInt((bally-(dx/2+.5))/dx+1);
 	
+	lightx = ballx + 2*Math.sin(2*t);
+	lighty = bally - 2*Math.cos(2*t);
+	gridi = parseInt((lightx-(dx/2+.5))/dx+1);
+	gridj = parseInt((lighty-(dx/2+.5))/dx+1);
+	
+	if (gridi!=ballgridi || gridj!=ballgridj){
+		lightx = ballx;
+		lighty = bally;
+		gridi = parseInt((lightx-(dx/2+.5))/dx+1);
+		gridj = parseInt((lighty-(dx/2+.5))/dx+1);
+	}
 	
 	paper.beginPath();
 	paper.fillStyle = 'rgba(200,200,200,.5)';//'rgba(255,255,255,.5)';//
-		var colour=paper.createRadialGradient(ballx,bally,0,ballx,bally,300);
+		var colour=paper.createRadialGradient(lightx,lighty,0,lightx,lighty,300);
 		colour.addColorStop(0,"#F57741");
 		colour.addColorStop(.3,"#C04848");
 		colour.addColorStop(.5,"#251030");
@@ -323,8 +334,6 @@ function addlight(){
 	paper.stroke();
 	
 	
-	lightx = ballx + Math.random()*8-4;
-	lighty = bally + Math.random()*8-4;
 	if(hwall[gridi][gridj]==0){
 		lightsquare(lightx,lighty,gridi,gridj-1,xs[gridi+1][gridj],ys[gridi+1][gridj],xs[gridi][gridj],ys[gridi][gridj]);
 	}if(hwall[gridi][gridj+1]==0){
@@ -400,7 +409,7 @@ function lightsquare(x,y,i,j,x1,y1,x2,y2){
 	//var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
 	var colour = 'rgba(200,200,200,.5)';//'rgba('+rgb+','+rgb+','+rgb+',.5)'//;
 	//alert(colour)
-		var colour=paper.createRadialGradient(x,y,0,x,y,300);
+		var colour=paper.createRadialGradient(x,y,0,x,y,300+10*Math.sin(.2*t));
 		colour.addColorStop(0,"#F57741");
 		colour.addColorStop(.3,"#C04848");
 		colour.addColorStop(.7,"#251030");
@@ -533,7 +542,7 @@ function lightsquare(x,y,i,j,x1,y1,x2,y2){
 			if (vwall[i+1][j]==0){
 				lightsquare(x,y,i+1,j,x1x,y1x,x2x,y2x);
 			}
-		}/**/
+		}
 	}else if (y1 == down && y2 == down){
 		//entering from the bottom
 		
@@ -978,7 +987,7 @@ function draw(dt){
 		newbally = bally;
 	}
 
-	paper.fillStyle = 'rgba(0,17,44,.05)';//'#00112c';//'rgba(255,255,255,1)';//"#124";//
+	paper.fillStyle = 'rgba(0,17,44,.04)';//'#00112c';//'rgba(255,255,255,1)';//"#124";//
 	paper.fillRect(0,0,W,H);
 	//drawlines(xs,ys,W,H,dx);
 	//paper.clearRect(0,0,W,H);
@@ -1025,6 +1034,7 @@ function keypressed(e) {
 		window.open('graph-mazedark.html',"_self");
     }
 }
+
 function keydepressed(e) {
 
     e = e || window.event;
@@ -1055,9 +1065,10 @@ function animate( render ) {
             requestAnimationFrame( loop );
             var deltaT = now - lastFrame;
 			document.getElementById("fps").innerHTML = "fps: " + deltaT;
-
+			
             // do not render frame when deltaT is too high
-            if ( deltaT < 160 && initialising == 0) {
+            if ( Math.abs(deltaT) < 160 && initialising == 0) {
+				t = (t+deltaT/100)%(2000);
                 running = render( deltaT );
 				//drawlines(xs,ys,W,H,dx);
             }
