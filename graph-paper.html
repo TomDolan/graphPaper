@@ -1,193 +1,185 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-
 <link rel="stylesheet" type="text/css" href="graph.css">
 <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
-
 </head>
+
 <body>
 
 <div id = "canvasbox">
-<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 
 <div id = "menu">
-<p style = "text-align: center;">info</p>
-<p id = "fps">info</p>
-<h1>Draw Something</h1>
-<p class = "hoverbutton" id = "reset" >reset</p>
-<p class = "hoverbutton" id = "bluepen" style="background-color:#89a;">blue</p>
-<p class = "hoverbutton" id = "redpen" style="background-color:#FF8587;">red</p>
-<p class = "hoverbutton" id = "greenpen" style="background-color:#55A88F;">green</p>
+	<p style = "text-align: center;">info</p>
+	<p id = "fps">info</p>
+	<h1>Draw Something</h1>
+	<p class = "hoverbutton" id = "reset" >reset</p>
+	<p class = "hoverbutton" id = "bluepen" style="background-color:#89a;">blue</p>
+	<p class = "hoverbutton" id = "redpen" style="background-color:#FF8587;">red</p>
+	<p class = "hoverbutton" id = "greenpen" style="background-color:#55A88F;">green</p>
 </div>
 
 <div id = "footer">
-<p style = "text-align:center;">previous | <a href="graph-dragon.html">next</a> </p>
+	<p style = "text-align:center;">previous | <a href="graph-dragon.html">next</a> </p>
 </div>
 
 <script>
-var c = document.getElementById("graph");
-var paper = c.getContext("2d");
-W=window.innerWidth;
-H=window.innerHeight;
-dx = 20;
-c.width = W;
-c.height = H;
-var t = 0;
-var dt = .001;
-paper.fillStyle = '#fff';
-paper.fillRect(0,0,W,H);
 
-var xold = -1;
-var yold = -1;
-var xpos = -1;
-var ypos = -1;
-var clicked = 0;
-var pencolour = '#346';
+	// Initialise canvas and begin animation
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	var pencolour = '#349';
+	drawpage();
 
-paper.strokeStyle="#bce";
-paper.lineCap = 'square';
-paper.lineWidth=1;
-for (var i = dx/2+.5; i < W; i+=dx){
-	paper.moveTo(i,0);
-	paper.lineTo(i,H);
-	paper.stroke();
-}
-for (var i = dx/2+.5; i < H; i+=dx){
-	paper.moveTo(0,i);
-	paper.lineTo(W,i);
-	paper.stroke();
-}
-paper.beginPath()
-paper.strokeStyle="#FF5254";
-paper.lineWidth=3;
-paper.moveTo(0,0);
-paper.lineTo(0,H);
-paper.stroke();
+	// Initialise mouse functions
+	var xold = -1;
+	var yold = -1;
+	var xpos = -1;
+	var ypos = -1;
+	var clicked = 0;
+	document.onmousemove = coords;
+	document.onmousedown = click;
+	document.onmouseup = unclick;
 
-paper.beginPath();
-paper.strokeStyle="#bce";
-paper.lineWidth=1;
-addhole(40,H/5);
-addhole(40,H/5+50);
-
-addhole(40,4*H/5);
-addhole(40,4*H/5-50);
-
-animate(draw);
-
-function init(){
-	paper.strokeStyle="#bce";
-	paper.lineCap = 'square';
-	paper.lineWidth=1;
-	for (var i = dx/2+.5; i < W; i+=dx){
-		paper.moveTo(i,0);
-		paper.lineTo(i,H);
-		paper.stroke();
-	}
-	for (var i = dx/2+.5; i < H; i+=dx){
-		paper.moveTo(0,i);
-		paper.lineTo(W,i);
-		paper.stroke();
-	}
-	paper.beginPath()
-	paper.strokeStyle="#FF5254";
-	paper.lineWidth=3;
-	paper.moveTo(0,0);
-	paper.lineTo(0,H);
-	paper.stroke();
-
-	paper.beginPath();
-	paper.strokeStyle="#bce";
-	paper.lineWidth=1;
-	addhole(40,H/5);
-	addhole(40,H/5+50);
-
-	addhole(40,4*H/5);
-	addhole(40,4*H/5-50);
-}
-
-function addhole(x,y){
-paper.fillStyle="#679";
-paper.beginPath();
-paper.arc(x, y, dx/1.5, 0, 2 * Math.PI);
-paper.stroke();
-paper.fill();
-paper.beginPath();
-paper.arc(x+1, y+1, dx/1.5, 0, 2 * Math.PI);
-paper.stroke();
-paper.fillStyle="white";
-paper.fill();
-}
-
-function draw(dt){
-	if(clicked){
-		paper.strokeStyle=pencolour;
+	function drawpage(){
+		// Draw lines with spacing dx, horizontally and vertically		
+		dx = 20;
 		paper.beginPath();
-		paper.moveTo(xold,yold);
-		paper.lineTo(xpos, ypos);
+		paper.strokeStyle="#bce";
+		paper.lineCap = 'square';
+		paper.lineWidth=1;
+		for (var i = dx/2+.5; i < W; i+=dx){
+			paper.moveTo(i,0);
+			paper.lineTo(i,H);
+			paper.stroke();
+		}
+		for (var i = dx/2+.5; i < H; i+=dx){
+			paper.moveTo(0,i);
+			paper.lineTo(W,i);
+			paper.stroke();
+		}
+		
+		// Red line down left side
+		paper.beginPath()
+		paper.strokeStyle="#FF5254";
+		paper.lineWidth=3;
+		paper.moveTo(0,0);
+		paper.lineTo(0,H);
 		paper.stroke();
-	}
-	xold = xpos
-	yold = ypos
-}
+		
+		// Hole punches
+		addhole(40,H/5);
+		addhole(40,H/5+50);
 
-document.onmousemove = coords;
-document.onmousedown = click;
-document.onmouseup = click;
-
-function coords(e){
-	xpos = e.clientX;
-	ypos = e.clientY;
-}
-
-function click (){
-	clicked = !clicked;
-}
-
-function animate( render ) {
-    var running, lastFrame = +new Date;
-    function loop( now ) {
-        // stop the loop if render returned false
-        if ( running !== false ) {
-            requestAnimationFrame( loop );
-            var deltaT = now - lastFrame;
-			document.getElementById("fps").innerHTML = "fps: " + deltaT;
-
-            // do not render frame when deltaT is too high
-            if ( deltaT < 160 ) {
-                running = render( deltaT );
-            }
-            lastFrame = now;
-        }
-    }
-    loop( lastFrame );
-}
-window.onload = function() {
-	reset.onmousedown = function() {
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		init();
-		return false;
+		addhole(40,4*H/5);
+		addhole(40,4*H/5-50);
 	}
-	bluepen.onmousedown = function() {
-		pencolour = '#349';
-		return false;
+
+	function addhole(x,y){
+		// Draw shadow circle
+		paper.strokeStyle="#bce";
+		paper.lineWidth=1;
+		paper.fillStyle="#679";
+		paper.beginPath();
+		paper.arc(x, y, dx/1.5, 0, 2 * Math.PI);
+		paper.stroke();
+		paper.fill();
+		
+		// Draw white circle
+		paper.beginPath();
+		paper.arc(x+1, y+1, dx/1.5, 0, 2 * Math.PI);
+		paper.stroke();
+		paper.fillStyle="white";
+		paper.fill();
 	}
-	redpen.onmousedown = function() {
-		pencolour = '#FF5254';
-		return false;
+	
+	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
+	// calculate the difference in time and pass to the given render function, render function returns false to stop, will not render if deltaT is too high
+	function animate( render ) {
+		var running, lastFrame = +new Date;
+		function loop( now ) {
+			// stop the loop if render returned false
+			if ( running !== false ) {
+				requestAnimationFrame( loop );
+				var deltaT = now - lastFrame;
+				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
+				// do not render frame when deltaT is too high
+				if ( deltaT < 160 ) {
+					running = render( deltaT );
+				}
+				lastFrame = now;
+			} else {
+				document.getElementById("fps").innerHTML = "fps: 0";
+			}
+		}
+		loop( lastFrame );
 	}
-	greenpen.onmousedown = function() {
-		pencolour = '#33b66F';
-		return false;
+
+	function draw(dt){
+		// Draw if clicked and there is a previous mouse location. else return false
+		if(clicked){
+			if (xold != -1 && yold != -1){
+				paper.strokeStyle=pencolour;
+				paper.beginPath();
+				paper.moveTo(xold,yold);
+				paper.lineTo(xpos, ypos);
+				paper.stroke();
+			}
+		} else {
+			return false;
+		}
+		// update old mouse position
+		xold = xpos
+		yold = ypos
 	}
-}
+
+	// Mouse and keyboard functions
+	function coords(e){
+		xpos = e.clientX;
+		ypos = e.clientY;
+	}
+	function click (){
+		clicked = 1;
+		animate(draw);
+	}
+	function unclick (){
+		clicked = 0;
+		xold = -1;
+		yold = -1;
+	}
+	
+	// Button functions
+	window.onload = function() {
+		reset.onmousedown = function() {
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			drawpage();
+			return false;
+		}
+		bluepen.onmousedown = function() {
+			pencolour = '#349';
+			return false;
+		}
+		redpen.onmousedown = function() {
+			pencolour = '#FF5254';
+			return false;
+		}
+		greenpen.onmousedown = function() {
+			pencolour = '#33b66F';
+			return false;
+		}
+	}
 
 </script>
 
 </body>
 </html>
-
-
