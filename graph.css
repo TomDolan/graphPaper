@@ -45,7 +45,7 @@ p {
 	position:absolute;
 	top:10px;
 	right:10px;
-	width:300px;
+	width:400px;
 	height:calc(100% - 20px);
 	margin:0px;
 	padding:0px;
@@ -60,7 +60,7 @@ p {
 	display: block;
 	float:left;
 	margin: 0px;
-	width: 134px;
+	width: 184px;
 	height:20px;
 	background-color: rgba(200,200,200,0.5);
 	color: #568;

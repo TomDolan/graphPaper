@@ -1,91 +1,56 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-
 <link rel="stylesheet" type="text/css" href="graph.css">
 <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
-
 </head>
+
 <body>
 
 <div id = "canvasbox" onmousemove="coords(event)">
-<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 
 <div id = "menu">
-<p style = "text-align: center;">info</p>
-<h1>Fluid</h1>
-<p>A grid-based fluid simulation</p>
-<p class = "hoverbutton" id = "reset" >reset</p>
-<p class = "hoverbutton" id = "bb" >2</p>
-<p class = "hoverbutton" id = "cc" >5</p>
-<p class = "hoverbutton" id = "dd" >10</p>
-<p class = "hoverbutton" id = "ee" >20</p>
-<p class = "hoverbutton" id = "ff" >50</p>
+	<p style = "text-align: center;">info</p>
+	<p id = "fps">fps: 0</p>
+	<h1>Fluid</h1>
+	<p>A grid-based fluid simulation</p>
+	<p class = "hoverbutton" id = "reset" >reset</p>
+	<p class = "hoverbutton" id = "bb" >2</p>
+	<p class = "hoverbutton" id = "cc" >5</p>
+	<p class = "hoverbutton" id = "dd" >10</p>
+	<p class = "hoverbutton" id = "ee" >20</p>
+	<p class = "hoverbutton" id = "ff" >50</p>
 </div>
 
 <div id = "footer">
-<p style = "text-align:center;"><a href="graph-dragon.html">previous</a> | <a href="graph-gol.html">next</a> </p>
+	<p style = "text-align:center;"><a href="graph-dragon.html">previous</a> | <a href="graph-gol.html">next</a> </p>
 </div>
 
 <script>
-var c = document.getElementById("graph");
-var paper = c.getContext("2d");
-W=window.innerWidth;
-H=window.innerHeight;
-dx = 20;
-c.width = W;
-c.height = H;
-var t = 0;
-var dt = .001;
-yes = 1;
-var xs = [];
-var ys = [];
-for (var i = 0; i < W/dx+2; i++){
-	xs[i]=[];
-	ys[i]=[];
-	for (var j = 0; j < H/dx+2; j++){
-		xs[i][j] = (i-1)*dx+dx/2+.5;
-		ys[i][j] = (j-1)*dx+dx/2+.5;
-	}
-}
-
-paper.fillStyle="#679";
-paper.strokeStyle="#bce";
-//drawpoints(xs,ys,W,H,dx)
-drawlines(xs,ys,W,H,dx)
-
-var hex = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
-var N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
-var dt = .3; 
-
-var u = new Array(size), v = new Array(size);
-var uOld = new Array(size), vOld = new Array(size);
-var dens = new Array(size), densOld = new Array(size);
-var G = new Array(size);
-
-var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
-
-//////////////////////////////////////////////////////////////////
-//initialisation//
-//////////////////////////////////////////////////////////////////
-
-//alert(dens)
-//dens[idx(1,1)] = 1;
-//alert(dens)
-
-setVelocity();
-setDensity();
-setVelocityBoundary();
-setBoundary();
-setG();
-animate();
-
-function init(){
-	var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
-	yes = 1;
-	xs = [];
-	ys = [];
+	
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	
+	// Initialise variables
+	var dx = 20;
+	var hex = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+	var N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
+	var dt = .3; 
+	var yes = 1;
+	
+	// Initialise grid
+	var xs = [];
+	var ys = [];
 	for (var i = 0; i < W/dx+2; i++){
 		xs[i]=[];
 		ys[i]=[];
@@ -94,26 +59,14 @@ function init(){
 			ys[i][j] = (j-1)*dx+dx/2+.5;
 		}
 	}
-
-	paper.fillStyle="#679";
-	paper.strokeStyle="#bce";
-	//drawpoints(xs,ys,W,H,dx)
 	drawlines(xs,ys,W,H,dx)
 
-	N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
-
-	u = new Array(size), v = new Array(size);
-	uOld = new Array(size), vOld = new Array(size);
-	dens = new Array(size), densOld = new Array(size);
-	G = new Array(size);
-
-	//////////////////////////////////////////////////////////////////
-	//initialisation//
-	//////////////////////////////////////////////////////////////////
-
-	//alert(dens)
-	//dens[idx(1,1)] = 1;
-	//alert(dens)
+	// Initialise position, velocity, density and colour arrays
+	var u = new Array(size), v = new Array(size);
+	var uOld = new Array(size), vOld = new Array(size);
+	var dens = new Array(size), densOld = new Array(size);
+	var G = new Array(size);
+	var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
 
 	setVelocity();
 	setDensity();
@@ -121,419 +74,445 @@ function init(){
 	setBoundary();
 	setG();
 	animate();
-}
+
+	function init(){
+		var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
+		yes = 1;
+		xs = [];
+		ys = [];
+		for (var i = 0; i < W/dx+2; i++){
+			xs[i]=[];
+			ys[i]=[];
+			for (var j = 0; j < H/dx+2; j++){
+				xs[i][j] = (i-1)*dx+dx/2+.5;
+				ys[i][j] = (j-1)*dx+dx/2+.5;
+			}
+		}
+
+		paper.fillStyle="#679";
+		paper.strokeStyle="#bce";
+		//drawpoints(xs,ys,W,H,dx)
+		drawlines(xs,ys,W,H,dx)
+
+		N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
+
+		u = new Array(size), v = new Array(size);
+		uOld = new Array(size), vOld = new Array(size);
+		dens = new Array(size), densOld = new Array(size);
+		G = new Array(size);
+
+		//////////////////////////////////////////////////////////////////
+		//initialisation//
+		//////////////////////////////////////////////////////////////////
+
+		//alert(dens)
+		//dens[idx(1,1)] = 1;
+		//alert(dens)
+
+		setVelocity();
+		setDensity();
+		setVelocityBoundary();
+		setBoundary();
+		setG();
+		animate();
+	}
 	
-function drawpoints(xs,ys,W,H,dx){
-	for (var i = 0; i < W/dx+1; i++){
-		for (var j = 0; j < H/dx+1; j++){
-			paper.beginPath();
-			paper.arc(xs[i][j], ys[i][j], 1, 0, 2 * Math.PI);
-			paper.stroke();
-			paper.fill();
-		}
-	}
-}
-
-function drawlines(xs,ys,W,H,dx){
-	for (var i = 0; i < W/dx+1; i++){
-		for (var j = 0; j < H/dx+1; j++){
-			paper.beginPath();
-			paper.moveTo(xs[i][j],ys[i][j]);
-			paper.lineTo(xs[i+1][j], ys[i+1][j]);
-			paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
-			paper.stroke();
-		}
-	}
-}
-
-
-//////////////////////////////////////////////////////////////////
-//functions//
-//////////////////////////////////////////////////////////////////
-
-//initial functions//
-function setVelocity(){
-	for(i = 0; i < N1+2; i++){
-		for (j = 0; j < N2+2; j++){
-			u[idx(i,j)]=0, v[idx(i,j)]=0;
-			uOld[idx(i,j)]=u[idx(i,j)], vOld[idx(i,j)]=v[idx(i,j)];
-		}
-	}
-}
-function setDensity(){
-	for(i = 1; i <= N1; i++){
-		for (j = 1; j <= N2; j++){
-			dens[idx(i,j)] = 0, densOld[idx(i,j)] = 0;
-			paper.fillStyle = "#fff";
-			paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);
-			if (j < N2/2){
-				//dens[idx(i,j)] = 1, densOld[idx(i,j)] = 1;
-				//paper.fillStyle = "#f24";
-				//paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx, dx);
+	function drawlines(xs,ys,W,H,dx){
+		paper.strokeStyle="#bce";
+		for (var i = 0; i < W/dx+1; i++){
+			for (var j = 0; j < H/dx+1; j++){
+				paper.beginPath();
+				paper.moveTo(xs[i][j],ys[i][j]);
+				paper.lineTo(xs[i+1][j], ys[i+1][j]);
+				paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
+				paper.stroke();
 			}
 		}
-	}	
-	if (dx>=10){
-		paper.strokeStyle="#bce";
-		drawlines(xs,ys,W,H,dx)
-	}	
-}
-function animate(){
-
-	var requestAnimationFrame =  
-        window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        window.oRequestAnimationFrame;
-		
-	stepVelocity();
-	stepDensity();
-	if (dx>=10){
-		paper.strokeStyle="#bce";
-		drawlines(xs,ys,W,H,dx)
-	}	
-	if (yes){
-	requestAnimationFrame(animate);
-	} else {
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
 	}
-}
-function stepVelocity(){
-	velocityForces();
-	project();
-	copy(uOld, u);
-	copy(vOld, v);
-	velocityAdvect();
-	project();
-}
-function stepDensity(){
-	forces();
-	copy(densOld, dens);
-	advect();
-}
 
-//density processes//
-function forces(){
-	if(x!=-1 && xOld!=-1){
-		if(x==xOld&&y==yOld){
-			for (i = 1; i <= N1; i++){
-				for (j = 1; j <= N2; j++){
-					if((i-x)*(i-x)+(j-y)*(j-y) < 5){
-						dens[idx(i,j)] = Math.min(1, dens[idx(i,j)]+.75); 
-					}
-				}
-			} 
-		}else if(x==xOld){
-			for (i = Math.min(y,yOld); i < Math.max(y,yOld); i++){
-				dens[idx(x-2,i)] = Math.min(1, dens[idx(i,j)]+.5);
-				dens[idx(x-1,i)] = Math.min(1, dens[idx(i,j)]+.5);
-				dens[idx(x,i)] = Math.min(1, dens[idx(i,j)]+.75);
-				dens[idx(x+1,i)] = Math.min(1, dens[idx(i,j)]+.5);
-				dens[idx(x+2,i)] = Math.min(1, dens[idx(i,j)]+.5);
+
+	//////////////////////////////////////////////////////////////////
+	//functions//
+	//////////////////////////////////////////////////////////////////
+
+	//initial functions//
+	function setVelocity(){
+		for(i = 0; i < N1+2; i++){
+			for (j = 0; j < N2+2; j++){
+				u[idx(i,j)]=0, v[idx(i,j)]=0;
+				uOld[idx(i,j)]=u[idx(i,j)], vOld[idx(i,j)]=v[idx(i,j)];
 			}
-		} else {
-			for (i = 1; i <= N1; i++){
-				for (j = 1; j <= N2; j++){
-					var m = (yOld-y)/(xOld-x);
-					if(i>=Math.min(x,xOld)&&i<=Math.max(x,xOld)&&j>=Math.min(y,yOld)&&j<=Math.max(y,yOld)&&Math.abs(j-m*i-y+m*x) < 5){
-						dens[idx(i,j)] = Math.min(1, dens[idx(i,j)]+.75); 
-					}
+		}
+	}
+	function setDensity(){
+		for(i = 1; i <= N1; i++){
+			for (j = 1; j <= N2; j++){
+				dens[idx(i,j)] = 0, densOld[idx(i,j)] = 0;
+				paper.fillStyle = "#fff";
+				paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);
+				if (j < N2/2){
+					//dens[idx(i,j)] = 1, densOld[idx(i,j)] = 1;
+					//paper.fillStyle = "#f24";
+					//paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx, dx);
 				}
 			}
-		}
+		}	
+		if (dx>=10){
+			paper.strokeStyle="#bce";
+			drawlines(xs,ys,W,H,dx)
+		}	
 	}
-	xOld = x;
-	yOld = y;
-}
-function advect(){
-	var i0,j0,i1,j1,xpos,ypos,s0,t0,s1,t1;
-	//var dt0 = N*dt;
-	for (i = 1; i <= N1; i++){
-		for (j = 1; j <= N2; j++){
-			xpos = i-dt*N1*u[idx(i,j)];
-			ypos = j-dt*N2*v[idx(i,j)];
-			if(xpos<.5){
-				xpos = .5;
-			} else if (xpos>N1+.5){
-				xpos = N1+.5;
-			}
-			if(ypos<.5){
-				ypos = .5;
-			} else if (ypos>N2+.5){
-				ypos = N2+.5;
-			}
-			i0 = Math.floor(xpos), j0 = Math.floor(ypos);
-			i1 = i0+1, j1 = j0+1;
-			s1 = (xpos - i0), s0 = 1-s1;
-			t1 = (ypos - j0), t0 = 1-t1;
-			dens[idx(i,j)] = s0*(t0*densOld[idx(i0,j0)]+t1*densOld[idx(i0,j1)])+s1*(t0*densOld[idx(i1,j0)]+t1*densOld[idx(i1,j1)]);
+	function animate(){
+
+		var requestAnimationFrame =  
+			window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			window.oRequestAnimationFrame;
 			
-			g = 15-Math.floor(dens[idx(i,j)]*12);
-			if(G[idx(i,j)] != g) {
-				G[idx(i,j)] = g;
-				//var f = hex[g];
-				var colour = "#" + hex[Math.min(g,15)]+hex[Math.min(g+1,15)]+hex[Math.min(g+3,15)];
-				//paper.clearRect((i-1)*dx, (j-1)*dx, dx, dx);
-				paper.fillStyle = colour;	
-				paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);	
-			}
+		stepVelocity();
+		stepDensity();
+		if (dx>=10){
+			paper.strokeStyle="#bce";
+			drawlines(xs,ys,W,H,dx)
+		}	
+		if (yes){
+		requestAnimationFrame(animate);
+		} else {
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
 		}
 	}
-	setBoundary();
-}
+	function stepVelocity(){
+		velocityForces();
+		project();
+		copy(uOld, u);
+		copy(vOld, v);
+		velocityAdvect();
+		project();
+	}
+	function stepDensity(){
+		forces();
+		copy(densOld, dens);
+		advect();
+	}
 
-//velocity processes//
-function velocityForces(){
-	if(x!=-1 && xOld!=-1 && uxy && vxy){ 
-		if(x==xOld&&y==yOld){
-		}else if(x==xOld){
-			for (i = Math.min(y,yOld); i < Math.max(y,yOld); i++){
-				u[idx(x,i)] = .2*uxy;
-				v[idx(x,i)] = .2*vxy;
-			}
-		} else {
-			for (i = 1; i <= N1; i++){
-				for (j = 1; j <= N2; j++){
-					var m = (yOld-y)/(xOld-x);
-					if(i>=Math.min(x,xOld)&&i<=Math.max(x,xOld)&&j>=Math.min(y,yOld)&&j<=Math.max(y,yOld)&&Math.abs(j-m*i-y+m*x) < 1){
-						u[idx(i,j)] = .2*uxy; 
-						v[idx(i,j)] = .2*vxy;
+	//density processes//
+	function forces(){
+		if(x!=-1 && xOld!=-1){
+			if(x==xOld&&y==yOld){
+				for (i = 1; i <= N1; i++){
+					for (j = 1; j <= N2; j++){
+						if((i-x)*(i-x)+(j-y)*(j-y) < 5){
+							dens[idx(i,j)] = Math.min(1, dens[idx(i,j)]+.75); 
+						}
+					}
+				} 
+			}else if(x==xOld){
+				for (i = Math.min(y,yOld); i < Math.max(y,yOld); i++){
+					dens[idx(x-2,i)] = Math.min(1, dens[idx(i,j)]+.5);
+					dens[idx(x-1,i)] = Math.min(1, dens[idx(i,j)]+.5);
+					dens[idx(x,i)] = Math.min(1, dens[idx(i,j)]+.75);
+					dens[idx(x+1,i)] = Math.min(1, dens[idx(i,j)]+.5);
+					dens[idx(x+2,i)] = Math.min(1, dens[idx(i,j)]+.5);
+				}
+			} else {
+				for (i = 1; i <= N1; i++){
+					for (j = 1; j <= N2; j++){
+						var m = (yOld-y)/(xOld-x);
+						if(i>=Math.min(x,xOld)&&i<=Math.max(x,xOld)&&j>=Math.min(y,yOld)&&j<=Math.max(y,yOld)&&Math.abs(j-m*i-y+m*x) < 5){
+							dens[idx(i,j)] = Math.min(1, dens[idx(i,j)]+.75); 
+						}
 					}
 				}
 			}
 		}
-		uxy = 0;
-		vxy = 0;
+		xOld = x;
+		yOld = y;
 	}
-}
-function velocityAdvect(){
-	var i0,j0,i1,j1,xpos,ypos,s0,t0,s1,t1;
-	//var dt0 = N*dt;
-	for (i = 1; i <= N1; i++){
-		for (j = 1; j <= N2; j++){
-			xpos = i-dt*N1*uOld[idx(i,j)];
-			ypos = j-dt*N2*vOld[idx(i,j)];
-			if(xpos<.5){
-				xpos = .5;
-			} else if (xpos>N1+.5){
-				xpos = N1+.5;
+	function advect(){
+		var i0,j0,i1,j1,xpos,ypos,s0,t0,s1,t1;
+		//var dt0 = N*dt;
+		for (i = 1; i <= N1; i++){
+			for (j = 1; j <= N2; j++){
+				xpos = i-dt*N1*u[idx(i,j)];
+				ypos = j-dt*N2*v[idx(i,j)];
+				if(xpos<.5){
+					xpos = .5;
+				} else if (xpos>N1+.5){
+					xpos = N1+.5;
+				}
+				if(ypos<.5){
+					ypos = .5;
+				} else if (ypos>N2+.5){
+					ypos = N2+.5;
+				}
+				i0 = Math.floor(xpos), j0 = Math.floor(ypos);
+				i1 = i0+1, j1 = j0+1;
+				s1 = (xpos - i0), s0 = 1-s1;
+				t1 = (ypos - j0), t0 = 1-t1;
+				dens[idx(i,j)] = s0*(t0*densOld[idx(i0,j0)]+t1*densOld[idx(i0,j1)])+s1*(t0*densOld[idx(i1,j0)]+t1*densOld[idx(i1,j1)]);
+				
+				g = 15-Math.floor(dens[idx(i,j)]*12);
+				if(G[idx(i,j)] != g) {
+					G[idx(i,j)] = g;
+					//var f = hex[g];
+					var colour = "#" + hex[Math.min(g,15)]+hex[Math.min(g+1,15)]+hex[Math.min(g+3,15)];
+					//paper.clearRect((i-1)*dx, (j-1)*dx, dx, dx);
+					paper.fillStyle = colour;	
+					paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);	
+				}
 			}
-			if(ypos<.5){
-				ypos = .5;
-			} else if (ypos>N2+.5){
-				ypos = N2+.5;
+		}
+		setBoundary();
+	}
+
+	//velocity processes//
+	function velocityForces(){
+		if(x!=-1 && xOld!=-1 && uxy && vxy){ 
+			if(x==xOld&&y==yOld){
+			}else if(x==xOld){
+				for (i = Math.min(y,yOld); i < Math.max(y,yOld); i++){
+					u[idx(x,i)] = .2*uxy;
+					v[idx(x,i)] = .2*vxy;
+				}
+			} else {
+				for (i = 1; i <= N1; i++){
+					for (j = 1; j <= N2; j++){
+						var m = (yOld-y)/(xOld-x);
+						if(i>=Math.min(x,xOld)&&i<=Math.max(x,xOld)&&j>=Math.min(y,yOld)&&j<=Math.max(y,yOld)&&Math.abs(j-m*i-y+m*x) < 1){
+							u[idx(i,j)] = .2*uxy; 
+							v[idx(i,j)] = .2*vxy;
+						}
+					}
+				}
 			}
-			i0 = Math.floor(xpos), j0 = Math.floor(ypos);
-			i1 = i0+1, j1 = j0+1;
-			s1 = (xpos - i0), s0 = 1-s1;
-			t1 = (ypos - j0), t0 = 1-t1;
-			u[idx(i,j)] = s0*(t0*uOld[idx(i0,j0)]+t1*uOld[idx(i0,j1)])+s1*(t0*uOld[idx(i1,j0)]+t1*uOld[idx(i1,j1)]);
-			v[idx(i,j)] = s0*(t0*vOld[idx(i0,j0)]+t1*vOld[idx(i0,j1)])+s1*(t0*vOld[idx(i1,j0)]+t1*vOld[idx(i1,j1)]);
+			uxy = 0;
+			vxy = 0;
 		}
 	}
-	setVelocityBoundary();
-}
-function project(){
-	for ( i=1 ; i<=N1 ; i++ ) { 
-		for ( j=1 ; j<=N2 ; j++ ) { 
-			vOld[idx(i,j)] = -0.5*dx*(u[idx(i+1,j)]-u[idx(i-1,j)]+v[idx(i,j+1)]-v[idx(i,j-1)]); 
-			uOld[idx(i,j)] = 0; 
-		} 
-	} 
-	setVelocityBoundary2();
- 
-	for ( k=0 ; k<20 ; k++ ) { 
+	function velocityAdvect(){
+		var i0,j0,i1,j1,xpos,ypos,s0,t0,s1,t1;
+		//var dt0 = N*dt;
+		for (i = 1; i <= N1; i++){
+			for (j = 1; j <= N2; j++){
+				xpos = i-dt*N1*uOld[idx(i,j)];
+				ypos = j-dt*N2*vOld[idx(i,j)];
+				if(xpos<.5){
+					xpos = .5;
+				} else if (xpos>N1+.5){
+					xpos = N1+.5;
+				}
+				if(ypos<.5){
+					ypos = .5;
+				} else if (ypos>N2+.5){
+					ypos = N2+.5;
+				}
+				i0 = Math.floor(xpos), j0 = Math.floor(ypos);
+				i1 = i0+1, j1 = j0+1;
+				s1 = (xpos - i0), s0 = 1-s1;
+				t1 = (ypos - j0), t0 = 1-t1;
+				u[idx(i,j)] = s0*(t0*uOld[idx(i0,j0)]+t1*uOld[idx(i0,j1)])+s1*(t0*uOld[idx(i1,j0)]+t1*uOld[idx(i1,j1)]);
+				v[idx(i,j)] = s0*(t0*vOld[idx(i0,j0)]+t1*vOld[idx(i0,j1)])+s1*(t0*vOld[idx(i1,j0)]+t1*vOld[idx(i1,j1)]);
+			}
+		}
+		setVelocityBoundary();
+	}
+	function project(){
 		for ( i=1 ; i<=N1 ; i++ ) { 
 			for ( j=1 ; j<=N2 ; j++ ) { 
-				uOld[idx(i,j)] = (vOld[idx(i,j)]+uOld[idx(i-1,j)]+uOld[idx(i+1,j)]+ 
-				uOld[idx(i,j-1)]+uOld[idx(i,j+1)])/4; 
+				vOld[idx(i,j)] = -0.5*dx*(u[idx(i+1,j)]-u[idx(i-1,j)]+v[idx(i,j+1)]-v[idx(i,j-1)]); 
+				uOld[idx(i,j)] = 0; 
 			} 
 		} 
-		setVelocityBoundary2(); 
-	} 
- 
-	for ( i=1 ; i<=N1 ; i++ ) { 
-		for ( j=1 ; j<=N2 ; j++ ) { 
-			u[idx(i,j)] -= 0.5*(uOld[idx(i+1,j)]-uOld[idx(i-1,j)])/dx; 
-			v[idx(i,j)] -= 0.5*(uOld[idx(i,j+1)]-uOld[idx(i,j-1)])/dx; 
+		setVelocityBoundary2();
+	 
+		for ( k=0 ; k<20 ; k++ ) { 
+			for ( i=1 ; i<=N1 ; i++ ) { 
+				for ( j=1 ; j<=N2 ; j++ ) { 
+					uOld[idx(i,j)] = (vOld[idx(i,j)]+uOld[idx(i-1,j)]+uOld[idx(i+1,j)]+ 
+					uOld[idx(i,j-1)]+uOld[idx(i,j+1)])/4; 
+				} 
+			} 
+			setVelocityBoundary2(); 
 		} 
-	} 
-	setVelocityBoundary(); 
-}
+	 
+		for ( i=1 ; i<=N1 ; i++ ) { 
+			for ( j=1 ; j<=N2 ; j++ ) { 
+				u[idx(i,j)] -= 0.5*(uOld[idx(i+1,j)]-uOld[idx(i-1,j)])/dx; 
+				v[idx(i,j)] -= 0.5*(uOld[idx(i,j+1)]-uOld[idx(i,j-1)])/dx; 
+			} 
+		} 
+		setVelocityBoundary(); 
+	}
 
-//paper functions//
-function updatepaper(){
-	for (i = 1; i<=N; i++){
-		for (j = 1; j <= N; j++){
-			g = Math.floor(dens[idx(i,j)]*15);
-			//if(G[idx(i,j)] != g) {
-				//G[idx(i,j)] = g;
-				var f = hex[g];
-				var colour = "#" + f + "2" + "4";
-				//paper.clearRect((i-1)*dx, (j-1)*dx, dx, dx);
-				paper.fillStyle = colour;	
-				paper.fillRect((i-1)*dx, (j-1)*dx, dx+1, dx+1);	
-			//}
-		}
-	}
-}
-
-function setG(){
-	for (i = 1; i<=N1; i++){
-		for (j = 1; j <= N2; j++){
-			g = Math.floor(dens[idx(i,j)]*15);
-			G[idx(i,j)] = g;
-		}
-	}
-}
-
-//housekeeping functions//
-function idx(i, j){
-	return i+(N1+2)*j;
-}
-function setBoundary(){
-	for (i = 1; i <= N1; i++){
-		dens[idx(i,0)] = dens[idx(i,1)];
-		dens[idx(i,N2+1)] = dens[idx(i,N2)];
-	}
-	for (j = 1; j <= N2; j++){
-		dens[idx(0,j)] = dens[idx(1,j)];
-		dens[idx(N1+1,j)] = dens[idx(N1,j)];
-	}
-	dens[idx(0,0)] = .5*(dens[idx(0,1)] + dens[idx(1,0)]);
-	dens[idx(0,N2+1)] = .5*(dens[idx(1,N2+1)] + dens[idx(0,N2)]);
-	dens[idx(N1+1,0)] = .5*(dens[idx(N1,0)] + dens[idx(N1+1,1)]);
-	dens[idx(N1+1, N2+1)] = .5*(dens[idx(N1,N2+1)] + dens[idx(N1+1,N2)]);
-	
-	/*for (i = 1; i<=N; i++){
-		for (j = 1; j <= N; j++){
-			if((i-N/2)*(i-N/2)+(j-N/2)*(j-N/2) < 100){
-				dens[idx(i,j)] = 0;
+	//paper functions//
+	function updatepaper(){
+		for (i = 1; i<=N; i++){
+			for (j = 1; j <= N; j++){
+				g = Math.floor(dens[idx(i,j)]*15);
+				//if(G[idx(i,j)] != g) {
+					//G[idx(i,j)] = g;
+					var f = hex[g];
+					var colour = "#" + f + "2" + "4";
+					//paper.clearRect((i-1)*dx, (j-1)*dx, dx, dx);
+					paper.fillStyle = colour;	
+					paper.fillRect((i-1)*dx, (j-1)*dx, dx+1, dx+1);	
+				//}
 			}
 		}
-	}*/
-}
-function setVelocityBoundary(){
-	for (i = 1; i <= N1; i++){
-		u[idx(i,0)] = u[idx(i,1)];
-		u[idx(i,N2+1)] = u[idx(i,N2)];
-		v[idx(i,0)] = -v[idx(i,1)];
-		v[idx(i,N2+1)] = -v[idx(i,N2)];
 	}
-	for (j = 1; j <= N2; j++){
-		u[idx(0,j)] = -u[idx(1,j)];
-		u[idx(N1+1,j)] = -u[idx(N1,j)];
-		v[idx(0,j)] = v[idx(1,j)];
-		v[idx(N1+1,j)] = v[idx(N1,j)];
-	}
-	
-	u[idx(0,0)] = .5*(u[idx(0,1)] + u[idx(1,0)]);
-	u[idx(0,N2+1)] = .5*(u[idx(1,N2+1)] + u[idx(0,N2)]);
-	u[idx(N1+1,0)] = .5*(u[idx(N1,0)] + u[idx(N1+1,1)]);
-	u[idx(N1+1, N2+1)] = .5*(u[idx(N1,N2+1)] + u[idx(N1+1,N2)]);
-	
-	v[idx(0,0)] = .5*(v[idx(0,1)] + v[idx(1,0)]);
-	v[idx(0,N2+1)] = .5*(v[idx(1,N2+1)] + v[idx(0,N2)]);
-	v[idx(N1+1,0)] = .5*(v[idx(N1,0)] + v[idx(N1+1,1)]);
-	v[idx(N1+1, N2+1)] = .5*(v[idx(N1,N2+1)] + v[idx(N1+1,N2)]);
-}
-function setVelocityBoundary2(){
-	for (i = 1; i <= N1; i++){
-		uOld[idx(i,0)] = uOld[idx(i,1)];
-		uOld[idx(i,N2+1)] = uOld[idx(i,N2)];
-		vOld[idx(i,0)] = vOld[idx(i,1)];
-		vOld[idx(i,N2+1)] = vOld[idx(i,N2)];
-	}
-	for (j = 1; j <= N2; j++){
-		uOld[idx(0,j)] = uOld[idx(1,j)];
-		uOld[idx(N1+1,j)] = uOld[idx(N1,j)];
-		vOld[idx(0,j)] = vOld[idx(1,j)];
-		vOld[idx(N1+1,j)] = vOld[idx(N1,j)];
-	}
-	
-	uOld[idx(0,0)] = .5*(uOld[idx(0,1)] + uOld[idx(1,0)]);
-	uOld[idx(0,N2+1)] = .5*(uOld[idx(1,N2+1)] + uOld[idx(0,N2)]);
-	uOld[idx(N1+1,0)] = .5*(uOld[idx(N1,0)] + uOld[idx(N1+1,1)]);
-	uOld[idx(N1+1, N2+1)] = .5*(uOld[idx(N1,N2+1)] + uOld[idx(N1+1,N2)]);
-	
-	vOld[idx(0,0)] = .5*(vOld[idx(0,1)] + vOld[idx(1,0)]);
-	vOld[idx(0,N2+1)] = .5*(vOld[idx(1,N2+1)] + vOld[idx(0,N2)]);
-	vOld[idx(N1+1,0)] = .5*(vOld[idx(N1,0)] + vOld[idx(N1+1,1)]);
-	vOld[idx(N1+1, N2+1)] = .5*(vOld[idx(N1,N2+1)] + vOld[idx(N1+1,N2)]);
-}
-function copy(to,from){
-	for(var i=0; i<N1+2; i++){
-		for(var j=0; j<N2+2; j++){
-			to[idx(i,j)]=from[idx(i,j)];
+
+	function setG(){
+		for (i = 1; i<=N1; i++){
+			for (j = 1; j <= N2; j++){
+				g = Math.floor(dens[idx(i,j)]*15);
+				G[idx(i,j)] = g;
+			}
 		}
 	}
-}
 
-//mousekeeping functions//
-function coords(event){
-	xOld=x, yOld=y;
-	x = event.clientX, y = event.clientY;
-	//if(x>xmin&&y>ymin&&x<xmin+dx*N&&y<ymin+dx*N){
+	//housekeeping functions//
+	function idx(i, j){
+		return i+(N1+2)*j;
+	}
+	function setBoundary(){
+		for (i = 1; i <= N1; i++){
+			dens[idx(i,0)] = dens[idx(i,1)];
+			dens[idx(i,N2+1)] = dens[idx(i,N2)];
+		}
+		for (j = 1; j <= N2; j++){
+			dens[idx(0,j)] = dens[idx(1,j)];
+			dens[idx(N1+1,j)] = dens[idx(N1,j)];
+		}
+		dens[idx(0,0)] = .5*(dens[idx(0,1)] + dens[idx(1,0)]);
+		dens[idx(0,N2+1)] = .5*(dens[idx(1,N2+1)] + dens[idx(0,N2)]);
+		dens[idx(N1+1,0)] = .5*(dens[idx(N1,0)] + dens[idx(N1+1,1)]);
+		dens[idx(N1+1, N2+1)] = .5*(dens[idx(N1,N2+1)] + dens[idx(N1+1,N2)]);
+		
+		/*for (i = 1; i<=N; i++){
+			for (j = 1; j <= N; j++){
+				if((i-N/2)*(i-N/2)+(j-N/2)*(j-N/2) < 100){
+					dens[idx(i,j)] = 0;
+				}
+			}
+		}*/
+	}
+	function setVelocityBoundary(){
+		for (i = 1; i <= N1; i++){
+			u[idx(i,0)] = u[idx(i,1)];
+			u[idx(i,N2+1)] = u[idx(i,N2)];
+			v[idx(i,0)] = -v[idx(i,1)];
+			v[idx(i,N2+1)] = -v[idx(i,N2)];
+		}
+		for (j = 1; j <= N2; j++){
+			u[idx(0,j)] = -u[idx(1,j)];
+			u[idx(N1+1,j)] = -u[idx(N1,j)];
+			v[idx(0,j)] = v[idx(1,j)];
+			v[idx(N1+1,j)] = v[idx(N1,j)];
+		}
+		
+		u[idx(0,0)] = .5*(u[idx(0,1)] + u[idx(1,0)]);
+		u[idx(0,N2+1)] = .5*(u[idx(1,N2+1)] + u[idx(0,N2)]);
+		u[idx(N1+1,0)] = .5*(u[idx(N1,0)] + u[idx(N1+1,1)]);
+		u[idx(N1+1, N2+1)] = .5*(u[idx(N1,N2+1)] + u[idx(N1+1,N2)]);
+		
+		v[idx(0,0)] = .5*(v[idx(0,1)] + v[idx(1,0)]);
+		v[idx(0,N2+1)] = .5*(v[idx(1,N2+1)] + v[idx(0,N2)]);
+		v[idx(N1+1,0)] = .5*(v[idx(N1,0)] + v[idx(N1+1,1)]);
+		v[idx(N1+1, N2+1)] = .5*(v[idx(N1,N2+1)] + v[idx(N1+1,N2)]);
+	}
+	function setVelocityBoundary2(){
+		for (i = 1; i <= N1; i++){
+			uOld[idx(i,0)] = uOld[idx(i,1)];
+			uOld[idx(i,N2+1)] = uOld[idx(i,N2)];
+			vOld[idx(i,0)] = vOld[idx(i,1)];
+			vOld[idx(i,N2+1)] = vOld[idx(i,N2)];
+		}
+		for (j = 1; j <= N2; j++){
+			uOld[idx(0,j)] = uOld[idx(1,j)];
+			uOld[idx(N1+1,j)] = uOld[idx(N1,j)];
+			vOld[idx(0,j)] = vOld[idx(1,j)];
+			vOld[idx(N1+1,j)] = vOld[idx(N1,j)];
+		}
+		
+		uOld[idx(0,0)] = .5*(uOld[idx(0,1)] + uOld[idx(1,0)]);
+		uOld[idx(0,N2+1)] = .5*(uOld[idx(1,N2+1)] + uOld[idx(0,N2)]);
+		uOld[idx(N1+1,0)] = .5*(uOld[idx(N1,0)] + uOld[idx(N1+1,1)]);
+		uOld[idx(N1+1, N2+1)] = .5*(uOld[idx(N1,N2+1)] + uOld[idx(N1+1,N2)]);
+		
+		vOld[idx(0,0)] = .5*(vOld[idx(0,1)] + vOld[idx(1,0)]);
+		vOld[idx(0,N2+1)] = .5*(vOld[idx(1,N2+1)] + vOld[idx(0,N2)]);
+		vOld[idx(N1+1,0)] = .5*(vOld[idx(N1,0)] + vOld[idx(N1+1,1)]);
+		vOld[idx(N1+1, N2+1)] = .5*(vOld[idx(N1,N2+1)] + vOld[idx(N1+1,N2)]);
+	}
+	function copy(to,from){
+		for(var i=0; i<N1+2; i++){
+			for(var j=0; j<N2+2; j++){
+				to[idx(i,j)]=from[idx(i,j)];
+			}
+		}
+	}
+
+	// Mousekeeping functions
+	function coords(event){
+		xOld=x, yOld=y;
+		x = event.clientX, y = event.clientY;
 		x = Math.ceil((x)/dx);
 		y = Math.ceil((y)/dx);
 		uxy = (x-xOld)*dt;
 		vxy = (y-yOld)*dt;
-	/*} else {
-		x = -1, y = -1;
-		uxy = 0, vxy = 0;
-	}*/
-}
-window.onload = function() {
-	reset.onmousedown = function() {
-		yes = 0;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
 	}
-	bb.onmousedown = function() {
-		yes = 0;
-		dx = 2;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
+	window.onload = function() {
+		reset.onmousedown = function() {
+			yes = 0;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		bb.onmousedown = function() {
+			yes = 0;
+			dx = 2;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		cc.onmousedown = function() {
+			yes = 0;
+			dx = 5;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		dd.onmousedown = function() {
+			yes = 0;
+			dx = 10;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		ee.onmousedown = function() {
+			yes = 0;
+			dx = 20;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		ff.onmousedown = function() {
+			yes = 0;
+			dx = 50;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
 	}
-	cc.onmousedown = function() {
-		yes = 0;
-		dx = 5;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	dd.onmousedown = function() {
-		yes = 0;
-		dx = 10;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	ee.onmousedown = function() {
-		yes = 0;
-		dx = 20;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	ff.onmousedown = function() {
-		yes = 0;
-		dx = 50;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-}
 
 </script>
 

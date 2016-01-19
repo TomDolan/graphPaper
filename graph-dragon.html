@@ -15,22 +15,32 @@
 <div id = "menu">
 	<p style = "text-align: center;">info</p>
 	<h1 style = "text-align: center;">Dragon Curve</h1>
-	<div style="width:300px;height:100px;">
-		<p class = "hoverbutton" id = "button3" href = "graph-dragon.html">3</p>
-		<p class = "hoverbutton" id = "button5" href = "graph-dragon.html">5</p>
-		<p class = "hoverbutton" id = "button9" href = "graph-dragon.html">9</p>
-		<p class = "hoverbutton" id = "button17" href = "graph-dragon.html">17</p>
-		<p class = "hoverbutton" id = "button33" href = "graph-dragon.html">33</p>
-		<p class = "hoverbutton" id = "button65" href = "graph-dragon.html">65</p>
-		<p class = "hoverbutton" id = "button129" href = "graph-dragon.html">129</p>
-		<p class = "hoverbutton" id = "button257" href = "graph-dragon.html">257</p>
-		<p class = "hoverbutton" id = "button513" href = "graph-dragon.html">513</p>
-		<p class = "hoverbutton" id = "button1025" href = "graph-dragon.html">1025</p>
-		<p class = "hoverbutton" id = "button2049" href = "graph-dragon.html">2049</p>
-		<p class = "hoverbutton" id = "button4097" href = "graph-dragon.html">4097</p>
-		<p class = "hoverbutton" id = "button8193" href = "graph-dragon.html">8193</p>
-		<p class = "hoverbutton" id = "button16385" href = "graph-dragon.html">16385</p>
+	<div style="width:400px;height:100px;">
+		<p class = "hoverbutton" id = "button3" href = "graph-dragon.html">1</p>
+		<p class = "hoverbutton" id = "button257" href = "graph-dragon.html">8</p>
+		<p class = "hoverbutton" id = "button5" href = "graph-dragon.html">2</p>
+		<p class = "hoverbutton" id = "button513" href = "graph-dragon.html">9</p>
+		<p class = "hoverbutton" id = "button9" href = "graph-dragon.html">3</p>
+		<p class = "hoverbutton" id = "button1025" href = "graph-dragon.html">10</p>
+		<p class = "hoverbutton" id = "button17" href = "graph-dragon.html">4</p>
+		<p class = "hoverbutton" id = "button2049" href = "graph-dragon.html">11</p>
+		<p class = "hoverbutton" id = "button33" href = "graph-dragon.html">5</p>
+		<p class = "hoverbutton" id = "button4097" href = "graph-dragon.html">12</p>
+		<p class = "hoverbutton" id = "button65" href = "graph-dragon.html">6</p>
+		<p class = "hoverbutton" id = "button8193" href = "graph-dragon.html">13</p>
+		<p class = "hoverbutton" id = "button129" href = "graph-dragon.html">7</p>
+		<p class = "hoverbutton" id = "button16385" href = "graph-dragon.html"style = "margin-bottom:20px;">14</p>
 	</div>
+	<p>
+	</br>
+	The dragon curve is a single line made up of straight segments with right-angle turns. More and more turns are added until it becomes a solid, dragon like image. 
+	</br></br>
+	Dragon curves are self similar fractals, which means the shape of the curve can be found again within itself, and again within that, and so on as you zoom in. 
+	</br></br>
+	To generate a dragon curve, start with two lines of equal length forming a right angle. 
+	Replace each line segment with another right angle, alternating left and right of the line to get a new curve. 
+	Repeat the process, each time using smaller and smaller lines to generate more and more complicated curves.
+	</p>
 </div>
 
 <div id = "footer">
@@ -52,8 +62,8 @@
 	drawpage();
 	
 	// Set size and position of curve on the page
-	if (W-380>H){
-		var x0 = (W-380-H/3)/2+60;
+	if (W-430>H){
+		var x0 = (W-430-H/3)/2+40;
 		var y0 = 7*H/18;
 		var xl = H/3;
 		var yl = H/3;
