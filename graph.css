@@ -27,6 +27,10 @@ p {
 	font-family: 'Roboto', sans-serif;
 }
 
+a:visited {
+    color: #FF5254;
+}
+
 #canvasbox {
 	position:absolute;
 	width:100%;

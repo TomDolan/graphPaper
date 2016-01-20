@@ -1,40 +1,40 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-
 <link rel="stylesheet" type="text/css" href="graph.css">
 <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
-
 </head>
+
 <body>
 
 <div id = "canvasbox">
-<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 
 <div id = "menu">
-<p style = "text-align: center;">info</p>
-<p id = "fps">info</p>
-<h1>maze</h1>
-<p>Navigate the maze to find the exit. Also try different maze parameters. </p>
-<p>corridor width:</p>
-<div style="width:400px;height:100px;">
-<p class = "hoverbutton" id = "reset" >reset</p>
-<p class = "hoverbutton" id = "bb" >10</p>
-<p class = "hoverbutton" id = "cc" >20</p>
-<p class = "hoverbutton" id = "dd" >30</p>
-<p class = "hoverbutton" id = "ee" >40</p>
-<p class = "hoverbutton" id = "ff">50</p>
-</div>
-<p>Maximum room width (in number of corridor widths):
-<div style="width:400px;height:100px;">
-<p class = "hoverbutton" id = "gg" >1</p>
-<p class = "hoverbutton" id = "hh" >2</p>
-<p class = "hoverbutton" id = "ii" >3</p>
-<p class = "hoverbutton" id = "jj" >4</p>
-<p class = "hoverbutton" id = "kk">5</p>
-<p class = "hoverbutton" id = "ll">6</p>
-</div>
+	<p style = "text-align: center;" id = "info">info</p>
+	<p id = "fps">fps: 0</p>
+	<h1>maze</h1>
+	<p>Navigate the maze to find the exit. Also try different maze parameters. </p>
+	<p>Corridor width:</p>
+	<div style="width:400px;height:100px;">
+		<p class = "hoverbutton" id = "reset" >reset</p>
+		<p class = "hoverbutton" id = "bb" >10</p>
+		<p class = "hoverbutton" id = "cc" >20</p>
+		<p class = "hoverbutton" id = "dd" >30</p>
+		<p class = "hoverbutton" id = "ee" >40</p>
+		<p class = "hoverbutton" id = "ff">50</p>
+	</div>
+	<p>Maximum room width (in number of corridor widths):
+	<div style="width:400px;height:100px;">
+		<p class = "hoverbutton" id = "gg" >1</p>
+		<p class = "hoverbutton" id = "hh" >2</p>
+		<p class = "hoverbutton" id = "ii" >3</p>
+		<p class = "hoverbutton" id = "jj" >4</p>
+		<p class = "hoverbutton" id = "kk">5</p>
+		<p class = "hoverbutton" id = "ll">6</p>
+	</div>
 </div>
 
 <div id="winner">
@@ -43,88 +43,28 @@
 </div>
 
 <div id = "footer">
-<p style = "text-align:center;"><a href="graph-gol.html">previous</a> | <a href="graph-mazedark.html">lights off</a> </p>
+	<p style = "text-align:center;"id="foot"><a href="graph-gol.html">previous</a> | <a id = "lightswitch" onclick="lights()">lights off</a> </p>
 </div>
 
 <script>
-var c = document.getElementById("graph");
-var paper = c.getContext("2d");
-W=window.innerWidth;
-H=window.innerHeight;
-dx = 40;
-c.width = W;
-c.height = H;
-var t = 0;
-var dt = .001;
-var initialising = 0;
-paper.fillStyle = 'rgba(255,255,255,1)';
-paper.fillRect(0,0,W,H);
 
-
-var xs = [];
-var ys = [];
-var hwall = [];
-var vwall = [];
-for (var i = 0; i < W/dx+1; i++){
-	xs[i]=[];
-	ys[i]=[];
-	hwall[i] = [];
-	vwall[i] = [];
-	for (var j = 0; j < H/dx+1; j++){
-		xs[i][j] = (i-1)*dx+dx/2+.5;
-		ys[i][j] = (j-1)*dx+dx/2+.5;
-		hwall[i][j] = 0;//parseInt(Math.random()*2);
-		vwall[i][j] = 0;//parseInt(Math.random()*2);
-		//if(j == 19){
-		//	vwall[i][j] = 0;
-		//}
-	}
-}
-
-for (var i = 1; i < xs.length-2; i++){
-	hwall[i][1] = 1;
-	hwall[i][xs[0].length-2] = 1;
-}
-for (var j = 1; j < xs[0].length-2; j++){
-	vwall[1][j] = 1;
-	vwall[xs.length-2][j] = 1;
-}
-roomwidth = 4;
-split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
-
-paper.fillStyle="#679";
-paper.strokeStyle="#bce";
-//drawpoints(xs,ys,W,H,dx)
-//drawlines(xs,ys,W,H,dx)
-
-var ballx = xs[1][1]+dx/2;
-var bally = ys[1][1]+dx/2;
-var newballx = ballx;
-var newbally = bally;
-var upkey = 0;
-var downkey = 0;
-var leftkey = 0;
-var rightkey = 0;
-var speed = dx/20;
-
-var found = 0;
-var won = 0;
-var goali = 1+Math.floor((xs.length-3)*Math.random());
-var goalj = 1+Math.floor((xs[0].length-3)*Math.random());
-var goalx = xs[goali][goalj]+dx/2;
-var goaly = ys[goali][goalj]+dx/2;
-
-drawball(ballx,bally);
-//addlight();
-//setTimeout(animate, 500);
-animate(draw);
-
-function init(){
-	initialising = 1;
-	xs = [];
-	ys = [];
-	hwall = [];
-	vwall = [];
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	
+	var dx = 40;
+	var t = 0;
+	var initialising = 0;
+	var xs = [];
+	var ys = [];
+	var hwall = [];
+	var vwall = [];
 	for (var i = 0; i < W/dx+1; i++){
 		xs[i]=[];
 		ys[i]=[];
@@ -133,11 +73,8 @@ function init(){
 		for (var j = 0; j < H/dx+1; j++){
 			xs[i][j] = (i-1)*dx+dx/2+.5;
 			ys[i][j] = (j-1)*dx+dx/2+.5;
-			hwall[i][j] = 0;//parseInt(Math.random()*2);
-			vwall[i][j] = 0;//parseInt(Math.random()*2);
-			//if(j == 19){
-			//	vwall[i][j] = 0;
-			//}
+			hwall[i][j] = 0;
+			vwall[i][j] = 0;
 		}
 	}
 
@@ -149,1014 +86,860 @@ function init(){
 		vwall[1][j] = 1;
 		vwall[xs.length-2][j] = 1;
 	}
+	roomwidth = 4;
 	split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
 
-	ballx = xs[1][1]+dx/2;
-	bally = ys[1][1]+dx/2;
-	newballx = ballx;
-	newbally = bally;
-	upkey = 0;
-	downkey = 0;
-	leftkey = 0;
-	rightkey = 0;
+	var ballx = xs[1][1]+dx/2;
+	var bally = ys[1][1]+dx/2;
+	var newballx = ballx;
+	var newbally = bally;
+	var upkey = 0;
+	var downkey = 0;
+	var leftkey = 0;
+	var rightkey = 0;
+	var speed = dx/20;
 
-	found = 0;
-	won = 0;
-	goali = 1+Math.floor((xs.length-3)*Math.random());
-	goalj = 1+Math.floor((xs[0].length-3)*Math.random());
-	goalx = xs[goali][goalj]+dx/2;
-	goaly = ys[goali][goalj]+dx/2;
-	setTimeout(initialising = 0,200);
-}
+	var found = 0;
+	var won = 0;
+	var light = 1;
+	var lightblocks = 0;
+	var lightlines = 0;
+	var goali = 1+Math.floor((xs.length-3)*Math.random());
+	var goalj = 1+Math.floor((xs[0].length-3)*Math.random());
+	var goalx = xs[goali][goalj]+dx/2;
+	var goaly = ys[goali][goalj]+dx/2;
 
-function split(x,y,xleft,yup,xright,ydown,hoz,width){
-	if (xright-xleft<=width||ydown-yup<=width){
-		return;
-	}
-	if (hoz){
-		var splith = Math.floor(1+yup+(ydown-yup-2)*Math.random());
-		for (var i = xleft; i<xright; i++){
-			hwall[i][splith]=1;
+	drawball(ballx,bally);
+	animate(draw);
+
+	function init(){
+		if (light){
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+		} else {
+			paper.fillStyle = 'rgba(0,17,44,1)';
+			paper.fillRect(0,0,W,H);
 		}
-		var gaph = Math.floor(xleft+(xright-xleft)*Math.random());
-		hwall[gaph][splith]=0;
-		//alert('')
-		//drawlines(xs,ys,W,H,dx)
-		split(x,y,xleft,yup,xright,splith,0,width)
-		split(x,y,xleft,splith,xright,ydown,0,width)
-	}else{
-		var splitv = Math.floor(1+xleft+(xright-xleft-2)*Math.random());
-		for (var j = yup; j<ydown; j++){
-			vwall[splitv][j]=1;
-		}
-		var gapv = Math.floor(yup+(ydown-yup)*Math.random());
-		vwall[splitv][gapv]=0;
-		//alert('')
-		//drawlines(xs,ys,W,H,dx)
-		split(x,y,xleft,yup,splitv,ydown,1,width)
-		split(x,y,splitv,yup,xright,ydown,1,width)
-	}
-}
-
-function addhole(x,y){
-paper.fillStyle="#679";
-paper.beginPath();
-paper.arc(x, y, dx/1.5, 0, 2 * Math.PI);
-paper.stroke();
-paper.fill();
-paper.beginPath();
-paper.arc(x+1, y+1, dx/1.5, 0, 2 * Math.PI);
-paper.stroke();
-paper.fillStyle="white";
-paper.fill();
-}
-
-function trace(x,y,n,colour){
-paper.beginPath();
-paper.moveTo(x0+x[0]*xl,y0+y[0]*yl);
-for (var i = 1; i < n; i ++){
-	paper.lineTo(x0+x[i]*xl,y0+y[i]*yl);
-}
-paper.strokeStyle = colour;
-paper.stroke();
-}
-
-function addvertex(x,y,n){
-	var i = 1;
-	var sign = 1;
-	while(i<n){
-		
-		var x0 = x[i-1];
-		var x1 = x[i];
-		var y0 = y[i-1];
-		var y1 = y[i];
-		var r = Math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
-		var theta = Math.acos((x1-x0)/r);
-		if (y0<y1){
-			theta = -theta;
-		}
-		//alert("position, angle, magnitude: " + x0 + ", " + x1 + ", " + y0 + ", " + y1 + ", "+ theta + ", "+ r)
-		var newx = x0+r/Math.sqrt(2)*Math.cos(theta+sign*Math.PI/4);
-		var newy = y0-r/Math.sqrt(2)*Math.sin(theta+sign*Math.PI/4);
-		insert(x,newx,i,n);
-		insert(y,newy,i,n);
-		n++;
-		i +=2;
-		sign*=-1;
-	}
-}
-
-function insert(x,newx,i,n){
-	var temp1 = x[i];
-	x[i] = newx;
-	for(var j = n; j > i; j--){
-		x[j]=x[j-1];
-	}
-	x[i+1]=temp1;
-}
-
-function drawpoints(xs,ys,W,H,dx){
-	for (var i = 0; i < W/dx+1; i++){
-		for (var j = 0; j < H/dx+1; j++){
-			paper.beginPath();
-			paper.arc(xs[i][j], ys[i][j], 1, 0, 2 * Math.PI);
-			paper.stroke();
-			paper.fill();
-		}
-	}
-}
-
-function drawlines(xs,ys,W,H,dx){
-	paper.strokeStyle="#bce";
-	for (var i = 0; i < W/dx; i++){
-		for (var j = 0; j < H/dx; j++){
-			if(hwall[i][j]){	
-				paper.beginPath();
-				paper.moveTo(xs[i][j],ys[i][j]);
-				paper.lineTo(xs[i+1][j], ys[i+1][j]);
-				paper.stroke();
-			}
-			if(vwall[i][j]){	
-				paper.beginPath();
-				paper.moveTo(xs[i][j],ys[i][j]);
-				paper.lineTo(xs[i][j+1],ys[i][j+1]);
-				paper.stroke();
+		initialising = 1;
+		xs = [];
+		ys = [];
+		hwall = [];
+		vwall = [];
+		for (var i = 0; i < W/dx+1; i++){
+			xs[i]=[];
+			ys[i]=[];
+			hwall[i] = [];
+			vwall[i] = [];
+			for (var j = 0; j < H/dx+1; j++){
+				xs[i][j] = (i-1)*dx+dx/2+.5;
+				ys[i][j] = (j-1)*dx+dx/2+.5;
+				hwall[i][j] = 0;
+				vwall[i][j] = 0;
 			}
 		}
-	}
-}
 
-function drawball(ballx,bally){
-	paper.beginPath();
-	paper.arc(ballx,bally, 2, 0, 2 * Math.PI);
-	paper.stroke();
-	paper.fill();
-}
-
-function addlight(){
-	found = 0;
-	
-	gridi = parseInt((ballx-(dx/2+.5))/dx+1);
-	gridj = parseInt((bally-(dx/2+.5))/dx+1);
-	
-	
-	paper.beginPath();
-	paper.fillStyle = 'rgba(200,200,200,.5)';//'rgba(255,255,255,.5)';//
-		var colour=paper.createRadialGradient(ballx,bally,5,ballx,bally,300);
-		colour.addColorStop(0,"rgb(220,220,220)");
-		colour.addColorStop(1,"white");
-	paper.fillStyle =colour;
-	paper.strokeStyle = colour;
-	paper.moveTo(xs[gridi][gridj],ys[gridi][gridj]);
-	paper.lineTo(xs[gridi][gridj+1],ys[gridi][gridj+1]);
-	paper.lineTo(xs[gridi+1][gridj+1],ys[gridi+1][gridj+1]);
-	paper.lineTo(xs[gridi+1][gridj],ys[gridi+1][gridj]);
-	paper.lineTo(xs[gridi][gridj],ys[gridi][gridj]);
-	paper.fill(); 
-	paper.stroke();
-	
-	if(hwall[gridi][gridj]==0){
-		lightsquare(ballx,bally,gridi,gridj-1,xs[gridi+1][gridj],ys[gridi+1][gridj],xs[gridi][gridj],ys[gridi][gridj]);
-	}if(hwall[gridi][gridj+1]==0){
-		lightsquare(ballx,bally,gridi,gridj+1,xs[gridi][gridj+1],ys[gridi][gridj+1],xs[gridi+1][gridj+1],ys[gridi+1][gridj+1]);
-	}if(vwall[gridi][gridj]==0){
-		lightsquare(ballx,bally,gridi-1,gridj,xs[gridi][gridj],ys[gridi][gridj],xs[gridi][gridj+1],ys[gridi][gridj+1]);
-	}if(vwall[gridi+1][gridj]==0){
-		lightsquare(ballx,bally,gridi+1,gridj,xs[gridi+1][gridj+1],ys[gridi+1][gridj+1],xs[gridi+1][gridj],ys[gridi+1][gridj]);
-	}
-	
-	/*for(var i = 0; i < 2*3.141593; i +=2*3.141593/60){
-		var sini = Math.sin(i);
-		var cosi = Math.cos(i);
-		paper.beginPath();
-		paper.lineWidth=1;
-		paper.lineCap = "round"
-		paper.moveTo(ballx,bally);
-		var L=0;
-		for (L = 0; L<150; L+=.5){
-			if(ballx+sini*L<0||ballx+sini*L>W||bally-cosi*L<0||bally-cosi*L>H){
-				break
-			}
-			j = parseInt(Math.max((ballx+sini*L-(dx/2+.5))/dx+1,(ballx+sini*(L+1)-(dx/2+.5))/dx+1));
-			k = parseInt(Math.max((bally-cosi*L-(dx/2+.5))/dx+1,(bally-cosi*(L+1)-(dx/2+.5))/dx+1));
-			if(parseInt((ballx+sini*L-(dx/2+.5))/dx+1) != parseInt((ballx+sini*(L+1)-(dx/2+.5))/dx+1)){
-				if (vwall[j][k]){
-					break;
-				}
-			}
-			if(parseInt((bally-cosi*L-(dx/2+.5))/dx+1) != parseInt((bally-cosi*(L+1)-(dx/2+.5))/dx+1)){
-				if (hwall[j][k]){
-					break;
-				}
-			}
-			if((parseInt((ballx+sini*L-(dx/2+.5))/dx+1) != parseInt((ballx+sini*(L+1)-(dx/2+.5))/dx+1))&&(parseInt((bally-cosi*L-(dx/2+.5))/dx+1) != parseInt((bally-cosi*(L+1)-(dx/2+.5))/dx+1))){
-				if (hwall[j][k]||vwall[j][k]||hwall[j-1][k]||vwall[j][k-1]){
-					break;
-				}
-			}
-			if (Math.pow(Math.abs(ballx+sini*L - goalx),2) + Math.pow(Math.abs(bally-cosi*L - goaly),2)<49){
-				found = 1;
-			}
+		for (var i = 1; i < xs.length-2; i++){
+			hwall[i][1] = 1;
+			hwall[i][xs[0].length-2] = 1;
 		}
-		paper.lineTo(ballx+sini*L, bally-cosi*L);
-		
-		//gradient=paper.createLinearGradient(ballx,bally,ballx+Math.sin(i)*50, bally-Math.cos(i)*50);
-		//gradient.addColorStop("0","#FFA566");
-		//gradient.addColorStop("1.0","white");
-		//paper.strokeStyle=gradient;
-		//paper.strokeStyle="#FFA566";
-		paper.strokeStyle="#679";
-		
-		paper.stroke();
-	}*/
-	
-	
-	if (gridi==goali&&gridj==goalj){
-		paper.beginPath();
-		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
-		paper.stroke();
-		paper.fillStyle="#fff";
-		paper.fill();
+		for (var j = 1; j < xs[0].length-2; j++){
+			vwall[1][j] = 1;
+			vwall[xs.length-2][j] = 1;
+		}
+		split(xs,ys,1,1,xs.length-2,xs[0].length-2,W<H,roomwidth);
+
+		ballx = xs[1][1]+dx/2;
+		bally = ys[1][1]+dx/2;
+		newballx = ballx;
+		newbally = bally;
+		upkey = 0;
+		downkey = 0;
+		leftkey = 0;
+		rightkey = 0;
+
 		found = 0;
+		won = 0;
+		goali = 1+Math.floor((xs.length-3)*Math.random());
+		goalj = 1+Math.floor((xs[0].length-3)*Math.random());
+		goalx = xs[goali][goalj]+dx/2;
+		goaly = ys[goali][goalj]+dx/2;
+		setTimeout(initialising = 0,200);
 	}
-	paper.lineWidth=1.5;
-}
 
-function lightsquare(x,y,i,j,x1,y1,x2,y2){
-	var tol = 0.01;
-	if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>300||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
-		return;
+	function split(x,y,xleft,yup,xright,ydown,hoz,width){
+		if (xright-xleft<=width||ydown-yup<=width){
+			return;
+		}
+		if (hoz){
+			var splith = Math.floor(1+yup+(ydown-yup-2)*Math.random());
+			for (var i = xleft; i<xright; i++){
+				hwall[i][splith]=1;
+			}
+			var gaph = Math.floor(xleft+(xright-xleft)*Math.random());
+			hwall[gaph][splith]=0;
+			split(x,y,xleft,yup,xright,splith,0,width)
+			split(x,y,xleft,splith,xright,ydown,0,width)
+		}else{
+			var splitv = Math.floor(1+xleft+(xright-xleft-2)*Math.random());
+			for (var j = yup; j<ydown; j++){
+				vwall[splitv][j]=1;
+			}
+			var gapv = Math.floor(yup+(ydown-yup)*Math.random());
+			vwall[splitv][gapv]=0;
+			split(x,y,xleft,yup,splitv,ydown,1,width)
+			split(x,y,splitv,yup,xright,ydown,1,width)
+		}
 	}
-	//var rgb = Math.floor((Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))/(6*dx))*255)
-	var colour = 'rgba(200,200,200,.5)';//'rgba('+rgb+','+rgb+','+rgb+',.5)'//;
-	//alert(colour)
-		var colour=paper.createRadialGradient(x,y,5,x,y,300);
-		colour.addColorStop(0,"rgb(220,220,220)");
-		colour.addColorStop(1,"white");
+
+	function drawlines(xs,ys,W,H,dx){
+		paper.strokeStyle="#bce";
+		for (var i = 0; i < W/dx; i++){
+			for (var j = 0; j < H/dx; j++){
+				if(hwall[i][j]){	
+					paper.beginPath();
+					paper.moveTo(xs[i][j],ys[i][j]);
+					paper.lineTo(xs[i+1][j], ys[i+1][j]);
+					paper.stroke();
+				}
+				if(vwall[i][j]){	
+					paper.beginPath();
+					paper.moveTo(xs[i][j],ys[i][j]);
+					paper.lineTo(xs[i][j+1],ys[i][j+1]);
+					paper.stroke();
+				}
+			}
+		}
+	}
+
+	function drawball(ballx,bally){
+		if (light){
+			paper.fillStyle="#679";
+		} else {
+			paper.fillStyle="#bce";
+		}
+		paper.strokeStyle="#bce";
+		paper.beginPath();
+		paper.arc(ballx,bally, 2, 0, 2 * Math.PI);
+		paper.stroke();
+		paper.fill();
+	}
+	
+	function addlightlines(){
+		
+		lightx = ballx;
+		lighty = bally;
+		
+		for(var i = 0; i < 2*3.141593; i +=2*3.141593/80){
+			var sini = Math.sin(i);
+			var cosi = Math.cos(i);
+			paper.beginPath();
+			paper.lineWidth=1;
+			paper.lineCap = "round"
+			paper.moveTo(lightx,lighty);
+			var L=0;
+			for (L = 0; L<300; L+=.5){
+				if(lightx+sini*L<0||lightx+sini*L>W||lighty-cosi*L<0||lighty-cosi*L>H){
+					break
+				}
+				j = parseInt(Math.max((lightx+sini*L-(dx/2+.5))/dx+1,(lightx+sini*(L+1)-(dx/2+.5))/dx+1));
+				k = parseInt(Math.max((lighty-cosi*L-(dx/2+.5))/dx+1,(lighty-cosi*(L+1)-(dx/2+.5))/dx+1));
+				if(parseInt((lightx+sini*L-(dx/2+.5))/dx+1) != parseInt((lightx+sini*(L+1)-(dx/2+.5))/dx+1)){
+					if (vwall[j][k]){
+						break;
+					}
+				}
+				if(parseInt((lighty-cosi*L-(dx/2+.5))/dx+1) != parseInt((lighty-cosi*(L+1)-(dx/2+.5))/dx+1)){
+					if (hwall[j][k]){
+						break;
+					}
+				}
+				if((parseInt((lightx+sini*L-(dx/2+.5))/dx+1) != parseInt((lightx+sini*(L+1)-(dx/2+.5))/dx+1))&&(parseInt((lighty-cosi*L-(dx/2+.5))/dx+1) != parseInt((lighty-cosi*(L+1)-(dx/2+.5))/dx+1))){
+					if (hwall[j][k]||vwall[j][k]||hwall[j-1][k]||vwall[j][k-1]){
+						break;
+					}
+				}
+				if (Math.pow(Math.abs(lightx+sini*L - goalx),2) + Math.pow(Math.abs(lighty-cosi*L - goaly),2)<49){
+					found = 1;
+				}
+			}
+			paper.lineTo(lightx+sini*L, lighty-cosi*L);
+			
+			var colour=paper.createRadialGradient(lightx,lighty,0,lightx,lighty,300);
+			colour.addColorStop(0,"#F57741");
+			colour.addColorStop(.3,"#C04848");
+			colour.addColorStop(.5,"#251030");
+			colour.addColorStop(1,"#00112c");
+			paper.strokeStyle = colour;
+			
+			paper.stroke();
+		}
+	}
+
+	function addlightblocks(){
+		found = 0;
+		
+		ballgridi = parseInt((ballx-(dx/2+.5))/dx+1);
+		ballgridj = parseInt((bally-(dx/2+.5))/dx+1);
+		
+		lightx = ballx + 2*Math.sin(2*t);
+		lighty = bally - 2*Math.cos(2*t);
+		gridi = parseInt((lightx-(dx/2+.5))/dx+1);
+		gridj = parseInt((lighty-(dx/2+.5))/dx+1);
+		
+		if (gridi!=ballgridi || gridj!=ballgridj){
+			lightx = ballx;
+			lighty = bally;
+			gridi = parseInt((lightx-(dx/2+.5))/dx+1);
+			gridj = parseInt((lighty-(dx/2+.5))/dx+1);
+		}
+		
+		paper.beginPath();
+		var colour=paper.createRadialGradient(lightx,lighty,0,lightx,lighty,300);
+		colour.addColorStop(0,"#F57741");
+		colour.addColorStop(.3,"#C04848");
+		colour.addColorStop(.5,"#251030");
+		colour.addColorStop(1,"#00112c");
+		paper.fillStyle =colour;
 		paper.strokeStyle = colour;
-	var up = ys[i][j];
-	var down = ys[i][j+1];
-	var left = xs[i][j];
-	var right = xs[i+1][j];
-	//alert("x1: " + x1 + ", y1: "+y1 + ", x2: "+x2 + ", y2: "+y2+ ", up: "+up + ", down: "+down+ ", left: "+left + ", right: "+right)
-	if (y1 == up && y2 == up){
-		//entering from the top
-		
-		var slope1 = (y1-y)/(x1-x);
-		var x1x = right;
-		var y1x = slope1*x1x+y1-slope1*x1;
-		if (y1x>=up-tol && y1x<=down+tol){
-			paper.beginPath();
-			paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#f00";
-			//paper.fill();
-		}else {
-			x1x = (down + slope1*x1-y1)/slope1;
-			y1x = down;
-			if (x1x>=left-tol&&x1x<=right+tol){
-				paper.beginPath();
-				paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#0f0";
-				//paper.fill();
-			} else {
-				x1x = left;
-				y1x = slope1*x1x+y1-slope1*x1;
-				if (y1x>=up-tol && y1x<=down+tol){
-					paper.beginPath();
-					paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#00f";
-					//paper.fill();				
-				}else{
-					//alert('whoops')
-				}
-			}
-		}
-		var slope2 = (y2-y)/(x2-x);
-		var x2x = left;
-		var y2x = slope2*x2x+y2-slope2*x2;
-		if (y2x>=up-tol && y2x<=down+tol){
-			paper.beginPath();
-			paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#f00";
-			//paper.fill();
-		}else {
-			x2x = (down + slope2*x2-y2)/slope2;
-			y2x = down;
-			if (x2x>=left-tol&&x2x<=right+tol){
-				paper.beginPath();
-				paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#0f0";
-				//paper.fill();
-			} else {
-				x2x = right;
-				y2x = slope2*x2x+y2-slope2*x2;
-				if (y2x>=up-tol && y2x<=down+tol){
-					paper.beginPath();
-					paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#00f";
-					//paper.fill();				
-				}else{
-					//alert('whoops2')
-				}
-			}
-		}
-		
-		paper.beginPath();
-		paper.fillStyle = colour;//'rgba(100,0,0,.5)';
-		paper.moveTo(x1,y1);
-		paper.lineTo(x1x,y1x);
-		if(x1x==left && x2x !=left){
-			paper.lineTo(left,down);
-		}
-		if(x1x!=right&&x2x == right){
-			paper.lineTo(right,down);
-		}
-		paper.lineTo(x2x,y2x);
-		paper.lineTo(x2,y2);
-		paper.fill();
+		paper.moveTo(xs[gridi][gridj],ys[gridi][gridj]);
+		paper.lineTo(xs[gridi][gridj+1],ys[gridi][gridj+1]);
+		paper.lineTo(xs[gridi+1][gridj+1],ys[gridi+1][gridj+1]);
+		paper.lineTo(xs[gridi+1][gridj],ys[gridi+1][gridj]);
+		paper.lineTo(xs[gridi][gridj],ys[gridi][gridj]);
+		paper.fill(); 
 		paper.stroke();
 		
-		if(Math.abs(x1x-left)<tol){
-			if (Math.abs(x2x - left)<tol){
-				if(vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,x1x,y1x,x2x,y2x);
-				}
-			}else if (Math.abs(y2x-down)<tol){
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,x1x,y1x,left,down);
-				}
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,left,down,x2x,y2x);
-				}
-			} else {
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,x1x,y1x,left,down);
-				}
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,left,down,right,down);
-				}
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,right,down,x2x,y2x);
-				}
-			}
-		} else if (Math.abs(y1x - down)<tol) {
-			if (y2x==down){
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,x1x,y1x,x2x,y2x);
-				}
-			} else {
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,x1x,y1x,right,down);
-				}
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,right,down,x2x,y2x);
-				}
-			}
-		} else {
-			if (vwall[i+1][j]==0){
-				lightsquare(x,y,i+1,j,x1x,y1x,x2x,y2x);
-			}
-		}/**/
-	}else if (y1 == down && y2 == down){
-		//entering from the bottom
+		if(hwall[gridi][gridj]==0){
+			lightsquare(lightx,lighty,gridi,gridj-1,xs[gridi+1][gridj],ys[gridi+1][gridj],xs[gridi][gridj],ys[gridi][gridj]);
+		}if(hwall[gridi][gridj+1]==0){
+			lightsquare(lightx,lighty,gridi,gridj+1,xs[gridi][gridj+1],ys[gridi][gridj+1],xs[gridi+1][gridj+1],ys[gridi+1][gridj+1]);
+		}if(vwall[gridi][gridj]==0){
+			lightsquare(lightx,lighty,gridi-1,gridj,xs[gridi][gridj],ys[gridi][gridj],xs[gridi][gridj+1],ys[gridi][gridj+1]);
+		}if(vwall[gridi+1][gridj]==0){
+			lightsquare(lightx,lighty,gridi+1,gridj,xs[gridi+1][gridj+1],ys[gridi+1][gridj+1],xs[gridi+1][gridj],ys[gridi+1][gridj]);
+		}	
 		
-		var slope1 = (y1-y)/(x1-x);
-		var x1x = left;
-		var y1x = slope1*x1x+y1-slope1*x1;
-		if (y1x>=up-tol && y1x<=down+tol){
+		if (gridi==goali&&gridj==goalj){
 			paper.beginPath();
-			paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#ff0";
-			//paper.fill();
-		}else {
-			x1x = (up + slope1*x1-y1)/slope1;
-			y1x = up;
-			if (x1x>=left-tol&&x1x<=right+tol){
-				paper.beginPath();
-				paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#0ff";
-				//paper.fill();
-			} else {
-				x1x = right;
-				y1x = slope1*x1x+y1-slope1*x1;
-				if (y1x>=up-tol && y1x<=down+tol){
-					paper.beginPath();
-					paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#f0f";
-					//paper.fill();				
-				}else{
-					//alert('whoops')
-				}
-			}
+			paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
+			paper.stroke();
+			paper.fillStyle="#fff";
+			paper.fill();
+			found = 0;
 		}
-		var slope2 = (y2-y)/(x2-x);
-		var x2x = right;
-		var y2x = slope2*x2x+y2-slope2*x2;
-		if (y2x>=up-tol && y2x<=down+tol){
-			paper.beginPath();
-			paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#aaa";
-			//paper.fill();
-		}else {
-			x2x = (up + slope2*x2-y2)/slope2;
-			y2x = up;
-			if (x2x>=left-tol&&x2x<=right+tol){
-				paper.beginPath();
-				paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#aaa";
-				//paper.fill();
-			} else {
-				x2x = left;
-				y2x = slope2*x2x+y2-slope2*x2;
-				if (y2x>=up-tol && y2x<=down+tol){
-					paper.beginPath();
-					paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#aaa";
-					//paper.fill();				
-				}else{
-					//alert('whoops2')
-				}
-			}
+		paper.lineWidth=1.5;
+	}
+
+	function lightsquare(x,y,i,j,x1,y1,x2,y2){
+		var tol = 0.01;
+		if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>300||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
+			return;
 		}
-		
-		paper.beginPath();
-		paper.fillStyle = colour;//'rgba(0,100,0,.5)';
-		paper.moveTo(x1,y1);
-		paper.lineTo(x1x,y1x);
-		if(x1x==right && x2x !=right){
-			paper.lineTo(right,up);
-		}
-		if(x1x!=left&&x2x == left){
-			paper.lineTo(left,up);
-		}
-		paper.lineTo(x2x,y2x);
-		paper.lineTo(x2,y2);
-		paper.fill();
-		paper.stroke();
-		
-		if(Math.abs(x1x-right)<tol){
-			if (Math.abs(x2x-right)<tol){
-				if(vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,x1x,y1x,x2x,y2x);
-				}
-			}else if (Math.abs(y2x-up)<tol){
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,x1x,y1x,right,up);
-				}
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,right,up,x2x,y2x);
-				}
-			} else {
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,x1x,y1x,right,up);
-				}
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,right,up,left,up);
-				}
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,left,up,x2x,y2x);
-				}
-			}
-		}else if (Math.abs(y1x - up)<tol) {
-			if (Math.abs(y2x-up)<tol){
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,x1x,y1x,x2x,y2x);
-				}
-			} else {
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,x1x,y1x,left,up);
-				}
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,left,up,x2x,y2x);
-				}
-			}
-		} else {
-			if (vwall[i][j]==0){
-				lightsquare(x,y,i-1,j,x1x,y1x,x2x,y2x);
-			}
-		}
-		/*paper.beginPath();
-		paper.fillStyle = 'rgba(0,100,0,.5)';
-		paper.moveTo(xs[i][j],ys[i][j]);
-		paper.lineTo(xs[i][j+1],ys[i][j+1]);
-		paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
-		paper.lineTo(xs[i+1][j],ys[i+1][j]);
-		paper.lineTo(xs[i][j],ys[i][j]);
-		paper.fill();*/
-	}else if (x1 == left && x2 == left){
-		//entering from the left
-		
-		var slope1 = (y1-y)/(x1-x);
-		x1x = (up + slope1*x1-y1)/slope1;
-		y1x = up;
-		if (x1x>=left-tol && x1x<=right+tol){
-			paper.beginPath();
-			paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#f00";
-			//paper.fill();
-		}else {
-			x1x = right;
-			y1x = slope1*x1x+y1-slope1*x1;
-			if (y1x>=up-tol&&y1x<=down+tol){
-				paper.beginPath();
-				paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#f00";
-				//paper.fill();
-			} else {
+		var colour=paper.createRadialGradient(x,y,0,x,y,300+10*Math.sin(.2*t));
+		colour.addColorStop(0,"#F57741");
+		colour.addColorStop(.3,"#C04848");
+		colour.addColorStop(.7,"#251030");
+		colour.addColorStop(1,"#00112c");
+		paper.strokeStyle = colour;
+		var up = ys[i][j];
+		var down = ys[i][j+1];
+		var left = xs[i][j];
+		var right = xs[i+1][j];
+		if (y1 == up && y2 == up){
+			//entering from the top
+			var slope1 = (y1-y)/(x1-x);
+			var x1x = right;
+			var y1x = slope1*x1x+y1-slope1*x1;
+			if (y1x<up-tol || y1x>down+tol){
 				x1x = (down + slope1*x1-y1)/slope1;
 				y1x = down;
-				if (x1x>=left-tol&&x1x<=right+tol){
-					paper.beginPath();
-					paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#f00";
-					//paper.fill();				
-				}else if (x1x<left || x1x>right || y1x<up || y1x>down){
-					alert(x1x + ", " + y1x)
+				if (x1x<left-tol || x1x>right+tol){
+					x1x = left;
+					y1x = slope1*x1x+y1-slope1*x1;
 				}
 			}
-		}
-		var slope2 = (y2-y)/(x2-x);
-		x2x = (down + slope2*x2-y2)/slope2;
-		y2x = down;
-		if (x2x>=left-tol && x2x<=right+tol){
+			var slope2 = (y2-y)/(x2-x);
+			var x2x = left;
+			var y2x = slope2*x2x+y2-slope2*x2;
+			if (y2x<up-tol || y2x>down+tol){
+				x2x = (down + slope2*x2-y2)/slope2;
+				y2x = down;
+				if (x2x<left-tol || x2x>right+tol){
+					x2x = right;
+					y2x = slope2*x2x+y2-slope2*x2;
+				}
+			}
+			
 			paper.beginPath();
-			paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#0f0";
-			//paper.fill();
-		}else {
-			x2x = right;
-			y2x = slope2*x2x+y2-slope2*x2;
-			if (y2x>=up-tol&&y2x<=down+tol){
-				paper.beginPath();
-				paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#0f0";
-				//paper.fill();
-			} else {
-				x2x = (up + slope2*x2-y2)/slope2;
-				y2x = up;
-				if (x2x>=left-tol&&x2x<=right+tol){
-					paper.beginPath();
-					paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#0f0";
-					//paper.fill();				
-				}else if (x2x<left || x2x>right || y2x<up || y2x>down){
-					//alert('whoops')
-				}
+			paper.fillStyle = colour;
+			paper.moveTo(x1,y1);
+			paper.lineTo(x1x,y1x);
+			if(x1x==left && x2x !=left){
+				paper.lineTo(left,down);
 			}
-		}
-		
-		paper.beginPath();
-		paper.fillStyle = colour;//'rgba(0,0,100,.5)';
-		paper.moveTo(x1,y1);
-		paper.lineTo(x1x,y1x);
-		if(y1x==down && y2x !=down){
-			paper.lineTo(right,down);
-		}
-		if(y1x!=up&&y2x == up){
-			paper.lineTo(right,up);
-		}
-		paper.lineTo(x2x,y2x);
-		paper.lineTo(x2,y2);
-		paper.fill();
-		paper.stroke();
-		
-		if(Math.abs(y1x-down)<tol){
-			if (Math.abs(y2x - down)<tol){
-				if(hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,x1x,y1x,x2x,y2x);
+			if(x1x!=right&&x2x == right){
+				paper.lineTo(right,down);
+			}
+			paper.lineTo(x2x,y2x);
+			paper.lineTo(x2,y2);
+			paper.fill();
+			paper.stroke();
+			
+			if(Math.abs(x1x-left)<tol){
+				if (Math.abs(x2x - left)<tol){
+					if(vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,x1x,y1x,x2x,y2x);
+					}
+				}else if (Math.abs(y2x-down)<tol){
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,x1x,y1x,left,down);
+					}
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,left,down,x2x,y2x);
+					}
+				} else {
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,x1x,y1x,left,down);
+					}
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,left,down,right,down);
+					}
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,right,down,x2x,y2x);
+					}
 				}
-			}else if (Math.abs(x2x-right)<tol){
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,x1x,y1x,right,down);
-				}
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,right,down,x2x,y2x);
+			} else if (Math.abs(y1x - down)<tol) {
+				if (y2x==down){
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,x1x,y1x,x2x,y2x);
+					}
+				} else {
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,x1x,y1x,right,down);
+					}
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,right,down,x2x,y2x);
+					}
 				}
 			} else {
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,x1x,y1x,right,down);
-				}
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,right,down,right,up);
-				}
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,right,up,x2x,y2x);
-				}
-			}
-		} else if (Math.abs(x1x - right)<tol) {
-			if (Math.abs(x2x -right)<tol){
 				if (vwall[i+1][j]==0){
 					lightsquare(x,y,i+1,j,x1x,y1x,x2x,y2x);
 				}
-			} else {
-				if (vwall[i+1][j]==0){
-					lightsquare(x,y,i+1,j,x1x,y1x,right,up);
-				}
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,right,up,x2x,y2x);
-				}
 			}
-		} else {
-			if (hwall[i][j]==0){
-				lightsquare(x,y,i,j-1,x1x,y1x,x2x,y2x);
-			}
-		}
-		/*paper.beginPath();
-		paper.fillStyle = 'rgba(0,0,100,.5)';
-		paper.moveTo(xs[i][j],ys[i][j]);
-		paper.lineTo(xs[i][j+1],ys[i][j+1]);
-		paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
-		paper.lineTo(xs[i+1][j],ys[i+1][j]);
-		paper.lineTo(xs[i][j],ys[i][j]);
-		paper.fill();	*/
-	}else if (x1 == right && x2 == right){
-		// entering from the right
-		
-		
-		var slope1 = (y1-y)/(x1-x);
-		x1x = (down + slope1*x1-y1)/slope1;
-		y1x = down;
-		if (x1x>=left-tol && x1x<=right+tol){
-			paper.beginPath();
-			paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#f00";
-			//paper.fill();
-		}else {
-			x1x = left;
-			y1x = slope1*x1x+y1-slope1*x1;
-			if (y1x>=up-tol&&y1x<=down+tol){
-				paper.beginPath();
-				paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#f00";
-				//paper.fill();
-			} else {
+		}else if (y1 == down && y2 == down){
+			//entering from the bottom
+			var slope1 = (y1-y)/(x1-x);
+			var x1x = left;
+			var y1x = slope1*x1x+y1-slope1*x1;
+			if (y1x<up-tol || y1x>down+tol){
 				x1x = (up + slope1*x1-y1)/slope1;
 				y1x = up;
-				if (x1x>=left-tol&&x1x<=right+tol){
-					paper.beginPath();
-					paper.arc(x1x, y1x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#f00";
-					//paper.fill();				
-				}else if (x1x<left || x1x>right || y1x<up || y1x>down){
-					alert(x1x + ", " + y1x)
+				if (x1x<left-tol || x1x>right+tol){
+					x1x = right;
+					y1x = slope1*x1x+y1-slope1*x1;
 				}
 			}
-		}
-		var slope2 = (y2-y)/(x2-x);
-		x2x = (up + slope2*x2-y2)/slope2;
-		y2x = up;
-		if (x2x>=left-tol && x2x<=right+tol){
+			var slope2 = (y2-y)/(x2-x);
+			var x2x = right;
+			var y2x = slope2*x2x+y2-slope2*x2;
+			if (y2x<up-tol || y2x>down+tol){
+				x2x = (up + slope2*x2-y2)/slope2;
+				y2x = up;
+				if (x2x<left-tol || x2x>right+tol){
+					x2x = left;
+					y2x = slope2*x2x+y2-slope2*x2;
+				}
+			}
+			
 			paper.beginPath();
-			paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-			paper.fillStyle="#0f0";
-			//paper.fill();
-		}else {
-			x2x = left;
-			y2x = slope2*x2x+y2-slope2*x2;
-			if (y2x>=up-tol&&y2x<=down+tol){
-				paper.beginPath();
-				paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-				paper.fillStyle="#0f0";
-				//paper.fill();
-			} else {
-				x2x = (down + slope2*x2-y2)/slope2;
-				y2x = down;
-				if (x2x>=left-tol&&x2x<=right+tol){
-					paper.beginPath();
-					paper.arc(x2x, y2x, 2, 0, 2 * Math.PI);
-					paper.fillStyle="#0f0";
-					//paper.fill();				
-				}else if (x2x<left || x2x>right || y2x<up || y2x>down){
-					//alert('whoops')
-				}
+			paper.fillStyle = colour;
+			paper.moveTo(x1,y1);
+			paper.lineTo(x1x,y1x);
+			if(x1x==right && x2x !=right){
+				paper.lineTo(right,up);
 			}
-		}
-		
-		paper.beginPath();
-		paper.fillStyle = colour;//'rgba(100,100,100,.5)';
-		paper.moveTo(x1,y1);
-		paper.lineTo(x1x,y1x);
-		if(y1x==up && y2x !=up){
-			paper.lineTo(left,up);
-		}
-		if(y1x!=down&&y2x == down){
-			paper.lineTo(left,down);
-		}
-		paper.lineTo(x2x,y2x);
-		paper.lineTo(x2,y2);
-		paper.fill();
-		paper.stroke();
-		
-		if(Math.abs(y1x-up)<tol){
-			if (Math.abs(y2x-up)<tol){
-				if(hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,x1x,y1x,x2x,y2x);
+			if(x1x!=left&&x2x == left){
+				paper.lineTo(left,up);
+			}
+			paper.lineTo(x2x,y2x);
+			paper.lineTo(x2,y2);
+			paper.fill();
+			paper.stroke();
+			
+			if(Math.abs(x1x-right)<tol){
+				if (Math.abs(x2x-right)<tol){
+					if(vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,x1x,y1x,x2x,y2x);
+					}
+				}else if (Math.abs(y2x-up)<tol){
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,x1x,y1x,right,up);
+					}
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,right,up,x2x,y2x);
+					}
+				} else {
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,x1x,y1x,right,up);
+					}
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,right,up,left,up);
+					}
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,left,up,x2x,y2x);
+					}
 				}
-			}else if (Math.abs(x2x-left)<tol){
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,x1x,y1x,left,up);
-				}
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,left,up,x2x,y2x);
+			}else if (Math.abs(y1x - up)<tol) {
+				if (Math.abs(y2x-up)<tol){
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,x1x,y1x,x2x,y2x);
+					}
+				} else {
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,x1x,y1x,left,up);
+					}
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,left,up,x2x,y2x);
+					}
 				}
 			} else {
-				if (hwall[i][j]==0){
-					lightsquare(x,y,i,j-1,x1x,y1x,left,up);
-				}
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,left,up,left,down);
-				}
-				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,left,down,x2x,y2x);
-				}
-			}
-		} else if (Math.abs(x1x-left)<tol) {
-			if (Math.abs(x2x-left)<tol){
 				if (vwall[i][j]==0){
 					lightsquare(x,y,i-1,j,x1x,y1x,x2x,y2x);
 				}
+			}
+		}else if (x1 == left && x2 == left){
+			//entering from the left
+			var slope1 = (y1-y)/(x1-x);
+			x1x = (up + slope1*x1-y1)/slope1;
+			y1x = up;
+			if (x1x<left-tol || x1x>right+tol){
+				x1x = right;
+				y1x = slope1*x1x+y1-slope1*x1;
+				if (y1x<up-tol || y1x>down+tol){
+					x1x = (down + slope1*x1-y1)/slope1;
+					y1x = down;
+				}
+			}
+			var slope2 = (y2-y)/(x2-x);
+			x2x = (down + slope2*x2-y2)/slope2;
+			y2x = down;
+			if (x2x<left-tol || x2x>right+tol){
+				x2x = right;
+				y2x = slope2*x2x+y2-slope2*x2;
+				if (y2x<up-tol || y2x>down+tol){
+					x2x = (up + slope2*x2-y2)/slope2;
+					y2x = up;
+				}
+			}
+			
+			paper.beginPath();
+			paper.fillStyle = colour;
+			paper.moveTo(x1,y1);
+			paper.lineTo(x1x,y1x);
+			if(y1x==down && y2x !=down){
+				paper.lineTo(right,down);
+			}
+			if(y1x!=up&&y2x == up){
+				paper.lineTo(right,up);
+			}
+			paper.lineTo(x2x,y2x);
+			paper.lineTo(x2,y2);
+			paper.fill();
+			paper.stroke();
+			
+			if(Math.abs(y1x-down)<tol){
+				if (Math.abs(y2x - down)<tol){
+					if(hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,x1x,y1x,x2x,y2x);
+					}
+				}else if (Math.abs(x2x-right)<tol){
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,x1x,y1x,right,down);
+					}
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,right,down,x2x,y2x);
+					}
+				} else {
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,x1x,y1x,right,down);
+					}
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,right,down,right,up);
+					}
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,right,up,x2x,y2x);
+					}
+				}
+			} else if (Math.abs(x1x - right)<tol) {
+				if (Math.abs(x2x -right)<tol){
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,x1x,y1x,x2x,y2x);
+					}
+				} else {
+					if (vwall[i+1][j]==0){
+						lightsquare(x,y,i+1,j,x1x,y1x,right,up);
+					}
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,right,up,x2x,y2x);
+					}
+				}
 			} else {
-				if (vwall[i][j]==0){
-					lightsquare(x,y,i-1,j,x1x,y1x,left,down);
+				if (hwall[i][j]==0){
+					lightsquare(x,y,i,j-1,x1x,y1x,x2x,y2x);
 				}
+			}
+		}else if (x1 == right && x2 == right){
+			// entering from the right
+			
+			
+			var slope1 = (y1-y)/(x1-x);
+			x1x = (down + slope1*x1-y1)/slope1;
+			y1x = down;
+			if (x1x<left-tol || x1x>right+tol){
+				x1x = left;
+				y1x = slope1*x1x+y1-slope1*x1;
+				if (y1x<up-tol || y1x>down+tol){
+					x1x = (up + slope1*x1-y1)/slope1;
+					y1x = up;
+				}
+			}
+			var slope2 = (y2-y)/(x2-x);
+			x2x = (up + slope2*x2-y2)/slope2;
+			y2x = up;
+			if (x2x<left-tol || x2x>right+tol){
+				x2x = left;
+				y2x = slope2*x2x+y2-slope2*x2;
+				if (y2x<up-tol || y2x>down+tol){
+					x2x = (down + slope2*x2-y2)/slope2;
+					y2x = down;
+				}
+			}
+			
+			paper.beginPath();
+			paper.fillStyle = colour;
+			paper.moveTo(x1,y1);
+			paper.lineTo(x1x,y1x);
+			if(y1x==up && y2x !=up){
+				paper.lineTo(left,up);
+			}
+			if(y1x!=down&&y2x == down){
+				paper.lineTo(left,down);
+			}
+			paper.lineTo(x2x,y2x);
+			paper.lineTo(x2,y2);
+			paper.fill();
+			paper.stroke();
+			
+			if(Math.abs(y1x-up)<tol){
+				if (Math.abs(y2x-up)<tol){
+					if(hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,x1x,y1x,x2x,y2x);
+					}
+				}else if (Math.abs(x2x-left)<tol){
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,x1x,y1x,left,up);
+					}
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,left,up,x2x,y2x);
+					}
+				} else {
+					if (hwall[i][j]==0){
+						lightsquare(x,y,i,j-1,x1x,y1x,left,up);
+					}
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,left,up,left,down);
+					}
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,left,down,x2x,y2x);
+					}
+				}
+			} else if (Math.abs(x1x-left)<tol) {
+				if (Math.abs(x2x-left)<tol){
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,x1x,y1x,x2x,y2x);
+					}
+				} else {
+					if (vwall[i][j]==0){
+						lightsquare(x,y,i-1,j,x1x,y1x,left,down);
+					}
+					if (hwall[i][j+1]==0){
+						lightsquare(x,y,i,j+1,left,down,x2x,y2x);
+					}
+				}
+			} else {
 				if (hwall[i][j+1]==0){
-					lightsquare(x,y,i,j+1,left,down,x2x,y2x);
+					lightsquare(x,y,i,j+1,x1x,y1x,x2x,y2x);
 				}
 			}
+		}		 
+	}
+
+	function draw(dt){
+		if (light){
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			drawlines(xs,ys,W,H,dx);
 		} else {
-			if (hwall[i][j+1]==0){
-				lightsquare(x,y,i,j+1,x1x,y1x,x2x,y2x);
-			}
+			paper.fillStyle = 'rgba(0,17,44,.04)';
+			paper.fillRect(0,0,W,H);
+		}
+		newballx -= (leftkey-rightkey)*speed/(1+.5*Math.abs(upkey-downkey))*dt/12;
+		newbally -= (upkey-downkey)*speed/(.5*Math.abs(leftkey+rightkey)+1)*dt/12;
+		up = 0;
+		down = H;
+		left = 0;
+		right = W;
+		gridi = parseInt((ballx-(dx/2+.5))/dx+1);
+		gridj = parseInt((bally-(dx/2+.5))/dx+1);
+		if (hwall[gridi][gridj]){
+			up = ys[gridi][gridj];
+		}if (vwall[gridi][gridj]){
+			left = xs[gridi][gridj];
+		}if (hwall[gridi][gridj+1]){
+			down = ys[gridi][gridj]+dx;
+		}if (vwall[gridi+1][gridj]){
+			right = xs[gridi+1][gridj];
 		}
 		
-		/*paper.beginPath();
-		paper.fillStyle = 'rgba(100,100,100,.5)';
-		paper.moveTo(xs[i][j],ys[i][j]);
-		paper.lineTo(xs[i][j+1],ys[i][j+1]);
-		paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
-		paper.lineTo(xs[i+1][j],ys[i+1][j]);
-		paper.lineTo(xs[i][j],ys[i][j]);
-		paper.fill();*/	
-	}//else{
-		//alert("x1: "+ x1 + "x2: "+ x2 + "y1: "+ y1 + "y2: "+ y2 )
-	//}
-	
-	if (i == goali && j == goalj){
-		paper.beginPath();
-		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
-		paper.fillStyle="#fff";
-		paper.fill();
-		found = 0;
-	}
-	 
-}
-
-function draw(dt){
-	paper.fillStyle = 'rgba(255,255,255,1)';
-	paper.fillRect(0,0,W,H);
-	newballx -= (leftkey-rightkey)*speed/(1+.5*Math.abs(upkey-downkey))*dt/12;
-	newbally -= (upkey-downkey)*speed/(.5*Math.abs(leftkey+rightkey)+1)*dt/12;
-	up = 0;
-	down = H;
-	left = 0;
-	right = W;
-	gridi = parseInt((ballx-(dx/2+.5))/dx+1);
-	gridj = parseInt((bally-(dx/2+.5))/dx+1);
-	if (hwall[gridi][gridj]){
-		up = ys[gridi][gridj];
-	}if (vwall[gridi][gridj]){
-		left = xs[gridi][gridj];
-	}if (hwall[gridi][gridj+1]){
-		down = ys[gridi][gridj]+dx;
-	}if (vwall[gridi+1][gridj]){
-		right = xs[gridi+1][gridj];
-	}
-	//t++;
-	if(newballx<left||newballx>=right){//||t%2){
-		newballx = ballx;
-	}
-	if(newbally<up||newbally>=down){//||~t%2){
-		newbally = bally;
-	}
-	
-	
-	up = 0;
-	down = H;
-	left = 0;
-	right = W;
-	newgridi = parseInt((newballx-(dx/2+.5))/dx+1);
-	newgridj = parseInt((newbally-(dx/2+.5))/dx+1);
-	if (hwall[newgridi][newgridj]){
-		up = ys[newgridi][newgridj];
-	}if (vwall[newgridi][newgridj]){
-		left = xs[newgridi][newgridj];
-	}if (hwall[newgridi][newgridj+1]){
-		down = ys[newgridi][newgridj]+dx;
-	}if (vwall[newgridi+1][newgridj]){
-		right = xs[newgridi+1][newgridj];
-	}
-	//t++;
-	if(ballx<left||ballx>=right){//||t%2){
-		newballx = ballx;
-	}
-	if(bally<up||bally>=down){//||~t%2){
-		newbally = bally;
-	}
-
-	//paper.fillStyle = '#000';//'rgba(255,255,255,1)';//"#124";//
-	//paper.fillRect(0,0,W,H);
-	//drawlines(xs,ys,W,H,dx);
-	ballx = newballx;
-	bally = newbally;
-	//addlight();
-	paper.fillStyle="#679";
-	paper.strokeStyle="#bce";
-	drawball(ballx,bally);
-		paper.beginPath();
-		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
-		paper.fill();
-		found = 0;
-	//paper.fillStyle = "#0f0";
-	//drawball(xs[gridi][gridj],ys[gridi][gridj])
-	
-	
-	if (Math.abs(ballx - goalx) < 4 && Math.abs(bally - goaly)<4){
-		return false;
-	}
-}
-
-document.onkeydown = keypressed;
-document.onkeyup = keydepressed;
-
-function keypressed(e) {
-
-    e = e || window.event;
-
-    if (e.keyCode == '87'||e.keyCode == '38') {
-        // up arrow
-		upkey = 1;
-    }
-    else if (e.keyCode == '83'||e.keyCode == '40') {
-        // down arrow
-		downkey = 1;
-    }
-    else if (e.keyCode == '65'||e.keyCode == '37') {
-       // left arrow
-		leftkey = 1;
-    }
-    else if (e.keyCode == '68'||e.keyCode == '39') {
-       // right arrow
-		rightkey = 1;
-    }
-    else if (e.keyCode == '13'&&won) {
-       // right arrow
-		window.open('graph-maze.html',"_self");
-    }
-}
-function keydepressed(e) {
-
-    e = e || window.event;
-
-    if (e.keyCode == '87'||e.keyCode == '38') {
-        // up arrow
-		upkey = 0;
-    }
-    else if (e.keyCode == '83'||e.keyCode == '40') {
-        // down arrow
-		downkey = 0;
-    }
-    else if (e.keyCode == '65'||e.keyCode == '37') {
-       // left arrow
-		leftkey = 0;
-    }
-    else if (e.keyCode == '68'||e.keyCode == '39') {
-       // right arrow
-		rightkey = 0;
-    }
-}
-
-function animate( render ) {
-    var running, lastFrame = +new Date;
-    function loop( now ) {
-        // stop the loop if render returned false
-        if ( running !== false ) {
-            requestAnimationFrame( loop );
-            var deltaT = now - lastFrame;
-			document.getElementById("fps").innerHTML = "fps: " + deltaT;
-
-            // do not render frame when deltaT is too high
-            if ( deltaT < 160 && initialising == 0) {
-                running = render( deltaT );
-				drawlines(xs,ys,W,H,dx);
-            }
-            lastFrame = now;
-        } else {			
-			var el = document.getElementById("winner");
-			el.style.display = 'block';
-			won =1;
+		if(newballx<left||newballx>=right){
+			newballx = ballx;
 		}
-    }
-    loop( lastFrame );
-}
+		if(newbally<up||newbally>=down){
+			newbally = bally;
+		}
+		
+		
+		up = 0;
+		down = H;
+		left = 0;
+		right = W;
+		newgridi = parseInt((newballx-(dx/2+.5))/dx+1);
+		newgridj = parseInt((newbally-(dx/2+.5))/dx+1);
+		if (hwall[newgridi][newgridj]){
+			up = ys[newgridi][newgridj];
+		}if (vwall[newgridi][newgridj]){
+			left = xs[newgridi][newgridj];
+		}if (hwall[newgridi][newgridj+1]){
+			down = ys[newgridi][newgridj]+dx;
+		}if (vwall[newgridi+1][newgridj]){
+			right = xs[newgridi+1][newgridj];
+		}
+		
+		if(ballx<left||ballx>=right){
+			newballx = ballx;
+		}
+		if(bally<up||bally>=down){
+			newbally = bally;
+		}
+
+		ballx = newballx;
+		bally = newbally;
+		if(lightblocks){
+			addlightblocks();
+		} else if (lightlines) {
+			addlightlines();
+		}
+		drawball(ballx,bally);
+		if (light){
+			paper.fillStyle="#679";
+		} else {
+			paper.fillStyle="#00112c";
+		}
+		paper.beginPath();
+		paper.arc(goalx, goaly, 5, 0, 2 * Math.PI);
+		paper.fill();
+		found = 0;
+		
+		if (Math.abs(ballx - goalx) < 4 && Math.abs(bally - goaly)<4){
+			return false;
+		}
+	}
+
+	document.onkeydown = keypressed;
+	document.onkeyup = keydepressed;
+
+	function keypressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '87'||e.keyCode == '38') {
+			// up arrow
+			upkey = 1;
+		}
+		else if (e.keyCode == '83'||e.keyCode == '40') {
+			// down arrow
+			downkey = 1;
+		}
+		else if (e.keyCode == '65'||e.keyCode == '37') {
+		   // left arrow
+			leftkey = 1;
+		}
+		else if (e.keyCode == '68'||e.keyCode == '39') {
+		   // right arrow
+			rightkey = 1;
+		}
+		else if (e.keyCode == '13'&&won) {
+		   // right arrow
+			window.open('graph-maze.html',"_self");
+		}
+	}
+	function keydepressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '87'||e.keyCode == '38') {
+			// up arrow
+			upkey = 0;
+		}
+		else if (e.keyCode == '83'||e.keyCode == '40') {
+			// down arrow
+			downkey = 0;
+		}
+		else if (e.keyCode == '65'||e.keyCode == '37') {
+		   // left arrow
+			leftkey = 0;
+		}
+		else if (e.keyCode == '68'||e.keyCode == '39') {
+		   // right arrow
+			rightkey = 0;
+		}
+	}
+
+	function animate( render ) {
+		var running, lastFrame = +new Date;
+		function loop( now ) {
+			// stop the loop if render returned false
+			if ( running !== false ) {
+				requestAnimationFrame( loop );
+				var deltaT = now - lastFrame;
+				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
+
+				// do not render frame when deltaT is too high
+				if ( deltaT < 160 && initialising == 0) {
+					t = (t+deltaT/100)%(2000);
+					running = render( deltaT );
+				}
+				lastFrame = now;
+			} else {		
+				document.getElementById("fps").innerHTML = "fps: 0";	
+				var el = document.getElementById("winner");
+				el.style.display = 'block';
+				won =1;
+			}
+		}
+		loop( lastFrame );
+	}
 
 
-window.onload = function() {
-	reset.onmousedown = function() {
-		initialising = 1;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
+	window.onload = function() {
+		reset.onmousedown = function() {
+			initialising = 1;
+			setTimeout(init, 500);
+			return false;
+		}
+		bb.onmousedown = function() {
+			initialising = 1;
+			dx = 10;
+			setTimeout(init, 500);
+			return false;
+		}
+		cc.onmousedown = function() {
+			initialising = 1;
+			dx = 20;
+			setTimeout(init, 500);
+			return false;
+		}
+		dd.onmousedown = function() {
+			initialising = 1;
+			dx = 30;
+			setTimeout(init, 500);
+			return false;
+		}
+		ee.onmousedown = function() {
+			initialising = 1;
+			dx = 40;
+			setTimeout(init, 500);
+			return false;
+		}
+		ff.onmousedown = function() {
+			initialising = 1;
+			dx = 50;
+			setTimeout(init, 500);
+			return false;
+		}
+		gg.onmousedown = function() {
+			initialising = 1;
+			roomwidth = 1;
+			setTimeout(init, 500);
+			return false;
+		}
+		hh.onmousedown = function() {
+			initialising = 1;
+			roomwidth = 2;
+			setTimeout(init, 500);
+			return false;
+		}
+		ii.onmousedown = function() {
+			initialising = 1;
+			roomwidth = 3;
+			setTimeout(init, 500);
+			return false;
+		}
+		jj.onmousedown = function() {
+			initialising = 1;
+			roomwidth = 4;
+			setTimeout(init, 500);
+			return false;
+		}
+		kk.onmousedown = function() {
+			initialising = 1;
+			roomwidth = 5;
+			setTimeout(init, 500);
+			return false;
+		}
+		ll.onmousedown = function() {
+			initialising = 1;
+			roomwidth = 6;
+			setTimeout(init, 500);
+			return false;
+		}
 	}
-	bb.onmousedown = function() {
-		initialising = 1;
-		dx = 10;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
+	
+	function lights(){
+		if (light){
+			document.getElementById("lightswitch").innerHTML = "lights on";
+			light = 0;
+			lightblocks = 1;
+			paper.fillStyle = 'rgba(0,17,44,1)';
+			paper.fillRect(0,0,W,H);
+			document.getElementById("menu").style.backgroundColor = "rgba(51,68,102,.5)";
+			document.getElementById("footer").style.backgroundColor = "rgba(51,68,102,.5)";
+			document.getElementById("winner").style.backgroundColor = "rgba(51,68,102,.5)";
+			document.getElementById("info").style.color = "#FF5254";
+			document.getElementById("fps").style.color = "#FF5254";
+			document.getElementById("foot").style.color = "#FF5254";
+			var x = document.getElementsByClassName("hoverbutton");
+			for (var i = 0; i < x.length; i++){
+				x[i].style.backgroundColor = "rgba(34,51,85,.7)";
+			}
+		} else{
+			document.getElementById("lightswitch").innerHTML = "lights off";
+			light = 1;
+			lightblocks = 0;
+			lightlines = 0;
+			document.getElementById("menu").style.backgroundColor = "rgba(255,255,255,0.5)";
+			document.getElementById("footer").style.backgroundColor = "rgba(255,255,255,0.5)";
+			document.getElementById("winner").style.backgroundColor = "rgba(255,255,255,0.5)";
+			document.getElementById("info").style.color = "#78a";
+			document.getElementById("fps").style.color = "#78a";
+			document.getElementById("foot").style.color = "#78a";
+			var x = document.getElementsByClassName("hoverbutton");
+			for (var i = 0; i < x.length; i++){
+				x[i].style.backgroundColor = "#568";
+			}
+		}
 	}
-	cc.onmousedown = function() {
-		initialising = 1;
-		dx = 20;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	dd.onmousedown = function() {
-		initialising = 1;
-		dx = 30;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	ee.onmousedown = function() {
-		initialising = 1;
-		dx = 40;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	ff.onmousedown = function() {
-		initialising = 1;
-		dx = 50;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	gg.onmousedown = function() {
-		initialising = 1;
-		roomwidth = 1;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	hh.onmousedown = function() {
-		initialising = 1;
-		roomwidth = 2;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	ii.onmousedown = function() {
-		initialising = 1;
-		roomwidth = 3;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	jj.onmousedown = function() {
-		initialising = 1;
-		roomwidth = 4;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	kk.onmousedown = function() {
-		initialising = 1;
-		roomwidth = 5;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-	ll.onmousedown = function() {
-		initialising = 1;
-		roomwidth = 6;
-		paper.fillStyle = 'rgba(255,255,255,1)';
-		paper.fillRect(0,0,W,H);
-		setTimeout(init, 500);
-		return false;
-	}
-}
+	
 </script>
 
 </body>
