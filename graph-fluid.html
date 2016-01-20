@@ -15,12 +15,15 @@
 <div id = "menu">
 	<p style = "text-align: center;">info</p>
 	<p id = "fps">fps: 0</p>
-	<h1>Fluid</h1>
-	<p>A grid-based fluid simulation</p>
-	<p class = "hoverbutton" id = "reset" >reset</p>
-	<p class = "hoverbutton" id = "cc" >5</p>
-	<p class = "hoverbutton" id = "dd" >10</p>
-	<p class = "hoverbutton" id = "ee" >20</p>
+	<h1>Fluid Simulation</h1>
+	<p>Grid size:</p>
+	<div style="width:400px;">
+		<p class = "hoverbutton" id = "reset" >reset</p>
+		<p class = "hoverbutton" id = "cc" >5</p>
+		<p class = "hoverbutton" id = "dd" >10</p>
+		<p class = "hoverbutton" id = "ee" style='margin-bottom:20px;'>20</p>
+	</div>
+	<p>There are many approaches to fluid simulation. A simple grid based method is used here, based on <a href="http://cg.informatik.uni-freiburg.de/intern/seminar/gridFluids_fluid-EulerParticle.pdf"target="_blank">Braley et al</a>. </p>
 </div>
 
 <div id = "footer">
@@ -172,11 +175,6 @@
 				dens[idx(i,j)] = 0, densOld[idx(i,j)] = 0;
 				paper.fillStyle = "#fff";
 				paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);
-				if (j < N2/2){
-					//dens[idx(i,j)] = 1, densOld[idx(i,j)] = 1;
-					//paper.fillStyle = "#f24";
-					//paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx, dx);
-				}
 			}
 		}	
 		if (dx>=10){
@@ -233,7 +231,6 @@
 	}
 	function advect(){
 		var i0,j0,i1,j1,xpos,ypos,s0,t0,s1,t1;
-		//var dt0 = N*dt;
 		for (i = 1; i <= N1; i++){
 			for (j = 1; j <= N2; j++){
 				xpos = i-dt*N1*u[idx(i,j)];
@@ -253,7 +250,7 @@
 				s1 = (xpos - i0), s0 = 1-s1;
 				t1 = (ypos - j0), t0 = 1-t1;
 				dens[idx(i,j)] = s0*(t0*densOld[idx(i0,j0)]+t1*densOld[idx(i0,j1)])+s1*(t0*densOld[idx(i1,j0)]+t1*densOld[idx(i1,j1)]);
-				
+				// Draw fluid
 				g = 15-Math.floor(dens[idx(i,j)]*12);
 				if(G[idx(i,j)] != g) {
 					G[idx(i,j)] = g;
@@ -297,7 +294,6 @@
 	}
 	function velocityAdvect(){
 		var i0,j0,i1,j1,xpos,ypos,s0,t0,s1,t1;
-		//var dt0 = N*dt;
 		for (i = 1; i <= N1; i++){
 			for (j = 1; j <= N2; j++){
 				xpos = i-dt*N1*uOld[idx(i,j)];
