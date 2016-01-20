@@ -6,9 +6,9 @@
 <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 </head>
 
-<body>
+<body onmousemove="coords(event)">
 
-<div id = "canvasbox" onmousemove="coords(event)">
+<div id = "canvasbox">
 	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 
@@ -18,11 +18,9 @@
 	<h1>Fluid</h1>
 	<p>A grid-based fluid simulation</p>
 	<p class = "hoverbutton" id = "reset" >reset</p>
-	<p class = "hoverbutton" id = "bb" >2</p>
 	<p class = "hoverbutton" id = "cc" >5</p>
 	<p class = "hoverbutton" id = "dd" >10</p>
 	<p class = "hoverbutton" id = "ee" >20</p>
-	<p class = "hoverbutton" id = "ff" >50</p>
 </div>
 
 <div id = "footer">
@@ -44,7 +42,6 @@
 	// Initialise variables
 	var dx = 20;
 	var hex = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
-	var N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
 	var dt = .3; 
 	var yes = 1;
 	
@@ -61,23 +58,24 @@
 	}
 	drawlines(xs,ys,W,H,dx)
 
-	// Initialise position, velocity, density and colour arrays
+	// Initialise position, velocity, density and colour
+	var N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
 	var u = new Array(size), v = new Array(size);
 	var uOld = new Array(size), vOld = new Array(size);
 	var dens = new Array(size), densOld = new Array(size);
 	var G = new Array(size);
 	var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
-
 	setVelocity();
 	setDensity();
 	setVelocityBoundary();
 	setBoundary();
 	setG();
-	animate();
+	
+	// Begin!
+	animate(draw);
 
 	function init(){
-		var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
-		yes = 1;
+		// Re-initialise arrays
 		xs = [];
 		ys = [];
 		for (var i = 0; i < W/dx+2; i++){
@@ -88,36 +86,22 @@
 				ys[i][j] = (j-1)*dx+dx/2+.5;
 			}
 		}
-
-		paper.fillStyle="#679";
-		paper.strokeStyle="#bce";
-		//drawpoints(xs,ys,W,H,dx)
 		drawlines(xs,ys,W,H,dx)
-
 		N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
-
 		u = new Array(size), v = new Array(size);
 		uOld = new Array(size), vOld = new Array(size);
 		dens = new Array(size), densOld = new Array(size);
 		G = new Array(size);
-
-		//////////////////////////////////////////////////////////////////
-		//initialisation//
-		//////////////////////////////////////////////////////////////////
-
-		//alert(dens)
-		//dens[idx(1,1)] = 1;
-		//alert(dens)
-
 		setVelocity();
 		setDensity();
 		setVelocityBoundary();
 		setBoundary();
 		setG();
-		animate();
+		yes = 1;
 	}
 	
 	function drawlines(xs,ys,W,H,dx){
+		// For each grid point draw a horizontal and vertical line to the neighbouring point
 		paper.strokeStyle="#bce";
 		for (var i = 0; i < W/dx+1; i++){
 			for (var j = 0; j < H/dx+1; j++){
@@ -129,10 +113,48 @@
 			}
 		}
 	}
+	
+	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
+	// calculate the difference in time and pass to the given render function, render function returns false to stop, will not render if deltaT is too high
+	function animate( render ) {
+		var running, lastFrame = +new Date;
+		function loop( now ) {
+			// stop the loop if render returned false
+			if ( running !== false ) {
+				requestAnimationFrame( loop );
+				var deltaT = now - lastFrame;
+				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
+				// do not render frame when deltaT is too high
+				if ( deltaT < 160 ) {
+					running = render( deltaT );
+				}
+				lastFrame = now;
+			} else {
+				document.getElementById("fps").innerHTML = "fps: 0";
+			}
+		}
+		loop( lastFrame );
+	}
+	
+	function draw(deltaT){
+		if (yes){
+			dt = Math.min(.4,deltaT/120);
+			stepVelocity();
+			stepDensity();
+			if (dx>=10){
+				paper.strokeStyle="#bce";
+				drawlines(xs,ys,W,H,dx)
+			}
+		} else {
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			var xOld=-1, yOld=-1, x=-1, y=-1, uxy=0, vxy=0;
+		}
+	}
 
 
 	//////////////////////////////////////////////////////////////////
-	//functions//
+	//Fluid Functions//
 	//////////////////////////////////////////////////////////////////
 
 	//initial functions//
@@ -161,28 +183,6 @@
 			paper.strokeStyle="#bce";
 			drawlines(xs,ys,W,H,dx)
 		}	
-	}
-	function animate(){
-
-		var requestAnimationFrame =  
-			window.requestAnimationFrame ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame ||
-			window.msRequestAnimationFrame ||
-			window.oRequestAnimationFrame;
-			
-		stepVelocity();
-		stepDensity();
-		if (dx>=10){
-			paper.strokeStyle="#bce";
-			drawlines(xs,ys,W,H,dx)
-		}	
-		if (yes){
-		requestAnimationFrame(animate);
-		} else {
-			paper.fillStyle = 'rgba(255,255,255,1)';
-			paper.fillRect(0,0,W,H);
-		}
 	}
 	function stepVelocity(){
 		velocityForces();
@@ -257,11 +257,14 @@
 				g = 15-Math.floor(dens[idx(i,j)]*12);
 				if(G[idx(i,j)] != g) {
 					G[idx(i,j)] = g;
-					//var f = hex[g];
-					var colour = "#" + hex[Math.min(g,15)]+hex[Math.min(g+1,15)]+hex[Math.min(g+3,15)];
-					//paper.clearRect((i-1)*dx, (j-1)*dx, dx, dx);
-					paper.fillStyle = colour;	
-					paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);	
+					if (g == 15){
+						paper.fillStyle = '#fff';	
+						paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);	
+					} else {
+						var colour = "#" + hex[Math.min(g,15)]+hex[Math.min(g+1,15)]+hex[Math.min(g+3,15)];
+						paper.fillStyle = colour;	
+						paper.fillRect((i-1.5)*dx+.5, (j-1.5)*dx+.5, dx, dx);	
+					}
 				}
 			}
 		}
@@ -274,16 +277,16 @@
 			if(x==xOld&&y==yOld){
 			}else if(x==xOld){
 				for (i = Math.min(y,yOld); i < Math.max(y,yOld); i++){
-					u[idx(x,i)] = .2*uxy;
-					v[idx(x,i)] = .2*vxy;
+					u[idx(x,i)] = dt/2*uxy;
+					v[idx(x,i)] = dt/2*vxy;
 				}
 			} else {
 				for (i = 1; i <= N1; i++){
 					for (j = 1; j <= N2; j++){
 						var m = (yOld-y)/(xOld-x);
 						if(i>=Math.min(x,xOld)&&i<=Math.max(x,xOld)&&j>=Math.min(y,yOld)&&j<=Math.max(y,yOld)&&Math.abs(j-m*i-y+m*x) < 1){
-							u[idx(i,j)] = .2*uxy; 
-							v[idx(i,j)] = .2*vxy;
+							u[idx(i,j)] = dt/2*uxy; 
+							v[idx(i,j)] = dt/2*vxy;
 						}
 					}
 				}
@@ -346,24 +349,8 @@
 		} 
 		setVelocityBoundary(); 
 	}
-
-	//paper functions//
-	function updatepaper(){
-		for (i = 1; i<=N; i++){
-			for (j = 1; j <= N; j++){
-				g = Math.floor(dens[idx(i,j)]*15);
-				//if(G[idx(i,j)] != g) {
-					//G[idx(i,j)] = g;
-					var f = hex[g];
-					var colour = "#" + f + "2" + "4";
-					//paper.clearRect((i-1)*dx, (j-1)*dx, dx, dx);
-					paper.fillStyle = colour;	
-					paper.fillRect((i-1)*dx, (j-1)*dx, dx+1, dx+1);	
-				//}
-			}
-		}
-	}
-
+	
+	// colour array
 	function setG(){
 		for (i = 1; i<=N1; i++){
 			for (j = 1; j <= N2; j++){
@@ -390,14 +377,6 @@
 		dens[idx(0,N2+1)] = .5*(dens[idx(1,N2+1)] + dens[idx(0,N2)]);
 		dens[idx(N1+1,0)] = .5*(dens[idx(N1,0)] + dens[idx(N1+1,1)]);
 		dens[idx(N1+1, N2+1)] = .5*(dens[idx(N1,N2+1)] + dens[idx(N1+1,N2)]);
-		
-		/*for (i = 1; i<=N; i++){
-			for (j = 1; j <= N; j++){
-				if((i-N/2)*(i-N/2)+(j-N/2)*(j-N/2) < 100){
-					dens[idx(i,j)] = 0;
-				}
-			}
-		}*/
 	}
 	function setVelocityBoundary(){
 		for (i = 1; i <= N1; i++){
@@ -457,24 +436,25 @@
 
 	// Mousekeeping functions
 	function coords(event){
-		xOld=x, yOld=y;
-		x = event.clientX, y = event.clientY;
-		x = Math.ceil((x)/dx);
-		y = Math.ceil((y)/dx);
-		uxy = (x-xOld)*dt;
-		vxy = (y-yOld)*dt;
+		if (yes) {
+			xOld=x, yOld=y;
+			x = event.clientX, y = event.clientY;
+			x = Math.ceil((x)/dx);
+			y = Math.ceil((y)/dx);
+			uxy = (x-xOld)*dt;
+			vxy = (y-yOld)*dt;
+		} else {
+			xOld=-1;
+			yOld=-1;
+			x=-1;
+			y=-1;
+			uxy=0;
+			vxy=0;
+		}
 	}
 	window.onload = function() {
 		reset.onmousedown = function() {
 			yes = 0;
-			paper.fillStyle = 'rgba(255,255,255,1)';
-			paper.fillRect(0,0,W,H);
-			setTimeout(init, 500);
-			return false;
-		}
-		bb.onmousedown = function() {
-			yes = 0;
-			dx = 2;
 			paper.fillStyle = 'rgba(255,255,255,1)';
 			paper.fillRect(0,0,W,H);
 			setTimeout(init, 500);
@@ -499,14 +479,6 @@
 		ee.onmousedown = function() {
 			yes = 0;
 			dx = 20;
-			paper.fillStyle = 'rgba(255,255,255,1)';
-			paper.fillRect(0,0,W,H);
-			setTimeout(init, 500);
-			return false;
-		}
-		ff.onmousedown = function() {
-			yes = 0;
-			dx = 50;
 			paper.fillStyle = 'rgba(255,255,255,1)';
 			paper.fillRect(0,0,W,H);
 			setTimeout(init, 500);
