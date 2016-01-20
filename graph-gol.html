@@ -128,7 +128,11 @@
 	<h3>Try these rule sets:</h3>
 	<p>
 		Game of life (default) S: 23, B: 3 </br>
-		maze S: 12345, B: 3
+		Maze S: 12345, B: 3 </br>
+		Life without death S: 012345678, B: 3 </br>
+		Day and Night S: 34678, B: 3678 </br>
+		Move S: 245, B: 368 </br>
+		Walled cities S: 2345, B: 45678 </br>
 	</p>
 </div>
 
@@ -289,11 +293,19 @@
 						paper.fillStyle="#fff";
 					}
 					paper.beginPath();
-					paper.moveTo(xs[i][j]+.5,ys[i][j]+.5);
-					paper.lineTo(xs[i+1][j]+.5, ys[i+1][j]+.5);
-					paper.lineTo(xs[i+1][j+1]+.5, ys[i+1][j+1]+.5);
-					paper.lineTo(xs[i][j+1]+.5,ys[i][j+1]+.5);
-					paper.moveTo(xs[i][j]+.5,ys[i][j]+.5);
+					if (dx<5){
+						paper.moveTo(xs[i][j]+.5,ys[i][j]+.5);
+						paper.lineTo(xs[i+1][j]+.5, ys[i+1][j]+.5);
+						paper.lineTo(xs[i+1][j+1]+.5, ys[i+1][j+1]+.5);
+						paper.lineTo(xs[i][j+1]+.5,ys[i][j+1]+.5);
+						paper.moveTo(xs[i][j]+.5,ys[i][j]+.5);
+					} else{
+						paper.moveTo(xs[i][j],ys[i][j]);
+						paper.lineTo(xs[i+1][j], ys[i+1][j]);
+						paper.lineTo(xs[i+1][j+1], ys[i+1][j+1]);
+						paper.lineTo(xs[i][j+1],ys[i][j+1]);
+						paper.moveTo(xs[i][j],ys[i][j]);					
+					}
 					paper.fill();
 				}
 			}
