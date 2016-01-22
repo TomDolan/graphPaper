@@ -115,6 +115,7 @@
 	var found = 0;
 	var won = 0;
 	var light = 1;
+	var lantern = 0;
 	var lightblocks = 0;
 	var lightlines = 0;
 	var lighttrace = 0;
@@ -841,11 +842,11 @@
 			newbally = bally;
 		}
 
-		if(lightblocks){
+		if(lightblocks && light==0){
 			addlightblocks();
-		} else if (lightlines) {
+		} else if (lightlines && light==0) {
 			addlightlines();
-		} else if (lighttrace) {
+		} else if (lighttrace && light==0) {
 			if (newbally == bally && newballx == ballx){
 				resolution = Math.max(resolution-.5,3)
 			} else {
@@ -1047,7 +1048,6 @@
 		if (light){
 			document.getElementById("lightswitch").innerHTML = "lights on";
 			light = 0;
-			//lightblocks = 1;
 			paper.fillStyle = 'rgba(0,17,44,1)';
 			paper.fillRect(0,0,W,H);
 			document.getElementById("menu").style.backgroundColor = "rgba(51,68,102,.5)";
@@ -1064,13 +1064,14 @@
 			document.getElementById("nn").style.display = 'block';
 			document.getElementById("oo").style.display = 'block';
 			document.getElementById("lightp").style.display = 'block';
-			var el = document.getElementById("unlock");
-			el.style.display = 'block';
+			if (lantern == 0) {
+				var el = document.getElementById("unlock");
+				el.style.display = 'block';
+			}
+			lantern = 1
 		} else{
 			document.getElementById("lightswitch").innerHTML = "lights off";
 			light = 1;
-			lightblocks = 0;
-			lightlines = 0;
 			document.getElementById("menu").style.backgroundColor = "rgba(255,255,255,0.5)";
 			document.getElementById("footer").style.backgroundColor = "rgba(255,255,255,0.5)";
 			document.getElementById("winner").style.backgroundColor = "rgba(255,255,255,0.5)";
