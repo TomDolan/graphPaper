@@ -105,6 +105,22 @@ a:visited {
 	display:none;
 }
 
+.popup{
+	position:absolute;
+	top:30%;
+	right:100px;
+	height:40%;
+	width:calc(100% - 200px);
+	margin:0px;
+	padding:0px;
+	background-color:rgba(255,255,255,0.7);
+	border: 1px solid #cdf;
+	box-shadow: 2px 2px 5px #abd;
+	overflow:auto;
+	text-align:center;
+	display:none;
+}
+
 #footer {
 	position:fixed;
 	bottom:0px;

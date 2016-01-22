@@ -35,10 +35,22 @@
 		<p class = "hoverbutton" id = "kk">5</p>
 		<p class = "hoverbutton" id = "ll">6</p>
 	</div>
+	
+	<p id = "lightp" style = "display:none;">How would you like to light the maze?</p>
+	<div style = "width:400px;">
+		<p class = "hoverbutton" id = "mm" style = "display:none;">use rays of light</p>
+		<p class = "hoverbutton" id = "nn" style = "display:none;">use recursion</p>
+		<p class = "hoverbutton" id = "oo" style = "display:none;">use ray tracing</p>
+	</div>
+</div>
+
+<div class = "popup" id="unlock" onclick="popdown()">
+	<h1><!--A lantern! </br> --> You have unlocked new lighting options in the menu!</h1>
+	<p>(ENTER to continue)<p>
 </div>
 
 <div id="winner">
-	<h1>you win!</h1>
+	<h1>You win!</h1>
 	<p><a href="graph-maze.html">next</a></p>
 </div>
 
@@ -98,12 +110,14 @@
 	var leftkey = 0;
 	var rightkey = 0;
 	var speed = dx/20;
+	var resolution = dx/4;
 
 	var found = 0;
 	var won = 0;
 	var light = 1;
 	var lightblocks = 0;
 	var lightlines = 0;
+	var lighttrace = 0;
 	var goali = 1+Math.floor((xs.length-3)*Math.random());
 	var goalj = 1+Math.floor((xs[0].length-3)*Math.random());
 	var goalx = xs[goali][goalj]+dx/2;
@@ -233,7 +247,7 @@
 			var sini = Math.sin(i);
 			var cosi = Math.cos(i);
 			paper.beginPath();
-			paper.lineWidth=1;
+			paper.lineWidth=.5;
 			paper.lineCap = "round"
 			paper.moveTo(lightx,lighty);
 			var L=0;
@@ -281,8 +295,8 @@
 		ballgridi = parseInt((ballx-(dx/2+.5))/dx+1);
 		ballgridj = parseInt((bally-(dx/2+.5))/dx+1);
 		
-		lightx = ballx + 2*Math.sin(2*t);
-		lighty = bally - 2*Math.cos(2*t);
+		lightx = ballx + 1*Math.sin(2*t);
+		lighty = bally - 1*Math.cos(2*t);
 		gridi = parseInt((lightx-(dx/2+.5))/dx+1);
 		gridj = parseInt((lighty-(dx/2+.5))/dx+1);
 		
@@ -335,7 +349,7 @@
 		if(Math.sqrt((x-xs[i][j]-dx/2)*(x-xs[i][j]-dx/2)+(y-ys[i][j]-dx/2)*(y-ys[i][j]-dx/2))>300||i<1||i>xs.length-2||j<1||j>xs[0].length-2||(Math.abs(x2-x1)<tol&&Math.abs(y2-y1)<tol)){
 			return;
 		}
-		var colour=paper.createRadialGradient(x,y,0,x,y,300+10*Math.sin(.2*t));
+		var colour=paper.createRadialGradient(x,y,0,x,y,300+15*(Math.sin(.2*t) + Math.cos(3*.2*t)+Math.cos(.02*t)-Math.sin(0.3*0.2*t)));
 		colour.addColorStop(0,"#F57741");
 		colour.addColorStop(.3,"#C04848");
 		colour.addColorStop(.7,"#251030");
@@ -673,6 +687,101 @@
 			}
 		}		 
 	}
+	
+	function addlighttrace(res){
+		r = 300+2*(Math.sin(.2*t) + Math.cos(3*.2*t)+Math.cos(.02*t)-Math.sin(0.3*0.2*t));
+		tol = 0.0001;
+		for  (var i = ballx-r; i < ballx+r; i+=res){
+			for (var j = bally-r; j < bally+r; j+=res){
+				if (i>0&&i<W&&j>0&&j<H){
+					//paper.clearRect(0,0,W,H);
+					trace = 1;
+					// find vertical intersections
+					if (ballx < i) {
+						xmin = ballx;
+						xmax = i;
+						ymin = bally;
+						ymax = j;
+					} else {
+						xmin = i;
+						xmax = ballx;
+						ymin = j;
+						ymax = bally;
+					}
+					for (var gridi = Math.ceil((xmin-(dx/2+.5))/dx + 1); xs[gridi][1] < xmax; gridi++) {
+						atx = xs[gridi][1];
+						percentx = (atx-xmin)/(xmax-xmin);
+						aty = ymin + percentx*(ymax-ymin);
+						gridj = Math.ceil((aty-(dx/2+.5))/dx)
+						//paper.beginPath();
+						//paper.strokeStyle = "#ccc";
+						//paper.moveTo(xs[gridi][1], ys[1][gridj]);
+						//paper.lineTo(xs[gridi][1], ys[1][gridj+1]);
+						//paper.stroke();
+						
+						// if wall then dont print
+						
+						if (vwall[gridi][gridj]){
+							trace = 0;
+						} else if ( Math.abs(ys[gridi][gridj]-aty)<tol && vwall[gridi][gridj-1]) {
+							trace = 0;
+						} else if ( Math.abs(ys[gridi][gridj+1]-aty)<tol  && vwall[gridi][gridj+1]) {
+							trace = 0;
+						}
+					}
+					// find horizontal intersections
+					if (bally < j) {
+						xmin = ballx;
+						xmax = i;
+						ymin = bally;
+						ymax = j;
+					} else {
+						xmin = i;
+						xmax = ballx;
+						ymin = j;
+						ymax = bally;
+					}
+					for (var gridj = Math.ceil((ymin-(dx/2+.5))/dx + 1); ys[1][gridj] < ymax; gridj++) {
+						aty = ys[1][gridj];
+						percenty = (aty-ymin)/(ymax-ymin);
+						atx = xmin + percenty*(xmax-xmin);
+						gridi = Math.ceil((atx-(dx/2+.5))/dx)
+						//paper.beginPath();
+						//paper.strokeStyle = "#ccc";
+						//paper.moveTo(xs[gridi][1], ys[1][gridj]);
+						//paper.lineTo(xs[gridi+1][1], ys[1][gridj]);
+						//paper.stroke();
+						if (hwall[gridi][gridj]){
+							trace = 0;
+						} else if ( Math.abs(xs[gridi][gridj]-atx)<tol && hwall[gridi-1][gridj]) {
+							trace = 0;
+						} else if ( Math.abs(xs[gridi+1][gridj]-atx)<tol && hwall[gridi+1][gridj]) {
+							trace = 0;
+						} 
+					}
+					//paper.beginPath();
+					//paper.strokeStyle = "#ccc";
+					//paper.moveTo(xmin, ymin);
+					//paper.lineTo(xmax, ymax);
+					//paper.stroke()
+					if (trace) {
+						var dist = Math.sqrt( (ballx-i)*(ballx-i) + (bally-j)*(bally-j) );
+						if (dist<.3*r) {
+							paper.fillStyle = "#F57741";
+						} else if (dist<.6*r) {
+							paper.fillStyle = "#C04848";
+						} else if (dist<r) {
+							paper.fillStyle = "#251030";
+						} else {
+							paper.fillStyle = "#00112c";
+						}
+						paper.fillRect(i-res/2,j-res/2,res,res);
+					}
+					//alert(j)
+				}
+			}
+		}
+	}
 
 	function draw(dt){
 		if (light){
@@ -680,7 +789,7 @@
 			paper.fillRect(0,0,W,H);
 			drawlines(xs,ys,W,H,dx);
 		} else {
-			paper.fillStyle = 'rgba(0,17,44,.04)';
+			paper.fillStyle = 'rgba(0,17,44,.2)';
 			paper.fillRect(0,0,W,H);
 		}
 		newballx -= (leftkey-rightkey)*speed/(1+.5*Math.abs(upkey-downkey))*dt/12;
@@ -732,12 +841,17 @@
 			newbally = bally;
 		}
 
-		ballx = newballx;
-		bally = newbally;
 		if(lightblocks){
 			addlightblocks();
 		} else if (lightlines) {
 			addlightlines();
+		} else if (lighttrace) {
+			if (newbally == bally && newballx == ballx){
+				resolution = Math.max(resolution-.5,3)
+			} else {
+				resolution = 10;
+			}
+			addlighttrace(resolution);
 		}
 		drawball(ballx,bally);
 		if (light){
@@ -750,7 +864,9 @@
 		paper.fill();
 		found = 0;
 		
-		if (Math.abs(ballx - goalx) < 4 && Math.abs(bally - goaly)<4){
+		ballx = newballx;
+		bally = newbally;
+		if (Math.abs(ballx - goalx) < 5 && Math.abs(bally - goaly) < 5){
 			return false;
 		}
 	}
@@ -781,6 +897,10 @@
 		else if (e.keyCode == '13'&&won) {
 		   // right arrow
 			window.open('graph-maze.html',"_self");
+		}
+		else if (e.keyCode == '13') {
+			var el = document.getElementById("unlock");
+			el.style.display = 'none';
 		}
 	}
 	function keydepressed(e) {
@@ -903,13 +1023,31 @@
 			setTimeout(init, 500);
 			return false;
 		}
+		mm.onmousedown = function() {
+			lightlines = !lightlines;
+			lightblocks = 0;
+			lighttrace = 0;
+			return false;
+		}
+		nn.onmousedown = function() {
+			lightblocks = !lightblocks;
+			lightlines = 0;
+			lighttrace = 0;
+			return false;
+		}
+		oo.onmousedown = function() {
+			lighttrace = !lighttrace;
+			lightlines = 0;
+			lightblocks = 0;
+			return false;
+		}
 	}
 	
 	function lights(){
 		if (light){
 			document.getElementById("lightswitch").innerHTML = "lights on";
 			light = 0;
-			lightblocks = 1;
+			//lightblocks = 1;
 			paper.fillStyle = 'rgba(0,17,44,1)';
 			paper.fillRect(0,0,W,H);
 			document.getElementById("menu").style.backgroundColor = "rgba(51,68,102,.5)";
@@ -922,6 +1060,12 @@
 			for (var i = 0; i < x.length; i++){
 				x[i].style.backgroundColor = "rgba(34,51,85,.7)";
 			}
+			document.getElementById("mm").style.display = 'block';
+			document.getElementById("nn").style.display = 'block';
+			document.getElementById("oo").style.display = 'block';
+			document.getElementById("lightp").style.display = 'block';
+			var el = document.getElementById("unlock");
+			el.style.display = 'block';
 		} else{
 			document.getElementById("lightswitch").innerHTML = "lights off";
 			light = 1;
@@ -933,11 +1077,20 @@
 			document.getElementById("info").style.color = "#78a";
 			document.getElementById("fps").style.color = "#78a";
 			document.getElementById("foot").style.color = "#78a";
-			var x = document.getElementsByClassName("hoverbutton");
-			for (var i = 0; i < x.length; i++){
-				x[i].style.backgroundColor = "#568";
+			var y = document.getElementsByClassName("hoverbutton");
+			for (var i = 0; i < y.length; i++){
+				y[i].style.backgroundColor = "rgba(200,200,200,0.5)";
 			}
+			document.getElementById("mm").style.display = 'none';
+			document.getElementById("nn").style.display = 'none';
+			document.getElementById("oo").style.display = 'none';
+			document.getElementById("lightp").style.display = 'none';
 		}
+	}
+	
+	function popdown(){
+		var el = document.getElementById("unlock");
+		el.style.display = 'none';
 	}
 	
 </script>
