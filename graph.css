@@ -31,6 +31,10 @@ a:visited {
     color: #FF5254;
 }
 
+.text {
+	margin-left:10px;
+}
+
 #canvasbox {
 	position:absolute;
 	width:100%;

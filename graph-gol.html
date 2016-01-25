@@ -126,14 +126,12 @@
 		</div>
 	</div>
 	<h3>Try these rule sets:</h3>
-	<p>
-		Game of life (default) S: 23, B: 3 </br>
-		Maze S: 12345, B: 3 </br>
-		Life without death S: 012345678, B: 3 </br>
-		Day and Night S: 34678, B: 3678 </br>
-		Move S: 245, B: 368 </br>
-		Walled cities S: 2345, B: 45678 </br>
-	</p>
+	<p onclick = "changeto([2,3],[3])">Game of life (default) S: 23, B: 3 </p>
+	<p onclick = "changeto([1,2,3,4,5],[3])">Maze S: 12345, B: 3 </p>
+	<p onclick = "changeto([0,1,2,3,4,5,6,7,8,9],[3])">Life without death S: 012345678, B: 3 </p>
+	<p onclick = "changeto([3,4,6,7,8],[3,6,7,8])">Day and Night S: 34678, B: 3678 </p>
+	<p onclick = "changeto([2,4,5],[3,6,8])">Move S: 245, B: 368 </p>
+	<p onclick = "changeto([2,3,4,5],[4,5,6,7,8])">Walled cities S: 2345, B: 45678 </p>
 </div>
 
 <div id = "footer">
@@ -451,6 +449,38 @@
 			setTimeout(init, 1000);
 			return false;
 		}
+	}
+	
+	function changeto(S,B){
+		for (var i = 0; i < 9; i++){
+			survival[i] = 0;
+			birth[i] = 0;
+		}
+		for (var i = 0; i < S.length; i++){
+			survival[S[i]] = 1;
+		}
+		for (var i = 0; i < B.length; i++){
+			birth[B[i]] = 1;
+		}
+				
+		document.getElementById("survival0").checked = survival[0];
+		document.getElementById("survival1").checked = survival[1];
+		document.getElementById("survival2").checked = survival[2];
+		document.getElementById("survival3").checked = survival[3];
+		document.getElementById("survival4").checked = survival[4];
+		document.getElementById("survival5").checked = survival[5];
+		document.getElementById("survival6").checked = survival[6];
+		document.getElementById("survival7").checked = survival[7];
+		document.getElementById("survival8").checked = survival[8];
+		document.getElementById("birth0").checked = birth[0];
+		document.getElementById("birth1").checked = birth[1];
+		document.getElementById("birth2").checked = birth[2];
+		document.getElementById("birth3").checked = birth[3];
+		document.getElementById("birth4").checked = birth[4];
+		document.getElementById("birth5").checked = birth[5];
+		document.getElementById("birth6").checked = birth[6];
+		document.getElementById("birth7").checked = birth[7];
+		document.getElementById("birth8").checked = birth[8];
 	}
 	
 </script>

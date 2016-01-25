@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+
+<div id = "canvasbox">
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+	<p style = "text-align: center;">info</p>
+	<h1 style = "text-align: center;">L-system</h1>
+	<p>Lindenmayer systems are a set of symbols and rules which can be used for generating curves. They can easily generate the dragon curve! </p>
+	<p>The symbols are: </p>
+	<p style="color:#FF5254;">X,Y,Z: Constants </p>
+	<p style="color:#FF5254;">A,B,F: Draw a line forward </p>
+	<p style="color:#FF5254;">+: Turn right </p>
+	<p style="color:#FF5254;">-: Turn left </p>
+	<p style="color:#FF5254;">[: Put the current state at the end of a list  </p>
+	<p style="color:#FF5254;">]: Remove state from end of list and revert to this state </p>
+	<p> </br> The rules are written as (FROM => TO). For example (A => AB) means wherever there is an A in the list of instructions, replace it with AB</p>
+	<p style="color:#FF5254;">Change the rules if you want </p>
+	<input type="text" class="text" name="rules" id="rules" value="(X => X+YF+), (Y => -FX-Y)" size = "40" onsubmit = "submit()">
+	<p> </br> All thats left is to give the initial list of characters and the turning angle</p>
+	<p style="color:#FF5254;">Initial characters: </p>
+	<input type="text" class="text" name="initial" id="initial" value="FX" size = "40" onsubmit = "submit()">
+	<p style="color:#FF5254;"> Angle:</p>
+	<input type="text" class="text" name="angle" id="angle" value="90" size = "40" onsubmit = "submit()">
+	<p style="color:#FF5254;"> Number of iterations:</p>
+	<input type="range" name="points" id="points" min="0" max="14" onChange = "submit()">
+	<button type = "button" style = "margin:20px;" onclick = "submit()">play</button>
+	<p style="color:#FF5254;"> Initial angle:</p>
+	<input type="range" name="theta0" id="theta0" step = "5" min="0" max="360" onChange = "submit()">
+	<h3>some examples</h3>
+	<p onclick = "changeto('(X => X+YF+), (Y => -FX-Y)','FX',90,10,0)"> Dragon Curve </br> Rules: (X => X+YF+), (Y => -FX-Y) </br> Initial: FX </br> Angle: 90 </p>
+	<p onclick = "changeto('(A => +B-A-B+), (B => -A+B+A-)','A',60,8,90)"> Sierpinski Triangle </br> Rules: (A => +B-A-B+), (B => -A+B+A-) </br> Initial: A </br> Angle: 60 </p>
+	<p onclick = "changeto('(F => F-F++F-F)','F++F++F',60,6,90)"> Koch Snowflake </br> Rules: (F => F-F++F-F) </br> Initial: F++F++F </br> Angle: 60 </p>
+	<p onclick = "changeto('(F => +F--F+)','F',45,12,270)"> L&eacutevy C Curve </br> Rules: (F => +F--F+) </br> Initial: F </br> Angle: 45 </p>
+	<p onclick = "changeto('(X => F[-F[X]+FFX][+FX]), (F=>FF)','X', 30, 5,180)"> Fractal Tree </br> Rules: (X => F[-F[X]+FFX][+FX]), (F=>FF) </br> Initial: X </br> Angle: 30 </p>
+	
+	
+</div>
+
+<div id = "footer">
+	<p style = "text-align:center;"><a href="graph-dragon.html">back</a></p>
+</div>
+
+<script>
+
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	var dx = 20;
+	var angle = 90;
+	var theta1 = 0;
+	iterations = 10;
+	var rulechar = [];
+	var ruleset = [];
+	string = ['F','X'];
+	changeto('(X => X+YF+), (Y => -FX-Y)','FX',90,10,0);
+	
+	// Drawing functions
+	function drawpage(){
+		// Draw lines with spacing dx, horizontally and vertically		
+		paper.fillStyle = '#fff';
+		paper.fillRect(0,0,W,H);
+		dx = 20;
+		paper.beginPath();
+		paper.strokeStyle="#bce";
+		paper.lineCap = 'square';
+		paper.lineWidth=1;
+		for (var i = dx/2+.5; i < W; i+=dx){
+			paper.moveTo(i,0);
+			paper.lineTo(i,H);
+			paper.stroke();
+		}
+		for (var i = dx/2+.5; i < H; i+=dx){
+			paper.moveTo(0,i);
+			paper.lineTo(W,i);
+			paper.stroke();
+		}
+		
+		// Red line down left side
+		paper.beginPath()
+		paper.strokeStyle="#FF5254";
+		paper.lineWidth=3;
+		paper.moveTo(0,0);
+		paper.lineTo(0,H);
+		paper.stroke();
+		
+		// Hole punches
+		addhole(40,H/5);
+		addhole(40,H/5+50);
+
+		addhole(40,4*H/5);
+		addhole(40,4*H/5-50);
+	}
+	function addhole(x,y){
+		// Draw shadow circle
+		paper.strokeStyle="#bce";
+		paper.lineWidth=1;
+		paper.fillStyle="#679";
+		paper.beginPath();
+		paper.arc(x, y, dx/1.5, 0, 2 * Math.PI);
+		paper.stroke();
+		paper.fill();
+		
+		// Draw white circle
+		paper.beginPath();
+		paper.arc(x+1, y+1, dx/1.5, 0, 2 * Math.PI);
+		paper.stroke();
+		paper.fillStyle="white";
+		paper.fill();
+	}
+	
+	function execute( str ) {
+		var t = 0;
+		while (str.length<100000) {
+			if (t>=iterations){
+				return str;
+			}
+			str = expand( str );
+			t ++;
+		}
+		alert("that took a long time so maybe you're iterating too many times")
+		return str;
+	}
+	
+	function expand ( str ) {
+		for (var i = str.length-1; i >= 0; i--) {
+			for (var j = 0; j < rulechar.length; j++){
+				if (str[i]==rulechar[j]){
+					replace(str,ruleset[j],i);
+				}
+			}
+		}
+		return str;
+	}
+	
+	function insert(str,newstr,i){
+		// Shift each element after i up by one and add in newx
+		length = str.length;
+		newlength = newstr.length;
+		for(var j = 0; j < newlength; j++){
+			str[j+length]=newstr[j];
+		}
+		for(var j = length-1; j >= i; j--){
+			str[j+newlength]=str[j];
+		}
+		for(var j = 0; j < newlength; j++){
+			str[j+i]=newstr[j];
+		}
+		return str;
+	}
+	
+	function replace(str,newstr,i){
+		// Shift each element after i up by one and add in newx
+		length = str.length;
+		newlength = newstr.length;
+		for(var j = 0; j < newlength-1; j++){
+			str[j+length]=newstr[j];
+		}
+		for(var j = length-1; j > i; j--){
+			str[j+newlength-1]=str[j];
+		}
+		for(var j = 0; j < newlength; j++){
+			str[j+i]=newstr[j];
+		}
+		return str;
+	}
+	
+	function trace ( str ) {
+		statex = [];
+		statey = [];
+		statea = [];
+	
+		x = 0;
+		y = 0;
+		theta = 0;
+		for (var i = 0; i < str.length; i++){
+			if ( str[i] == '-' ){
+				theta -= 2*3.1415926536*angle/360;
+			} else if ( str[i] == '+' ) {
+				theta += 2*3.1415926536*angle/360;
+			} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+				x += (Math.sin(theta));
+				y += (-Math.cos(theta));
+			} else if ( str[i] == '[') {
+				statex.push(x);
+				statey.push(y);
+				statea.push(theta);
+			} else if ( str[i] == ']') {
+				x = statex.pop();
+				y = statey.pop();
+				theta = statea.pop();
+			}
+		}
+		if (Math.sqrt(x*x+y*y) >.001) {
+			theta1 = -Math.acos(y/Math.sqrt(x*x+y*y));//+2*3.1415926536*theta0/360;
+			if (x>0){
+				theta1 *= -1;
+			}
+		}
+		theta1+=2*3.1415926536*theta0/360;
+		
+		x = 0;
+		y = 0;
+		theta = theta1;
+		xmin = 0;
+		xmax = 0;
+		ymin = 0;
+		ymax = 0;
+		for (var i = 0; i < str.length; i++){
+			if ( str[i] == '-' ){
+				theta -= 2*3.1415926536*angle/360;
+			} else if ( str[i] == '+' ) {
+				theta += 2*3.1415926536*angle/360;
+			} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+				x += (Math.sin(theta));
+				y += (-Math.cos(theta));
+				if (x<xmin) {
+					xmin = x;
+				} else if (x > xmax) {
+					xmax = x;
+				}
+				if (y<ymin) {
+					ymin = y;
+				} else if (y > ymax) {
+					ymax = y;
+				}
+			} else if ( str[i] == '[') {
+				statex.push(x);
+				statey.push(y);
+				statea.push(theta);
+			} else if ( str[i] == ']') {
+				x = statex.pop();
+				y = statey.pop();
+				theta = statea.pop();
+			}
+		}
+		
+		x0 = W/2-200;
+		x1 = W/2+200;
+		y0 = H/2-200;
+		y1 = H/2+200;
+		
+		r = (x1-x0)/Math.max(xmax-xmin,ymax-ymin);
+		
+		drawpage();
+		//paper.strokeRect(x0,y0,(x1-x0),(x1-x0));
+		theta = theta1;
+		x = (x0-xmin*r+x1-xmax*r)/2;
+		y = (y0-ymin*r+y1-ymax*r)/2;
+		paper.strokeStyle="#000";
+		paper.linewidth = 1.5;
+		for (var i = 0; i < str.length; i++){
+			if ( str[i] == '-' ){
+				theta -= 2*3.1415926536*angle/360;
+			} else if ( str[i] == '+' ) {
+				theta += 2*3.1415926536*angle/360;
+			} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+				paper.beginPath()
+				paper.moveTo(x,y);
+				x += (r*Math.sin(theta));
+				y += (-r*Math.cos(theta));
+				paper.lineTo(x,y);
+				/*if (i>str.length/4){
+					paper.strokeStyle = "#f00";
+				}
+				if (i>str.length/2){
+					paper.strokeStyle = "#0f0";
+				}
+				if (i>3*str.length/4){
+					paper.strokeStyle = "#00f";
+				}/**/
+				paper.stroke();
+			} else if ( str[i] == '[') {
+				statex.push(x);
+				statey.push(y);
+				statea.push(theta);
+			} else if ( str[i] == ']') {
+				x = statex.pop();
+				y = statey.pop();
+				theta = statea.pop();
+			}
+		}
+	}
+	
+	// Button functions
+	window.onload = function() {
+		
+	}
+	
+	function submitkey(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '13') {
+			submit();
+		}
+	}
+	
+	function submit(){
+		rules = document.getElementById("rules").value;
+		initial = document.getElementById("initial").value;
+		angle = document.getElementById("angle").value;
+		iterations = document.getElementById("points").value;
+		theta0 = document.getElementById("theta0").value;
+		
+		string = [];
+		for (var i = 0; i < initial.length; i++) {
+			string[i] = initial[i];
+		}
+		
+		//rules
+		var openbrackets = 0;
+		var rightside = 0;
+		rulen = 0;
+		rulechar = [];
+		ruleset = [];
+		ruleset[0] = [];
+		for (var i = 0; i < rules.length; i++) {
+			if (rules[i] == '('){
+				if (openbrackets){
+					alert('please correct the format of your rules. (probably no closed bracket)');
+					return;
+				}
+				openbrackets = 1;
+			} else if (rules[i] == ')'){
+				if (!openbrackets){
+					alert('please correct the format of your rules. (probably no open bracket)');
+					return;
+				}
+				openbrackets = 0;
+				rightside = 0;
+				rulen ++;
+				ruleset[rulen] = [];
+			} else if (openbrackets && rules[i]!=' ') {
+				if (rightside == 0) {
+					if (rules[i]=="=" || rules[i]==">"){
+						alert('please correct the format of your rules. (probably no FROM symbol)');
+						return;
+					}
+					rulechar[rulechar.length] = rules[i];
+					rightside = 1;
+				} else if (rightside == 1 && rules[i]!="=" && rules[i]!=">") {
+					ruleset[rulen][ruleset[rulen].length] = rules[i];
+				}
+			}
+		}
+		string = execute(string)
+		trace(string)
+	}
+	
+	function changeto(r,i,a,p,t){
+		document.getElementById("rules").value = r;
+		document.getElementById("initial").value = i;
+		document.getElementById("angle").value = a;
+		document.getElementById("points").value = p;
+		document.getElementById("theta0").value = t;
+		submit();
+	}
+
+</script>
+
+</body>
+</html>
