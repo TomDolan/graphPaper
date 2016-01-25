@@ -32,10 +32,10 @@
 	<p style="color:#FF5254;"> Angle:</p>
 	<input type="text" class="text" name="angle" id="angle" value="90" size = "40" onsubmit = "submit()">
 	<p style="color:#FF5254;"> Number of iterations:</p>
-	<input type="range" name="points" id="points" min="0" max="14" onChange = "submit()">
+	<input type="range" class="text" name="points" id="points" min="0" max="14" onChange = "submit()">
 	<button type = "button" style = "margin:20px;" onclick = "submit()">play</button>
 	<p style="color:#FF5254;"> Initial angle:</p>
-	<input type="range" name="theta0" id="theta0" step = "5" min="0" max="360" onChange = "submit()">
+	<input type="range" class="text" name="theta0" id="theta0" step = "5" min="0" max="360" onChange = "submit()">
 	<h3>some examples</h3>
 	<p onclick = "changeto('(X => X+YF+), (Y => -FX-Y)','FX',90,10,0)"> Dragon Curve </br> Rules: (X => X+YF+), (Y => -FX-Y) </br> Initial: FX </br> Angle: 90 </p>
 	<p onclick = "changeto('(A => +B-A-B+), (B => -A+B+A-)','A',60,8,90)"> Sierpinski Triangle </br> Rules: (A => +B-A-B+), (B => -A+B+A-) </br> Initial: A </br> Angle: 60 </p>
