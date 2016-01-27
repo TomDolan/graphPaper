@@ -948,14 +948,14 @@
 		upkey = 0;
 		leftkey = 0;
 		rightkey = 0;
-		if (Math.round(e.beta)>0) {
+		if (Math.round(e.beta)>10) {
 			downkey = 1;
-		} else if (Math.round(e.beta)<0) {
+		} else if (Math.round(e.beta)<-10) {
 			upkey = 1
 		}
-		if (Math.round(e.gamma)<0) {
+		if (Math.round(e.gamma)<-10) {
 			leftkey = 1;
-		} else if (Math.round(e.gamma)>0) {
+		} else if (Math.round(e.gamma)>10) {
 			rightkey = 1
 		}
 	}
