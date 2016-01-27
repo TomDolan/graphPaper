@@ -28,7 +28,17 @@ p {
 }
 
 a:visited {
+    color: #349;
+}
+a:hover {
     color: #FF5254;
+}
+
+::selection {
+  background: rgba(255,255,255,0); /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: rgba(255,255,255,0); /* Gecko Browsers */
 }
 
 .text {
