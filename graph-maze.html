@@ -942,8 +942,9 @@
 	}
 
 	
-	function deviceOrientationListener(event) {
-		 alert("alpha: " + event.alpha + ", beta: " + event.beta + ", gamma: " + event.gamma)
+	function deviceOrientationListener(e) {
+		e = e || window.event;
+		alert("alpha: " + e.alpha + ", beta: " + e.beta + ", gamma: " + e.gamma)
 	}
 
 	if (window.DeviceOrientationEvent) {
