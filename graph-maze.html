@@ -948,8 +948,12 @@
 	function deviceOrientationListener(e) {
 		 
 		 //ctx.fillText("Alpha:" + Math.round(event.alpha) ,10,20);
-		 ctx.fillText("Beta:" + Math.round(event.beta),10,140);
-		 //ctx.fillText("Gamma:" + Math.round(event.gamma),10,270);
+		 if (window.DeviceOrientationEvent) {
+			document.getElementById("lightswitch").innerHTML = e.beta;
+		} else {
+			document.getElementById("lightswitch").innerHTML = "cat";
+		}
+		//ctx.fillText("Gamma:" + Math.round(event.gamma),10,270);
 		 /*leftkey = 0;
 		 rightkey = 0;
 		 upkey = 0;
