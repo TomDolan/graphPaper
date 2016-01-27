@@ -944,7 +944,7 @@
 	
 	function deviceOrientationListener(e) {
 		e = e || window.event;
-		alert("alpha: " + e.alpha + ", beta: " + e.beta + ", gamma: " + e.gamma)
+		document.getElementById("lightswitch").innerHTML = e.beta;
 	}
 
 	if (window.DeviceOrientationEvent) {
