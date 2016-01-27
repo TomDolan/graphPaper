@@ -941,30 +941,16 @@
 		}
 	}
 
+	
+	function deviceOrientationListener(event) {
+		 alert("alpha: " + event.alpha + ", beta: " + event.beta + ", gamma: " + event.gamma)
+	}
+
 	if (window.DeviceOrientationEvent) {
 	   window.addEventListener("deviceorientation", deviceOrientationListener);
 	}
-	
-	function deviceOrientationListener(e) {
-		 
-		 //ctx.fillText("Alpha:" + Math.round(event.alpha) ,10,20);
-		 //ctx.fillText("Beta:" + Math.round(event.beta),10,140);
-		 //ctx.fillText("Gamma:" + Math.round(event.gamma),10,270);
-		 leftkey = 0;
-		 rightkey = 0;
-		 upkey = 0;
-		 down = 0;
-		 alert(e.beta)
-		 if( (e.beta%(2*3.141592)-3.141592)>0 && (e.beta%(2*3.141592)-3.141592)<0 ){
-			upkey = 1;
-		 } else if( (e.beta%(2*3.141592)-3.141592)>0 && (e.beta%(2*3.141592)-3.141592)<0 ){
-			downkey = 1;
-		 }
-		 if( (e.gamma%(2*3.141592)-3.141592)>0 && (e.gamma%(2*3.141592)-3.141592)<0 ){
-			leftkey = 1;
-		 } else if( (e.gamma%(2*3.141592)-3.141592)>0 && (e.gamma%(2*3.141592)-3.141592)<0 ){
-			rightkey = 1;
-		 }
+	else {
+		alert("Sorry, your browser doesn't support Device Orientation");
 	}
 
 	function animate( render ) {
