@@ -49,13 +49,13 @@
 	<p>(ENTER to continue)<p>
 </div>
 
-<div id="winner">
+<div id="winner" onclick = "init()">
 	<h1>You win!</h1>
-	<p onclick = "init()">Begin again</p>
+	<p>Begin again</p>
 </div>
 
 <div id = "footer">
-	<p style = "text-align:center;"id="foot"><a href="graph-gol.html">previous</a> | <a id = "lightswitch" onclick="lights()">lights off</a> </p>
+	<p style = "text-align:center;"id="foot"><a href="graph-gol.html">previous</a> | <a href="graph-paper.html">menu</a> | <a id = "lightswitch" onclick="lights()">lights off</a> </p>
 </div>
 
 <script>
@@ -134,6 +134,7 @@
 	animate(draw);
 
 	function init(){
+		document.getElementById('winner').style.display = 'none';
 		if (light){
 			paper.fillStyle = 'rgba(255,255,255,1)';
 			paper.fillRect(0,0,W,H);
@@ -179,15 +180,14 @@
 		rightkey = 0;
 
 		found = 0;
-		won = 0;
-		speed = dx/40;
+		speed = dx/20;
 		goali = 1+Math.floor((xs.length-3)*Math.random());
 		goalj = 1+Math.floor((xs[0].length-3)*Math.random());
 		goalx = xs[goali][goalj]+dx/2;
 		goaly = ys[goali][goalj]+dx/2;
 		setTimeout(initialising = 0,200);
-		if(won==0){
-			won==1;
+		if(won==1){
+			won=0;
 			animate(draw);
 		}
 	}
@@ -778,12 +778,25 @@
 					//paper.stroke()
 					if (trace) {
 						var dist = Math.sqrt( (ballx-i)*(ballx-i) + (bally-j)*(bally-j) );
-						if (dist<.3*r) {
+						/*if (dist<.3*r) {
 							paper.fillStyle = "#F57741";
 						} else if (dist<.6*r) {
 							paper.fillStyle = "#C04848";
 						} else if (dist<r) {
 							paper.fillStyle = "#251030";
+						} else {
+							paper.fillStyle = "#00112c";
+						}*/
+						if (dist<.2*r) {
+							paper.fillStyle = "#F57741";
+						} else if (dist<.4*r) {
+							paper.fillStyle = "rgb(218,95,68)";
+						} else if (dist<.6*r) {
+							paper.fillStyle = "rgb(198,77,71)";
+						} else if (dist<.8*r) {
+							paper.fillStyle = "rgb(156,59,66)";
+						}else if (dist<r) {
+							paper.fillStyle = "rgb(103,40,58)";
 						} else {
 							paper.fillStyle = "#00112c";
 						}
@@ -796,6 +809,9 @@
 	}
 
 	function draw(dt){
+		if (won){
+			return false;
+		}
 		if (light){
 			paper.fillStyle = 'rgba(255,255,255,1)';
 			paper.fillRect(0,0,W,H);
@@ -879,6 +895,7 @@
 		ballx = newballx;
 		bally = newbally;
 		if (Math.abs(ballx - goalx) < 5 && Math.abs(bally - goaly) < 5){
+			won = 1;
 			return false;
 		}
 	}
@@ -971,7 +988,7 @@
 		var running, lastFrame = +new Date;
 		function loop( now ) {
 			// stop the loop if render returned false
-			if ( running !== false ) {
+			if ( running !== false) {
 				requestAnimationFrame( loop );
 				var deltaT = now - lastFrame;
 				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
@@ -982,11 +999,10 @@
 					running = render( deltaT );
 				}
 				lastFrame = now;
-			} else {		
+			} else if (won){		
 				document.getElementById("fps").innerHTML = "fps: 0";	
 				var el = document.getElementById("winner");
 				el.style.display = 'block';
-				won =1;
 			}
 		}
 		loop( lastFrame );
