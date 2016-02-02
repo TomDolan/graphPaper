@@ -116,6 +116,8 @@
 	var won = 0;
 	var light = 1;
 	var lantern = 0;
+	var beta0 = '';
+	var gamma0 = '';
 	var lightblocks = 0;
 	var lightlines = 0;
 	var lighttrace = 0;
@@ -181,6 +183,8 @@
 
 		found = 0;
 		speed = dx/20;
+		beta0 = '';
+		gamma0 = '';
 		goali = 1+Math.floor((xs.length-3)*Math.random());
 		goalj = 1+Math.floor((xs[0].length-3)*Math.random());
 		goalx = xs[goali][goalj]+dx/2;
@@ -958,30 +962,34 @@
 		}
 	}
 
+	function initorientation(e){
+		beta0 = Math.round(e.beta);
+		gamma0 = Math.round(e.gamma);
+	}
 	
 	function deviceOrientationListener(e) {
+		if (!beta || !gamma){
+			initorientation(e)
+		}
 		e = e || window.event;
 		downkey = 0;
 		upkey = 0;
 		leftkey = 0;
 		rightkey = 0;
-		if (Math.round(e.beta)>15) {
+		if (Math.round(e.beta)-beta0>15) {
 			downkey = 1;
-		} else if (Math.round(e.beta)<-15) {
+		} else if (Math.round(e.beta)-beta0<-15) {
 			upkey = 1
 		}
-		if (Math.round(e.gamma)<-15) {
+		if (Math.round(e.gamma)-gamma0<-15) {
 			leftkey = 1;
-		} else if (Math.round(e.gamma)>15) {
+		} else if (Math.round(e.gamma)-gamma0>15) {
 			rightkey = 1
 		}
 	}
 
 	if (window.DeviceOrientationEvent) {
 		window.addEventListener("deviceorientation", deviceOrientationListener);
-	}
-	else {
-		alert("Sorry, your browser doesn't support Device Orientation");
 	}
 
 	function animate( render ) {
