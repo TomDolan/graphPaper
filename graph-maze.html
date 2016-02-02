@@ -116,8 +116,8 @@
 	var won = 0;
 	var light = 1;
 	var lantern = 0;
-	var beta0 = '';
-	var gamma0 = '';
+	var beta0 = 0;
+	var gamma0 = 0;
 	var lightblocks = 0;
 	var lightlines = 0;
 	var lighttrace = 0;
@@ -183,8 +183,8 @@
 
 		found = 0;
 		speed = dx/20;
-		beta0 = '';
-		gamma0 = '';
+		beta0 = 0;
+		gamma0 = 0;
 		goali = 1+Math.floor((xs.length-3)*Math.random());
 		goalj = 1+Math.floor((xs[0].length-3)*Math.random());
 		goalx = xs[goali][goalj]+dx/2;
@@ -968,7 +968,7 @@
 	}
 	
 	function deviceOrientationListener(e) {
-		if (!beta || !gamma){
+		if (beta==0 || gamma==0){
 			initorientation(e)
 		}
 		e = e || window.event;
