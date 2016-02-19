@@ -172,6 +172,9 @@
 			paper.moveTo(W/2,h0-jheight);
 			paper.lineTo(W/2+5*(rightkey-leftkey),h0-3-jheight);
 			paper.stroke();*/
+			if(jump){
+				var img=document.getElementById("rock4");
+			}
 			if(h0-jheight>h){
 				jump = 0;
 			}
@@ -184,16 +187,14 @@
 			paper.moveTo(W/2,h);
 			paper.lineTo(W/2+5*(rightkey-leftkey),h-5+2*(leftkey+rightkey));
 			paper.stroke();*/
-		}
-		if(jump){
-			var img=document.getElementById("rock4");
-		}else if(xold == x){
-			var img=document.getElementById("rock");
-		}else{
-			if (mod(Math.floor(t*5),2)){
-				var img=document.getElementById("rock2");
-			} else {
-				var img=document.getElementById("rock3");
+			if(xold == x){
+				var img=document.getElementById("rock");
+			}else{
+				if (mod(Math.floor(t*5),2)){
+					var img=document.getElementById("rock2");
+				} else {
+					var img=document.getElementById("rock3");
+				}
 			}
 		}
 		paper.save();
