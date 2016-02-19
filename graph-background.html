@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+<style>
+#menu:hover {
+	background-color:rgba(255,255,255,0.9);
+}
+</style>
+</head>
+
+<body>
+
+<div id = "canvasbox">
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+	<p style = "text-align: center;">info</p>
+	<p id = "fps">fps: 0</p>
+	<h1>Game-background</h1>
+	<p>Adding a more detailed background with randomisation and perspective.  </p>
+</div>
+
+<div id = "footer">
+	<p style = "text-align:center;"><a href="graph-rotate.html">previous</a> | <a href="graph-paper.html">menu</a> | next </p>
+</div>
+
+<img id="rock" width="50" height="50" src="rock.png" style="display:none;">
+<img id="rock2" width="50" height="50" src="rock2.png" style="display:none;">
+<img id="rock3" width="50" height="50" src="rock3.png" style="display:none;">
+<img id="rock4" width="50" height="50" src="rock4.png" style="display:none;">
+
+<script>
+	
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	
+	var a2 = [.65*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+	var a3 = [.6*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+	var a4 = [.55*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+	var a5 = [.5*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-13,13),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-5,5),0,rand(-1,1),0,rand(-5,5),0,rand(-1,1)];
+	var height = H-Math.abs(a5[0])+Math.abs(a5[1])+Math.abs(a5[2])+Math.abs(a5[3])+Math.abs(a5[5])+Math.abs(a5[7])+Math.abs(a5[9])+Math.abs(a5[11])+Math.abs(a5[13])+Math.abs(a5[17])+Math.abs(a5[19]);
+	var ah = [H-height,rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+	
+	/*var bgc1 = '#663366';
+	var bgc2 = '#8C6673';
+	var bgc3 = '#B39980';
+	var bgc4 = '#D9CC8C';
+	var bgc5 = '#FFFF99';*/
+	/*var bgc1 = '#506266';
+	var bgc2 = '#7B8F8A';
+	var bgc3 = '#92A68A';
+	var bgc4 = '#BCC499';
+	var bgc5 = '#F5DD9D';*/
+	/*var bgc1 = '#FAF6D0';
+	var bgc2 = '#C7D8AB';
+	var bgc3 = '#909A92';
+	var bgc4 = '#744F78';
+	var bgc5 = '#30091E';*/
+	var bgc1 = '#EFD9B4';
+	var bgc2 = '#D6A692';
+	var bgc3 = '#A39081';
+	var bgc4 = '#4D6160';
+	var grd=paper.createLinearGradient(0,height,0,H);
+	grd.addColorStop(0,"#292522");
+	grd.addColorStop(1,"#4D6160");
+	var bgc5 = grd;
+	
+	paper.fillStyle = bgc1;
+	paper.fillRect(0,0,W,H);
+	
+	// Initialise variables
+	var dx = 20;
+	var x = 0;
+	var xold = 0;
+	var right = 1;
+	var t = 0;
+	var jump = 0;
+	var h0 = 0;
+	var pi = 3.14159265;
+	
+	var upkey = 0;
+	var downkey = 0;
+	var leftkey = 0;
+	var rightkey = 0;
+
+	// Begin!
+	animate(draw);
+	//drawlayer(d,0,bgc2,[H/2,400/pi,0,400/(3*pi),0,400/(5*pi),0,400/(7*pi)])
+	
+	function init(){
+		
+	}
+	
+	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
+	// calculate the difference in time and pass to the given render function, render function returns false to stop, will not render if deltaT is too high
+	function animate( render ) {
+		var running, lastFrame = +new Date;
+		function loop( now ) {
+			// stop the loop if render returned false
+			if ( running !== false ) {
+				requestAnimationFrame( loop );
+				var deltaT = now - lastFrame;
+				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
+				// do not render frame when deltaT is too high
+				if ( Math.abs(deltaT) < 160 ) {
+					running = render( deltaT );
+				}
+				lastFrame = now;
+			} else {
+				document.getElementById("fps").innerHTML = "fps: 0";
+			}
+		}
+		loop( lastFrame );
+	}
+	
+	function draw(deltaT){
+		t += deltaT/1000;
+		paper.fillStyle = bgc1;
+		paper.fillRect(0,0,W,H);
+		x = updatepos(t,x);
+		drawlayer(8,x,bgc2,a2);
+		drawlayer(6,x,bgc3,a3);
+		//drawbirds(t,x);
+		drawlayer(4,x,bgc4,a4);
+		drawlayer(2,x,bgc5,a5);
+		drawscene(t,x);
+	}
+	
+	function updatepos(t,x){
+		if (leftkey){
+			right = 0;
+		} else if (rightkey) {
+			right = 1;
+		}
+		xold = x;
+		speed = 5;
+		xnew=x+speed*(rightkey-leftkey);
+		if (!jump&&Math.abs(pos(x,ah)-pos(x+(dx+1)*(rightkey-leftkey),ah))>10) {
+			return x;
+		}
+		return xnew;
+	}
+	
+	function drawscene(t,x){
+		drawlayer(0,x,'#000',ah);
+		drawplayer(t,x,ah);
+	}
+	
+	function drawplayer(t,x,an){
+		h = pos(x,an)
+		h1 = h
+		if (jump==0 && upkey){
+			jump = t;
+			h0 = h;
+		}
+		if (jump){
+			jtime = t-jump;
+			jheight = -500*jtime*(jtime-.5);
+			/*paper.strokeStyle = bgc2;
+			paper.lineWidth = 5;
+			paper.lineCap = 'round';
+			paper.beginPath();
+			paper.moveTo(W/2,h0-jheight);
+			paper.lineTo(W/2+5*(rightkey-leftkey),h0-3-jheight);
+			paper.stroke();*/
+			if(h0-jheight>h){
+				jump = 0;
+			}
+			h1 = h0-jheight;
+		} else {
+			/*paper.strokeStyle = bgc2;
+			paper.lineWidth = 5;
+			paper.lineCap = 'round';
+			paper.beginPath();
+			paper.moveTo(W/2,h);
+			paper.lineTo(W/2+5*(rightkey-leftkey),h-5+2*(leftkey+rightkey));
+			paper.stroke();*/
+		}
+		if(jump){
+			var img=document.getElementById("rock4");
+		}else if(xold == x){
+			var img=document.getElementById("rock");
+		}else{
+			if (mod(Math.floor(t*5),2)){
+				var img=document.getElementById("rock2");
+			} else {
+				var img=document.getElementById("rock3");
+			}
+		}
+		paper.save();
+		paper.translate(W/2-25,h1-25); 
+		if (right == 0){
+			paper.scale(-1, 1);
+			paper.rotate(Math.atan((pos(x-25,an)-pos(x+25,an))/50));
+		} else {
+			paper.rotate(Math.atan((pos(x+25,an)-pos(x-25,an))/50));
+		}
+		paper.drawImage(img, -(img.width/2), -(img.height/2)+10);
+		paper.restore(); 
+	}
+	
+	function drawbirds(t,x){
+		paper.fillStyle = '#000'
+		a = mod(50*t-x/6,W*2);
+		b = .55*H-fourier(t*200,a2);
+		paper.beginPath();
+		paper.arc(a,b,4,0,2*pi);
+		paper.fill();
+	}
+	
+	function drawlayer(depth,x,colour,an){
+		scale = 1/(1+depth);
+		paper.fillStyle = colour;
+		paper.beginPath();
+		paper.moveTo(0,H-(dx*Math.floor(an[0]+scale*fourier(x-W*.5/scale,an)))/dx);
+		for (var i = -mod(scale*x,dx); i<W+dx; i+=dx){
+			paper.lineTo(i,H-(dx*Math.floor(an[0]+scale*fourier(x-W*.5/scale+i/scale,an)))/dx);
+		}
+		paper.lineTo(W,H);
+		paper.lineTo(0,H);
+		paper.moveTo(0,H-(dx*Math.floor(an[0]+scale*fourier(x-W*.5/scale,an)))/dx);
+		paper.fill();
+	}
+	
+	function fourier(y,an){
+		if (an.length==0){
+			return 0;
+		}
+		f = 0;
+		for (var i = 1; i<an.length; i++){
+			f += an[i]*Math.sin(i*y*(2*pi)/(3*W));
+		}
+		return f;
+	}
+	
+	function pos(x,an){
+		return H-(dx*Math.floor(an[0]+fourier(x,an)))/dx;
+	}
+	
+	function mod(a,b){
+		while(a<=0){
+			a+=b;
+		}
+		return a%b;
+	}
+	
+	function rand(a,b){
+		return Math.random()*(b-a)+a;
+	}
+
+	document.onkeydown = keypressed;
+	document.onkeyup = keydepressed;
+
+	function keypressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '87'||e.keyCode == '38') {
+			// up arrow
+			upkey = 1;
+		}
+		else if (e.keyCode == '83'||e.keyCode == '40') {
+			// down arrow
+			downkey = 1;
+		}
+		else if (e.keyCode == '65'||e.keyCode == '37') {
+		   // left arrow
+			leftkey = 1;
+		}
+		else if (e.keyCode == '68'||e.keyCode == '39') {
+		   // right arrow
+			rightkey = 1;
+		}
+	}
+	function keydepressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '87'||e.keyCode == '38') {
+			// up arrow
+			upkey = 0;
+		}
+		else if (e.keyCode == '83'||e.keyCode == '40') {
+			// down arrow
+			downkey = 0;
+		}
+		else if (e.keyCode == '65'||e.keyCode == '37') {
+		   // left arrow
+			leftkey = 0;
+		}
+		else if (e.keyCode == '68'||e.keyCode == '39') {
+		   // right arrow
+			rightkey = 0;
+		}
+	}
+	
+</script>
+
+</body>
+</html>

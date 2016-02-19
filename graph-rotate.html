@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+<style>
+#menu:hover {
+	background-color:rgba(255,255,255,0.9);
+}
+</style>
+</head>
+
+<body>
+
+<div id = "canvasbox">
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+	<p style = "text-align: center;">info</p>
+	<p id = "fps">fps: 0</p>
+	<h1>Game</h1>
+	<p>This is the beginning attempt at a simple game in two dimensions with a somewhat three dimensional background. 
+	The aim is to have a player, moving left or right along a track. And a background which moves at different rates and is scaled to give the illusion of depth. </p>
+</div>
+
+<div id = "footer">
+	<p style = "text-align:center;"><a href="graph-maze.html">previous</a> | <a href="graph-paper.html">menu</a> | <a href="graph-background.html">next</a> </p>
+</div>
+
+<script>
+	
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	
+	// Initialise variables
+	var dx = 20;
+	var theta = 0;
+	var height = H/2;
+	var dtheta = 0.05;
+	var twopi = 2*3.14159265;
+	
+	var ax = 0;
+	var ay = 9.8;
+	var vx = 0;
+	var vy = 0;
+	var upkey = 0;
+	var downkey = 0;
+	var leftkey = 0;
+	var rightkey = 0;
+	
+	// Initialise grid
+	var xs = [];
+	var ys = [];
+	for (var i = 0; i < W/dx+4; i++){
+		xs[i]=[];
+		ys[i]=[];
+		for (var j = 0; j < H/dx+4; j++){
+			xs[i][j] = (i-2)*dx+dx/2+.5;
+			ys[i][j] = (j-2)*dx+dx/2+.5;
+		}
+	}
+	x0 = xs[0][0];
+	x1 = xs[xs.length-1][0];
+	drawlines(xs,ys,W,H,dx,theta)
+	
+	// Begin!
+	animate(draw);
+	
+	function init(){
+		// Re-initialise arrays
+		xs = [];
+		ys = [];
+		for (var i = 0; i < W/dx+2; i++){
+			xs[i]=[];
+			ys[i]=[];
+			for (var j = 0; j < H/dx+2; j++){
+				xs[i][j] = (i-1)*dx+dx/2+.5;
+				ys[i][j] = (j-1)*dx+dx/2+.5;
+			}
+		}
+		theta = 0;
+		drawlines(xs,ys,W,H,dx,theta)
+	}
+	
+	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
+	// calculate the difference in time and pass to the given render function, render function returns false to stop, will not render if deltaT is too high
+	function animate( render ) {
+		var running, lastFrame = +new Date;
+		function loop( now ) {
+			// stop the loop if render returned false
+			if ( running !== false ) {
+				requestAnimationFrame( loop );
+				var deltaT = now - lastFrame;
+				//document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
+				// do not render frame when deltaT is too high
+				if ( Math.abs(deltaT) < 160 ) {
+					running = render( deltaT );
+				}
+				lastFrame = now;
+			} else {
+				document.getElementById("fps").innerHTML = "fps: 0";
+			}
+		}
+		loop( lastFrame );
+	}
+	
+	function draw(deltaT){
+		paper.fillStyle = 'rgba(255,255,255,.8)';
+		paper.fillRect(0,0,W,H);
+		pm = rightkey-leftkey;
+		up = -upkey;
+		ypos = ballh(W/2+theta/twopi*W);
+		jump = ypos - height;
+		
+		if(jump>5){
+			ay = 9.8*jump;
+			vy += ay*deltaT/1000; 
+		} else {
+			ax = pm*5+.1*(ballh(W/2+(theta+dtheta)/twopi*W)-ballh(W/2+theta/twopi*W))/(dtheta);
+			ay = .2*(ballh(W/2+(theta+dtheta)/twopi*W)-ballh(W/2+theta/twopi*W))/(dtheta);
+			vx += Math.max(-.5,Math.min(.5,ax*deltaT/1000));
+			vx /= 1.1;
+			vy += 100*up+ay*deltaT/1000;
+		}
+		document.getElementById("fps").innerHTML = "fps: " + vy;
+		theta += vx*deltaT/1000;
+		height = Math.max(0,Math.min(ballh(W/2+theta/twopi*W)-2,height+vy*deltaT/1000))
+				
+		drawlines(xs,ys,W,H,dx,theta);
+		drawpillarsofperiod(theta,0,100,10,twopi/3,'even');
+		drawline(theta);
+		drawball(W/2,height);
+	}
+	
+	function drawlines(xs,ys,W,H,dx,theta){
+		// For each grid point draw a horizontal and vertical line to the neighbouring point
+		paper.strokeStyle="#bce";
+		offset = -theta*(x1-x0)/(twopi)/6;
+		for (var i = 0; i < xs.length-1; i++){
+			for (var j = 0; j < H/dx+1; j++){
+				paper.beginPath();
+				paper.moveTo(mod(xs[i][j]+offset,x1-x0)+x0,ys[i][j]);
+				paper.lineTo(mod(xs[i+1][j]+offset,x1-x0)+x0, ys[i+1][j]);
+				paper.lineTo(mod(xs[i+1][j+1]+offset,x1-x0)+x0,ys[i+1][j+1]);
+				paper.stroke();
+			}
+		}
+	}
+	
+	function drawline(theta){
+		/*var colour=paper.createRadialGradient(W/2,H/2,0,W/2,H/2,800);
+		colour.addColorStop(0,"#F5a741");
+		colour.addColorStop(.1,"#F57741");
+		colour.addColorStop(.3,"#C04848");
+		colour.addColorStop(.6,"#251030");
+		colour.addColorStop(1,"#00112c");
+		paper.fillStyle = colour;*/
+		paper.fillStyle = 'rgba(100,100,100,1)';
+		paper.beginPath();
+		paper.moveTo(0,ballh(theta/twopi*W));
+		for (var i = 1; i<W; i++){
+			paper.lineTo(i,ballh(i+theta/twopi*W));
+		}
+		paper.lineTo(W,H);
+		paper.lineTo(0,H);
+		paper.moveTo(0,ballh(+theta/twopi*W));
+		paper.fill();
+	}
+	
+	function drawpillarsofperiod(theta,d0,d1,dd,p,method){
+		if (method == 'even'){
+			for (var i = d1; i>=d0; i-=dd){
+				drawpillar(theta,i,p,0);
+			}
+		}
+	}
+	
+	function drawpillar(theta,distance,period,offset){
+		var scale = 100/(100+distance)
+		var W0 = (x1-x0)*scale;
+		spacing = period/twopi*W0;
+		pos = mod(theta/twopi*W0,spacing);
+		var n = Math.ceil((x1-x0)/(2*spacing))+1;
+		for (var i = -n*spacing; i<=n*spacing; i += spacing){
+			c = Math.floor(100+distance/3.2);
+			paper.fillStyle = 'rgba('+c+','+c+','+c+','+1+')';
+			paper.fillRect((x1-x0)/2-pos+i+offset,0,1.2*dx*scale,H);
+		}
+	}
+	
+	function drawball(ballx,bally){
+		paper.fillStyle="#fff";
+		paper.strokeStyle="#679";
+		paper.beginPath();
+		paper.arc(ballx,bally, 2, 0, 2 * Math.PI);
+		paper.fill();
+		paper.stroke();
+	}
+	
+	function ballh(x){
+		return 3*H/4+(5*Math.sin(x/W*twopi*2)+4*Math.sin(x/W*twopi*3)+1*Math.sin(x/W*twopi*5)+2*Math.sin(x/W*twopi*7)+1*Math.sin(x/W*twopi*11))*(x>W/2);
+	}
+	
+	function mod(a,b){
+		while(a<=0){
+			a+=b;
+		}
+		return a%b;
+	}
+
+	document.onkeydown = keypressed;
+	document.onkeyup = keydepressed;
+
+	function keypressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '87'||e.keyCode == '38') {
+			// up arrow
+			upkey = 1;
+		}
+		else if (e.keyCode == '83'||e.keyCode == '40') {
+			// down arrow
+			downkey = 1;
+		}
+		else if (e.keyCode == '65'||e.keyCode == '37') {
+		   // left arrow
+			leftkey = 1;
+		}
+		else if (e.keyCode == '68'||e.keyCode == '39') {
+		   // right arrow
+			rightkey = 1;
+		}
+	}
+	function keydepressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '87'||e.keyCode == '38') {
+			// up arrow
+			upkey = 0;
+		}
+		else if (e.keyCode == '83'||e.keyCode == '40') {
+			// down arrow
+			downkey = 0;
+		}
+		else if (e.keyCode == '65'||e.keyCode == '37') {
+		   // left arrow
+			leftkey = 0;
+		}
+		else if (e.keyCode == '68'||e.keyCode == '39') {
+		   // right arrow
+			rightkey = 0;
+		}
+	}
+	
+</script>
+
+</body>
+</html>
