@@ -15,7 +15,7 @@
 <div id = "menu">
 	<p style = "text-align: center;">info</p>
 	<p id = "fps">fps: 0</p>
-	<h1>Game of Life</h1>
+	<h1>Stochastic Cellular Automata</h1>
 	<p>Draw alive cells and press the q, w, e, r, t, y keys to choose the play speed and p to pause. </p>
 	<p>Grid size:</p>
 	<div style="width:400px;height:100px;">
@@ -26,6 +26,12 @@
 		<p class = "hoverbutton" id = "ee" >20</p>
 		<p class = "hoverbutton" id = "ff">50</p>
 	</div>
+	<p style="color:#FF5254;"> Set the probability of multiplying:</p>
+	<input type="text" class="text" name="multprob" id="multprob" value="0.1" size = "40" onsubmit = "submit()">
+	<button type = "button" style = "margin:20px;" onclick = "submit()">Go</button>
+	<p style="color:#FF5254;"> Set the prob of moving:</p>	
+	<input type="text" class="text" name="moveprob" id="moveprob" value="0.1" size = "40" onsubmit = "submit()">
+	<button type = "button" style = "margin:20px;" onclick = "submit()">Go</button>
 </div>
 
 <div id = "footer">
@@ -414,6 +420,12 @@
 		paper.fillRect(0,0,width,height);
 		init();
 	}
+	
+	function submit(){
+		multiplyrate = document.getElementById("multprob").value;
+		moverate = document.getElementById("moveprob").value;
+	}
+	
 </script>
 
 </body>
