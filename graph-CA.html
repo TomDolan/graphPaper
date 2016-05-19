@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body onresize="resize()">
+
+<div id = "canvasbox">
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+	<p style = "text-align: center;">info</p>
+	<p id = "fps">fps: 0</p>
+	<h1>Game of Life</h1>
+	<p>Draw alive cells and press the q, w, e, r, t, y keys to choose the play speed and p to pause. </p>
+	<p>Grid size:</p>
+	<div style="width:400px;height:100px;">
+		<p class = "hoverbutton" id = "reset" >reset</p>
+		<p class = "hoverbutton" id = "bb" >2</p>
+		<p class = "hoverbutton" id = "cc" >5</p>
+		<p class = "hoverbutton" id = "dd" >10</p>
+		<p class = "hoverbutton" id = "ee" >20</p>
+		<p class = "hoverbutton" id = "ff">50</p>
+	</div>
+</div>
+
+<div id = "footer">
+	<p style = "text-align:center;"><a href="graph-fluid.html">previous</a> | <a href="graph-paper.html">menu</a> | <a href="graph-maze.html">next</a> </p>
+</div>
+
+<script>
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	
+	// Initialise board
+	var dx = 20;
+	var xs = [];
+	var ys = [];
+	var life = [];
+	var pastlife = [];
+	for (var i = 0; i < W/dx+1; i++){
+		xs[i]=[];
+		ys[i]=[];
+		life[i] = [];
+		pastlife[i] = [];
+		for (var j = 0; j < H/dx+1; j++){
+			xs[i][j] = (i-1)*dx+dx/2+.5;
+			ys[i][j] = (j-1)*dx+dx/2+.5;
+			life[i][j] =0;
+			pastlife[i][j] =0;
+			//if (i < W/dx/2){
+			//	life[i][j] =1;
+			//	pastlife[i][j] =1;
+			//}
+		}
+	}
+	/*
+		for (var i = 0; i < W/dx+1; i++){
+			life[i][0] =1;
+			pastlife[i][Math.floor(H/dx+1)] =1;
+		}
+		for (var j = 0; j < H/dx+1; j++){
+			life[0][j] =1;
+			pastlife[Math.floor(W/dx+1),j] =1;
+		}
+		*/
+	var xpos = -1;
+	var ypos = -1;
+	var clicked = 0;
+	var stop = 1;
+	var qwerty = 0;
+	var multiplyrate = .1;
+	var moverate = .01;
+	drawlines(xs,ys,W,H,dx);
+	
+	function init(){
+		paper.fillStyle = 'rgba(255,255,255,1)';
+		paper.fillRect(0,0,W,H);
+		xs = [];
+		ys = [];
+		life = [];
+		pastlife = [];
+		for (var i = 0; i < W/dx+1; i++){
+			xs[i]=[];
+			ys[i]=[];
+			life[i] = [];
+			pastlife[i] = [];
+			for (var j = 0; j < H/dx+1; j++){
+				xs[i][j] = (i-1)*dx+dx/2+.5;
+				ys[i][j] = (j-1)*dx+dx/2+.5;
+				life[i][j] =0;
+				pastlife[i][j] =0;
+			//if (i < W/dx/2){
+			//	life[i][j] =1;
+			//	pastlife[i][j] =1;
+			//}
+			}
+		}
+		xpos = -1;
+		ypos = -1;
+		clicked = 0;
+		qwerty = 0;
+		stop = 1;
+		if (dx>=10){
+			drawlines(xs,ys,W,H,dx);
+		}
+	}
+	function animate( render ) {
+		var running, lastFrame = +new Date;
+		function loop( now ) {
+			// stop the loop if render returned false
+			if ( running !== false ) {
+				if (render == draw){
+					requestAnimationFrame( loop );
+				} else {
+					setTimeout(function(){requestAnimationFrame( loop );},qwerty);
+				}
+				var deltaT = now - lastFrame;
+				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
+				// do not render frame when deltaT is too high
+				if ( deltaT < 2000) {
+					running = render( deltaT );
+				}
+				lastFrame = now;
+			} else {
+				document.getElementById("fps").innerHTML = "fps: 0";
+			}
+		}
+		loop( lastFrame );
+	}
+	
+	function draw(dt){
+		if(clicked){
+			gridi = parseInt((xpos-(dx/2+.5))/dx+1);
+			gridj = parseInt((ypos-(dx/2+.5))/dx+1);
+			life[gridi][gridj] = 1;
+			drawlife(xs,ys,W,H,dx);
+			if(dx>=10){
+				drawlines(xs,ys,W,H,dx);
+			}
+			copy(life,pastlife);
+		} else {
+			return false;
+		}
+	}
+	
+	function run(dt){
+		runlife();
+		drawlife(xs,ys,W,H,dx);
+		if(dx>=10){
+			drawlines(xs,ys,W,H,dx);
+		}
+		if (stop){
+			return false;
+		}
+	}
+	function drawlines(xs,ys,W,H,dx){
+		paper.strokeStyle="#bce";
+		for (var i = 0; i < W/dx; i++){
+			for (var j = 0; j < H/dx; j++){	
+				paper.beginPath();
+				paper.moveTo(xs[i][j],ys[i][j]);
+				paper.lineTo(xs[i+1][j], ys[i+1][j]);
+				paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
+				paper.stroke();
+			}
+		}
+	}
+	function drawlife(xs,ys,W,H,dx){
+		for (var i = 0; i < W/dx; i++){
+			for (var j = 0; j < H/dx; j++){
+				//if (life[i][j]!=pastlife[i][j]){
+					if(life[i][j]){
+						paper.fillStyle="#bce";
+					} else {
+						paper.fillStyle="#fff";
+					}
+					paper.beginPath();
+					if (dx<5){
+						paper.moveTo(xs[i][j]+.5,ys[i][j]+.5);
+						paper.lineTo(xs[i+1][j]+.5, ys[i+1][j]+.5);
+						paper.lineTo(xs[i+1][j+1]+.5, ys[i+1][j+1]+.5);
+						paper.lineTo(xs[i][j+1]+.5,ys[i][j+1]+.5);
+						paper.moveTo(xs[i][j]+.5,ys[i][j]+.5);
+					} else{
+						paper.moveTo(xs[i][j],ys[i][j]);
+						paper.lineTo(xs[i+1][j], ys[i+1][j]);
+						paper.lineTo(xs[i+1][j+1], ys[i+1][j+1]);
+						paper.lineTo(xs[i][j+1],ys[i][j+1]);
+						paper.moveTo(xs[i][j],ys[i][j]);					
+					}
+					paper.fill();
+				//}
+			}
+		}
+	}
+	function runlife(){
+		copy(life,pastlife);
+		alivex = [];
+		alivey = [];
+		for (var i = 1; i < W/dx-1; i++){
+			for (var j = 1; j < H/dx-1; j++){
+				if (pastlife[i][j]){
+					alivex.push(i);
+					alivey.push(j);
+				}
+			}
+		}
+		while (alivex.length){
+			position = Math.floor(Math.random()*alivex.length);
+			evolve(alivex[position],alivey[position]);
+			alivex.splice(position, 1);
+			alivey.splice(position, 1);
+		}
+	}
+	function copy(from,to){
+		for (var i = 1; i < W/dx-1; i++){
+			for (var j = 1; j < H/dx-1; j++){
+				to[i][j] = from[i][j];
+			}
+		}
+	}
+	function evolve(i,j){
+		life[i][j]=1;
+		if (Math.random()<multiplyrate){
+			freespaces = 4-life[i-1][j]-life[i][j-1]-life[i+1][j]-life[i][j+1];
+			prob = Math.floor(Math.random()*freespaces)+1
+			if (freespaces != 0) {
+				count = 0;
+				if(life[i-1][j]==0){
+					count++;
+					if (prob == count){
+						life[i-1][j]=1;
+					}
+				} 
+				if(life[i][j-1]==0){
+					count++;
+					if (prob == count){
+						life[i][j-1]=1;
+					}
+				}
+				if(life[i+1][j]==0){
+					count++;
+					if (prob == count){
+						life[i+1][j]=1;
+					}
+				}
+				if(life[i][j+1]==0){
+					count++;
+					if (prob == count){
+						life[i][j+1]=1;
+					}
+				}
+				//alert(count)
+				//alert(freespaces)
+				//alert(prob)
+			}
+		} 
+		if (Math.random()<moverate){
+			freespaces = 4-life[i-1][j]-life[i][j-1]-life[i+1][j]-life[i][j+1];
+			prob = Math.floor(Math.random()*freespaces)+1
+			if (freespaces == 0){
+				life[i][j]=1;
+			} else {
+				life[i][j]=0;
+				count = 0;
+				if(life[i-1][j]==0){
+					count++;
+					if (prob == count){
+						life[i-1][j]=1;
+					}
+				} 
+				if(life[i][j-1]==0){
+					count++;
+					if (prob == count){
+						life[i][j-1]=1;
+					}
+				}
+				if(life[i+1][j]==0){
+					count++;
+					if (prob == count){
+						life[i+1][j]=1;
+					}
+				}
+				if(life[i][j+1]==0){
+					count++;
+					if (prob == count){
+						life[i][j+1]=1;
+					}
+				}
+				//alert(count)
+				//alert(freespaces)
+				//alert(prob)
+			}
+		} 
+	}
+	document.getElementById("canvasbox").onmousemove = coords;
+	document.getElementById("canvasbox").onmousedown = click;
+	document.getElementById("canvasbox").onmouseup = declick;
+	function coords(e){
+		xpos = e.clientX;
+		ypos = e.clientY;
+	}
+	function click (){
+		clicked = 1;
+		animate(draw);
+	}
+	function declick (){
+		clicked = 0;
+	}
+	document.onkeydown = keypressed;
+	function keypressed(e) {
+		e = e || window.event;
+		if (e.keyCode == '81' || e.keyCode == '13' || e.keyCode == '32') {
+			// q
+			if (qwerty == 0){
+				setTimeout(run(qwerty),qwerty);
+			}
+			qwerty=0;
+			stop = 1;
+		}
+		else if (e.keyCode == '87') {
+			// w
+			changespeed(1000);
+		}
+		else if (e.keyCode == '69') {
+		    // e
+			changespeed(500);
+		}
+		else if (e.keyCode == '82') {
+			// r
+			changespeed(100);
+		}
+		else if (e.keyCode == '84') {
+		    // t
+			changespeed(50);
+		}
+		else if (e.keyCode == '89') {
+			// y
+			changespeed(1);
+		}
+	}
+	
+	function changespeed(speed) {
+		if (qwerty != speed){
+			if (qwerty == 0){
+				stop = 1;
+				qwerty = speed;
+				setTimeout(function(){stop=0;animate(run);}, qwerty);
+			} else {
+				qwerty = speed;
+			}
+		} else {
+			stop = 1;
+			qwerty = 0;
+		}
+	}
+	
+	window.onload = function() {
+		reset.onmousedown = function() {
+			stop = 1;
+			setTimeout(init, 1000);
+			return false;
+		}
+		bb.onmousedown = function() {
+			stop = 1;
+			dx = 2;
+			setTimeout(init, 1000);
+			return false;
+		}
+		cc.onmousedown = function() {
+			stop = 1;
+			dx = 5;
+			setTimeout(init, 1000);
+			return false;
+		}
+		dd.onmousedown = function() {
+			stop = 1;
+			dx = 10;
+			setTimeout(init, 1000);
+			return false;
+		}
+		ee.onmousedown = function() {
+			stop = 1;
+			dx = 20;
+			setTimeout(init, 1000);
+			return false;
+		}
+		ff.onmousedown = function() {
+			stop = 1;
+			dx = 50;
+			setTimeout(init, 1000);
+			return false;
+		}
+	}
+		
+	function resize(){
+		width=window.innerWidth;
+		height=window.innerHeight;
+		c.width = width;
+		c.height = height;
+		paper.fillStyle = '#000';
+		paper.fillRect(0,0,width,height);
+		init();
+	}
+</script>
+
+</body>
+</html>
