@@ -11,9 +11,9 @@
 		font-family: 'Lobster', cursive;
 		position:absolute;
 		top:40px;
-		left:100px;
+		left:110px;
 		text-align:center;
-		font-size:35px;
+		font-size:40px;
 		color:#FF5254;
 		/* Rotate div */
 		-ms-transform: rotate(-3deg); /* IE 9 */
@@ -23,15 +23,15 @@
 	#description {
 		font-family: 'Coming Soon', cursive;
 		position:absolute;
-		top:150px;
-		left:140px;
+		top:130px;
+		left:100px;
 		text-align:center;
 		font-size:16px;
 		color:#013;
 		/* Rotate div */
-		-ms-transform: rotate(-4deg); /* IE 9 */
-		-webkit-transform: rotate(-4deg); /* Chrome, Safari, Opera */
-		transform: rotate(-4deg);
+		-ms-transform: rotate(-3deg); /* IE 9 */
+		-webkit-transform: rotate(-3deg); /* Chrome, Safari, Opera */
+		transform: rotate(-3deg);
 	}
 	#infobar {
 		font-family: 'Coming Soon', cursive;
@@ -49,7 +49,7 @@
 	#contents{
 		position: absolute;
 		top:180px;
-		left:140px;
+		left:120px;
 	}
 	li{
 		font-style:normal;
@@ -71,18 +71,26 @@
 </div>
 
 <div>
-	<p id = "welcome">Welcome to Journey to the Centre </br> of a Maths Degree</p>
-	<p id = "description">A collection of concepts from my time at university</p>
+	<p id = "welcome">Graph Paper</p>
+	<p id = "description">Programs that take place on grids</p>
 	<div id = "contents">
 		<ul>
 		<li>Draw something on this page</li>
+		<ul>
+			<li><a href="graph-paper.html">Plain Paper</a></li>
+		</ul>
 		<li><a href="graph-dragon.html">Dragon Curve</a></li>
 		<ul>
 			<li><a href="graph-L-system.html">L-Systems</a></li>
+			<li><a href="graph-tree.html">L-System Trees</a></li>
 		</ul>
 		<li><a href="graph-fluid.html">Fluid Simulation</a></li>
 		<li><a href="graph-gol.html">Game of Life</a></li>
+		<ul>
+			<li><a href="graph-CA.html">Stochastic Cellular Automata</a></li>
+		</ul>
 		<li><a href="graph-maze.html">Maze</a></li>
+		<li><a href="graph-background.html">Game</a></li>
 		</ul>
 	</div>
 	<p id = "infobar">The info bar contains options </br>and controls for each page</p>
@@ -95,11 +103,15 @@
 	<p class = "hoverbutton" id = "reset" >reset</p>
 	<p class = "hoverbutton" id = "bluepen" style="background-color:#89a;">blue</p>
 	<p class = "hoverbutton" id = "redpen" style="background-color:#FF8587;">red</p>
-	<p class = "hoverbutton" id = "greenpen" style="background-color:#55A88F;">green</p>
+	<p class = "hoverbutton" id = "greenpen" style="background-color:#55A88F;margin-bottom:20px;">green</p>
+	
+	<p>
+		This page is <a href="graph-paper.html">just plain paper</a> to draw on. 
+	</p>
 </div>
 
 <div id = "footer">
-	<p style = "text-align:center;">previous | <a href="graph-paper.html">menu</a> | <a href="graph-dragon.html">next</a> </p>
+	<p style = "text-align:center;">previous | <a href="index.html">menu</a> | <a href="graph-dragon.html">next</a> </p>
 </div>
 
 <script>

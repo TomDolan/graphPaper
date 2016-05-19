@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>L-System</title>
+	<link rel="stylesheet" type="text/css" href="graph.css">
+	<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body onresize="resize()">
+
+	<div id = "canvasbox">
+		<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+	</div>
+
+	<div id = "menu">
+		<p style = "text-align: center;" id = "info">info</p>
+		<h1 style = "text-align: center;">L-system</h1>
+		<p>Lindenmayer systems are a set of symbols and rules which can be used for generating curves. They can easily generate fractal trees! </p>
+		<p>The symbols are: </p>
+		<p style="color:#FF5254;">X,Y,Z: Constants </p>
+		<p style="color:#FF5254;">A,B,F: Draw a line forward </p>
+		<p style="color:#FF5254;">L: Draw a leaf </p>
+		<p style="color:#FF5254;">+: Turn right </p>
+		<p style="color:#FF5254;">-: Turn left </p>
+		<p style="color:#FF5254;">#: Turn right with randomness </p>
+		<p style="color:#FF5254;">~: Turn left with randomness</p>
+		<p style="color:#FF5254;">[: Put the current state at the end of a list  </p>
+		<p style="color:#FF5254;">]: Remove state from end of list and revert to this state </p>
+		<p> </br> The rules are written as (FROM => TO). For example (A => AB) means wherever there is an A in the list of instructions, replace it with AB</p>
+		<p style="color:#FF5254;">Change the rules if you want </p>
+		<input type="text" class="text" name="rules" id="rules" value="(X => X+YF+), (Y => -FX-Y)" size = "40" onsubmit = "submit()">
+		<p> </br> All thats left is to give the initial list of characters and adjust the extra options</p>
+		<p style="color:#FF5254;">Initial characters: </p>
+		<input type="text" class="text" name="initial" id="initial" value="FX" size = "40" onsubmit = "submit()">
+		<button type = "button" style = "margin-left:20px;" onclick = "submit()">OK</button>
+		<p style="color:#FF5254;"> Number of iterations:</p>
+		<input type="range" class="text" name="points" id="points" min="0" max="10" onChange = "submit()">
+		<p style="color:#FF5254;"> Branching angle:</p>
+		<input type="range" class="text" name="angle" id="angle" step = 1 min = "0" max = "360" onChange = "submit()">
+		<p style="color:#FF5254;"> Branching angle randomness:</p>
+		<input type="range" class="text" name="brand" id="brand" step = ".1" min="0" max="5" onChange = "submit()">
+		<p style="color:#FF5254;"> Trunk randomness:</p>
+		<input type="range" class="text" name="trand" id="trand" step = ".01" min="0" max=".5" onChange = "submit()">
+		<p style="color:#FF5254;"> Vertical correction percentage:</p>
+		<input type="range" class="text" name="vert" id="vert" step = ".002" min="0" max=".1" onChange = "submit()">
+		<p style="color:#FF5254;"> Seed:</p>
+		<input type="text" class="text" name="seed0" id="seed0" value="1" onsubmit = "submit()">
+		<button type = "button" style = "margin-left:20px;" onclick = "submit()">OK</button>
+		<button type = "button" style = "margin-left:20px;" onclick = "randomizeseed()">Randomize seed</button>
+		<h3>some examples</h3>
+		<p onclick = "changeto('(X => F[-FX][+FX]), (F=>FF)','X', 45, 8,0,0,0)"> Pythagoras Tree </br> Rules: (X=>F[-FX][+FX]), (F=>FF) </br> Initial: X </p>
+		<p onclick = "changeto('(X => F[-F[X]+FFX][+FX]), (F=>FF)','X', 30, 5,0,0,0)"> Basic Tree </br> Rules: (X=>F[-F[X]+FFX][+FX]), (F=>FF) </br> Initial: X </p>
+		<p onclick = "changeto('(X => F[~F[X]#FFXL][#FXL]), (F=>FF), (L => Y)','X', 30, 5,.2,.1,.01)"> Tree with Leaves and Randomness </br> Rules: (X => F[~F[X]#FFXL][#FXL]), (F=>FF), (L=>Y) </br> Initial: X </p>
+		<p onclick = "changeto('(X => F[~F[X]#FFXL][#FXL]), (F=>FF), (L => Y)','F[X][-X][+X]', 30, 6,.5,.05,.01)"> A fuller tree </br> Rules: (X => F[~F[X]#FFXL][#FXL]), (F=>FF), (L=>Y) </br> Initial: F[X][-X][+X] </p>
+		<p onclick = "randomtree()"> Generate a random ruleset </br> Rules: (X => ????????????), (F=>FF), (L=>Y) </br> Initial: X </p>
+	
+	</div>
+
+	<div id = "footer">
+		<p style = "text-align:center;"><a href="graph-L-system.html">back</a></p>
+	</div>
+
+	<script>
+
+		// Initialise canvas
+		var c = document.getElementById("graph");
+		var paper = c.getContext("2d");
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = '#444';
+		paper.fillRect(0,0,W,H);
+
+		var angle = 90;
+		var theta1 = 0;
+		var trand = .05;
+		var brand = .5;
+		var vert = .1;
+		var seed0 = 1;
+		var seed = 1;
+		var clouds = 0;
+		var bg = 0;
+		iterations = 10;
+		var rulechar = [];
+		var ruleset = [];
+		changeto('(X => F[-F[X]+FFX][+FX]), (F=>FF)','X', 30, 5,0,0,0)
+	
+		function execute( str ) {
+			var t = 0;
+			while (str.length<50000) {
+				if (t>=iterations){
+					return str;
+				}
+				str = expand( str );
+				t ++;
+			}
+			alert("that took a long time so maybe you're iterating too many times")
+			return str;
+		}
+	
+		function expand ( str ) {
+			for (var i = str.length-1; i >= 0; i--) {
+				for (var j = 0; j < rulechar.length; j++){
+					if (str[i]==rulechar[j]){
+						replace(str,ruleset[j],i);
+					}
+				}
+			}
+			return str;
+		}
+	
+		function insert(str,newstr,i){
+			// Shift each element after i up by one and add in newx
+			length = str.length;
+			newlength = newstr.length;
+			for(var j = 0; j < newlength; j++){
+				str[j+length]=newstr[j];
+			}
+			for(var j = length-1; j >= i; j--){
+				str[j+newlength]=str[j];
+			}
+			for(var j = 0; j < newlength; j++){
+				str[j+i]=newstr[j];
+			}
+			return str;
+		}
+	
+		function replace(str,newstr,i){
+			// Shift each element after i up by one and add in newx
+			length = str.length;
+			newlength = newstr.length;
+			for(var j = 0; j < newlength-1; j++){
+				str[j+length]=newstr[j];
+			}
+			for(var j = length-1; j > i; j--){
+				str[j+newlength-1]=str[j];
+			}
+			for(var j = 0; j < newlength; j++){
+				str[j+i]=newstr[j];
+			}
+			return str;
+		}
+	
+		function trace ( str ) {
+			paper.restore();
+			statex = [];
+			statey = [];
+			statea = [];
+		
+			x = 0;
+			y = 0;
+			theta = 0;
+			xmin = 0;
+			xmax = 0;
+			ymin = 0;
+			ymax = 0;
+			seed = seed0;
+			seed = random();
+			for (var i = 0; i < str.length; i++){
+				if ( str[i] == '-' ){
+					theta -= 2*3.1415926536*angle/360;
+				} else if ( str[i] == '+' ) {
+					theta += 2*3.1415926536*angle/360;
+				} else if ( str[i] == '~' ){
+					theta -= 2*3.1415926536*angle/360+brand*(random()-.5);
+				} else if ( str[i] == '#' ) {
+					theta += 2*3.1415926536*angle/360+brand*(random()-.5);
+				} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+					theta += trand*(random()-.5);
+					theta /= 1+vert;
+					x += (Math.sin(theta));
+					y += (-Math.cos(theta));
+					if (x<xmin) {
+						xmin = x;
+					} else if (x > xmax) {
+						xmax = x;
+					}
+					if (-y<ymin) {
+						ymin = -y;
+					} else if (-y > ymax) {
+						ymax = -y;
+					}
+				} else if ( str[i] == '[') {
+					statex.push(x);
+					statey.push(y);
+					statea.push(theta);
+				} else if ( str[i] == ']') {
+					x = statex.pop();
+					y = statey.pop();
+					theta = statea.pop();
+				}
+			}
+		
+			x0 = -H*.3;
+			x1 = H*.3;
+			y0 = 0;
+			y1 = H*.55;
+			
+			if (xmin == 0){
+				xmin = -.00001
+			} else if (xmax == 0){
+				xmax = .00001
+			} else if (ymax == 0){
+				ymax = .00001
+			}
+			r = Math.min(x0/xmin,x1/xmax,y1/ymax);
+			
+			var trunkgrd=paper.createLinearGradient(W/2,H,W/2,0);
+			trunkgrd.addColorStop(0,"#3072AB");
+			trunkgrd.addColorStop(0.05,"#247DB7");
+			trunkgrd.addColorStop(.5,"#5BBEE3");
+			trunkgrd.addColorStop(1,"#6ED4F6");
+			trunk = trunkgrd;
+			var sungrd=paper.createLinearGradient(W/2,.9*H,W/2,.1*H);
+			sungrd.addColorStop(0,"#7F1020");
+			sungrd.addColorStop(0.2,"#AC3C4A");
+			sungrd.addColorStop(.5,"#D9947D");
+			sungrd.addColorStop(1,"#DED18C");
+			sun = sungrd;
+			var skygrd=paper.createLinearGradient(W/2,H,W/2,0);
+			skygrd.addColorStop(0,"#781555");
+			skygrd.addColorStop(0.5,"#5F206E");
+			skygrd.addColorStop(1,"#3072AB");
+			sky = skygrd;
+			var leavesgrd=paper.createLinearGradient(W/2,4*H/5,W/2,H/5);
+			leavesgrd.addColorStop(0,"#247DB7");
+			leavesgrd.addColorStop(0.5,"#6F307E");
+			leavesgrd.addColorStop(1,"#881565");
+			leaves = leavesgrd;
+			
+			paper.fillStyle = sky
+			paper.fillRect(0,0,W,H);
+			paper.fillStyle = "#781555";
+			paper.beginPath();
+			paper.arc(W/2-2,H/2,H*.4,0,2*Math.PI);
+			paper.fill();
+			paper.fillStyle = "#3072AB";
+			paper.beginPath();
+			paper.arc(W/2+2,H/2,H*.4,0,2*Math.PI);
+			paper.fill();
+			paper.fillStyle = sun;
+			paper.beginPath();
+			paper.arc(W/2,H/2,H*.4,0,2*Math.PI);
+			paper.fill();
+			
+			if (clouds){
+				paper.strokeStyle = "#781555";
+				paper.lineWidth = 100;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/4+2,H/2);
+				paper.lineTo(W/3+2,H/2);
+				paper.stroke();
+				paper.lineWidth = 50;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/4+2,H/2+50);
+				paper.lineTo(W/3+102,H/2+50);
+				paper.stroke();
+				paper.strokeStyle = "#3072AB";
+				paper.lineWidth = 40;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/2-2,2*H/3);
+				paper.lineTo(W-2,2*H/3);
+				paper.stroke();
+				paper.lineWidth = 20;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(2*W/3-2,2*H/3-20);
+				paper.lineTo(W,2*H/3-20);
+				paper.stroke();
+				paper.lineWidth = 20;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/2-42,2*H/3+10);
+				paper.lineTo(W,2*H/3+10);
+				paper.stroke();
+				
+				paper.strokeStyle = sky;
+				paper.lineWidth = 100;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/4,H/2);
+				paper.lineTo(W/3,H/2);
+				paper.stroke();
+				paper.lineWidth = 50;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/4,H/2+50);
+				paper.lineTo(W/3+100,H/2+50);
+				paper.stroke();
+				paper.lineWidth = 40;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/2,2*H/3);
+				paper.lineTo(W,2*H/3);
+				paper.stroke();
+				paper.lineWidth = 20;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(2*W/3,2*H/3-20);
+				paper.lineTo(W,2*H/3-20);
+				paper.stroke();
+				paper.lineWidth = 20;
+				paper.lineCap = "round";
+				paper.beginPath();
+				paper.moveTo(W/2-40,2*H/3+10);
+				paper.lineTo(W,2*H/3+10);
+				paper.stroke();
+			}			
+			
+			paper.fillStyle = "#10528B";
+			paper.beginPath();
+			paper.moveTo(0,H);
+			seed = seed0;
+			seed = random();
+			for (var i = 0; i <= 20; i++){
+				paper.lineTo(W*i/20,3*H/4-random()*15-20+H/800*((i-10)*(i-10)));
+			}
+			paper.lineTo(W,H);
+			paper.closePath();
+			paper.fill();
+						
+			thickness0 = H/80;
+			thickness = thickness0;
+			theta = theta1;
+			seed = seed0;
+			seed = random();
+			x = W/2
+			y = 3*H/4;
+			paper.strokeStyle=trunk;
+			paper.fillStyle = leaves;
+			for (var i = 0; i < str.length; i++){
+				if ( str[i] == '-' ){
+					theta -= 2*3.1415926536*angle/360;
+				} else if ( str[i] == '+' ) {
+					theta += 2*3.1415926536*angle/360;
+				} else if ( str[i] == '~' ){
+					theta -= 2*3.1415926536*angle/360+brand*(random()-.5);
+				} else if ( str[i] == '#' ) {
+					theta += 2*3.1415926536*angle/360+brand*(random()-.5);
+				} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+					paper.lineWidth = thickness;
+					theta += trand*(random()-.5);
+					theta /= 1+vert;
+					xold = x;
+					yold = y;
+					x += (r*Math.sin(theta));
+					y += (-r*Math.cos(theta));
+					paper.strokeStyle = "#10528B";
+					paper.beginPath()
+					paper.moveTo(xold+1,yold);
+					paper.lineTo(x+1,y);
+					paper.stroke();
+				} else if ( str[i] == 'L') {
+					paper.fillStyle = "#0FF";
+					paper.beginPath()
+					paper.arc(x-.01*r,y-.01*r,Math.max(1,r/1.5),0,2*Math.PI);
+					paper.fill();
+				} else if ( str[i] == '[') {
+					thickness/=1.5;
+					statex.push(x);
+					statey.push(y);
+					statea.push(theta);
+				} else if ( str[i] == ']') {
+					thickness*=1.5;
+					x = statex.pop();
+					y = statey.pop();
+					theta = statea.pop();
+				}
+			}			
+			thickness = thickness0;
+			theta = theta1;
+			seed = seed0;
+			seed = random();
+			x = W/2
+			y = 3*H/4;
+			paper.strokeStyle=trunk;
+			paper.fillStyle = leaves;
+			paper.lineCap="round";
+			for (var i = 0; i < str.length; i++){
+				if ( str[i] == '-' ){
+					theta -= 2*3.1415926536*angle/360;
+				} else if ( str[i] == '+' ) {
+					theta += 2*3.1415926536*angle/360;
+				} else if ( str[i] == '~' ){
+					theta -= 2*3.1415926536*angle/360+brand*(random()-.5);
+				} else if ( str[i] == '#' ) {
+					theta += 2*3.1415926536*angle/360+brand*(random()-.5);
+				} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+					paper.lineWidth = thickness;
+					theta += trand*(random()-.5);
+					theta /= 1+vert;
+					xold = x;
+					yold = y;
+					x += (r*Math.sin(theta));
+					y += (-r*Math.cos(theta));
+					paper.strokeStyle = trunk;
+					paper.beginPath()
+					paper.moveTo(xold,yold);
+					paper.lineTo(x,y);
+					paper.stroke();
+				} else if ( str[i] == 'L') {
+					paper.beginPath()
+					paper.arc(x,y,Math.max(1.5,r/1.5),0,2*Math.PI);
+					paper.fill();
+				} else if ( str[i] == '[') {
+					thickness/=1.5;
+					statex.push(x);
+					statey.push(y);
+					statea.push(theta);
+				} else if ( str[i] == ']') {
+					thickness*=1.5;
+					x = statex.pop();
+					y = statey.pop();
+					theta = statea.pop();
+				}
+			}
+			
+			/*paper.fillStyle = "#10528B";
+			paper.beginPath();
+			paper.arc(W/2+15,2.25*H+1,1.5*H,0,2*Math.PI);
+			paper.fill();
+			paper.fillStyle = trunk;
+			paper.beginPath();
+			paper.arc(W/2,2.25*H,1.5*H,0,2*Math.PI);
+			paper.fill();*/
+			
+			paper.fillStyle = trunk;
+			paper.beginPath();
+			paper.moveTo(0,H);
+			seed = seed0;
+			seed = random();
+			for (var i = 0; i <= 10; i++){
+				paper.lineTo(W*i/10,3*H/4-random()*20+H/200*((i-5)*(i-5)));
+			}
+			paper.lineTo(W,H);
+			paper.closePath();
+			paper.fill();
+			if (bg){
+				paper.save();
+				paper.globalCompositeOperation = "lighten";
+				var imageObj = new Image();
+
+				imageObj.onload = function() {
+					paper.drawImage(imageObj, 0, 0,W,H);
+				};
+				imageObj.src = 'bg1.png';
+			}
+		}
+		
+		function random() {
+			var x = Math.sin(seed++) * 10000;
+			return x - Math.floor(x);
+		}
+	
+		// Button functions
+		window.onload = function() {
+		
+		}
+	
+		function submitkey(e) {
+
+			e = e || window.event;
+
+			if (e.keyCode == '13') {
+				submit();
+			}
+		}
+	
+		function submit(){
+			rules = document.getElementById("rules").value;
+			initial = document.getElementById("initial").value;
+			angle = 1*document.getElementById("angle").value;
+			iterations = 1*document.getElementById("points").value;
+			brand = 1*document.getElementById("brand").value;
+			trand = 1*document.getElementById("trand").value;
+			vert = 1*document.getElementById("vert").value/(iterations+1)*2;
+			seed0 = 1*document.getElementById("seed0").value;
+			if (seed0 == 0){
+				seed0 = 1234567890;
+			}
+		
+			string = [];
+			for (var i = 0; i < initial.length; i++) {
+				string[i] = initial[i];
+			}
+		
+			//rules
+			var openbrackets = 0;
+			var rightside = 0;
+			rulen = 0;
+			rulechar = [];
+			ruleset = [];
+			ruleset[0] = [];
+			for (var i = 0; i < rules.length; i++) {
+				if (rules[i] == '('){
+					if (openbrackets){
+						alert('please correct the format of your rules. (probably no closed bracket)');
+						return;
+					}
+					openbrackets = 1;
+				} else if (rules[i] == ')'){
+					if (!openbrackets){
+						alert('please correct the format of your rules. (probably no open bracket)');
+						return;
+					}
+					openbrackets = 0;
+					rightside = 0;
+					rulen ++;
+					ruleset[rulen] = [];
+				} else if (openbrackets && rules[i]!=' ') {
+					if (rightside == 0) {
+						if (rules[i]=="=" || rules[i]==">"){
+							alert('please correct the format of your rules. (probably no FROM symbol)');
+							return;
+						}
+						rulechar[rulechar.length] = rules[i];
+						rightside = 1;
+					} else if (rightside == 1 && rules[i]!="=" && rules[i]!=">") {
+						ruleset[rulen][ruleset[rulen].length] = rules[i];
+					}
+				}
+			}
+			string = execute(string)
+			trace(string)
+		}
+	
+		function changeto(r,i,a,p, brand, trand, vert){
+			document.getElementById("rules").value = r;
+			document.getElementById("initial").value = i;
+			document.getElementById("angle").value = a;
+			document.getElementById("points").value = p;
+			document.getElementById("brand").value = brand;
+			document.getElementById("trand").value = trand;
+			document.getElementById("vert").value = vert;
+			submit();
+		}
+		
+		function randomtree(){
+			seed = Math.floor(9999999999*Math.random());
+			//alert(seed)
+			maxlength = 20;
+			minlength = 10;
+			length = Math.floor(minlength + (maxlength-minlength)*random());
+			rulestr = 'F';
+			openbrackets = 0;
+			for (i = 0; i < length; i ++){
+				diceroll = Math.floor(random()*6)+1
+				if (diceroll == 1){
+					//X
+					rulestr += 'X';
+				} else if (diceroll == 2){
+					//F
+					rulestr += 'F';
+				} else if (diceroll == 3){
+					//#
+					rulestr += '#';
+				} else if (diceroll == 4){
+					//~
+					rulestr += '~';
+				} else if (diceroll == 5){
+					//[
+					openbrackets ++;
+					rulestr += '[';
+				} else if (diceroll == 6){
+					if (openbrackets == 0){
+						//[
+						openbrackets ++;
+						rulestr += '[';
+					} else {
+						//]
+						openbrackets --;
+						rulestr += 'L]';
+					}
+				} else {
+					alert(error)
+				}
+			}
+			for (i = openbrackets; i>0; i--){
+					rulestr += 'L]';
+			}
+			//alert(length)
+			//alert(rulestr)
+			changeto('(X=>' + rulestr + '), (F=>FF), (L => Y)','X', 30, 5,.2,.1,.01)
+		}
+		
+		function randomizeseed(){
+			seed0 = Math.floor(9999999999*Math.random());
+			document.getElementById("seed0").value = seed0;
+			
+			submit();
+		}
+		
+		function resize(){
+			W=window.innerWidth;
+			H=window.innerHeight;
+			c.width = W;
+			c.height = H;
+			submit();
+		}
+		
+	</script>
+
+</body>
+</html>
