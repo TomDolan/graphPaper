@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>SPH</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body onresize="resize()"  onmousemove="coords(event)" style = "cursor:none;">
+
+	<div id = "canvasbox">
+		<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+	</div>
+
+	<div id = "menu">
+		<p style = "text-align: center;">info</p>
+		<p id = "fps">fps: 0</p>
+		<h1 style = "text-align: center;">SPH</h1>
+	</div>
+
+	<script>
+		
+		// Initialise canvas
+		var c = document.getElementById("graph");
+		var paper = c.getContext("2d");
+		width=window.innerWidth;
+		height=window.innerHeight;
+		c.width = width;
+		c.height = height;
+		paper.fillStyle = '#000';
+		paper.fillRect(0,0,width,height);
+		var x = 0;
+		var y = 0;
+		
+		points = []
+		points[0] = point(40,0);
+		points[1] = point(40,20);
+		points[2] = point(60,0);
+		points[3] = point(60,20);
+		for (var i = 0; i <200; i++){
+			points.push(point());
+		}
+		//str = 'F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,F,F,F,F,[,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],[,+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],],+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,F,F,F,F,[,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],[,+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],],[,+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,F,F,F,F,[,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],[,+,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,F,F,[,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],+,F,F,F,F,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],[,+,F,F,F,F,F,F,F,F,[,-,F,F,[,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],+,F,F,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],[,+,F,F,F,F,[,-,F,[,X,],+,F,F,X,],[,+,F,X,],],],],]'
+		/*for (var i = 0; i<500; i++){
+			if (i<100||(i>140&&i<360)||i>400){
+				points.push(point(i/5,0,1));
+			}
+		}
+		for (var i = -100; i<600; i++){
+			if (i<225||i>275){
+				points.push(point(i/5,-20,1));
+			}		
+		}*/
+		/*x = 50;
+		y = -60;
+		theta = Math.PI;
+		r = .5;
+		var statex = []
+		var statey = []
+		var statea = []
+		for (var i = 0; i < str.length; i++){
+			if ( str[i] == '-' ){
+				theta -= 2*3.1415926536*30/360;
+			} else if ( str[i] == '+' ) {
+				theta += 2*3.1415926536*30/360;
+			} else if ( str[i] == 'F' || str[i] == 'A' || str[i] == 'B') {
+				x += (r*Math.sin(theta));
+				y += (-r*Math.cos(theta));
+				points.push(point(x,y,1));
+			} else if ( str[i] == '[') {
+				statex.push(x);
+				statey.push(y);
+				statea.push(theta);
+			} else if ( str[i] == ']') {
+				x = statex.pop();
+				y = statey.pop();
+				theta = statea.pop();
+			}
+		}	*/
+		for (var i = -50; i<300; i++){
+			points.push(point(i/2.5,-50,1));		
+		}
+		for (var i = 0; i<10; i++){
+			points.push(point(i/2.5,-50,2));		
+		}
+		
+		var tolerance = .0001;
+		var v0 = 1
+		var h = 1.2;
+		var B = 1;
+		var g = 0.2;
+		var rho0 = 10;//findrho0();
+		var B = 100*rho0*v0*v0/7;
+		drawpoints();
+		animate(step);
+		
+		function animate( render ) {
+			var running, lastFrame = +new Date;
+			function loop( now ) {
+				// stop the loop if render returned false
+				if ( running !== false ) {
+					var deltaT = now - lastFrame;
+					document.getElementById("fps").innerHTML = "fps: " + deltaT;//1000/deltaT;
+					requestAnimationFrame( loop );
+
+					// do not render frame when deltaT is too high
+					if ( deltaT < 2000) {
+						running = render( deltaT );
+					}
+					lastFrame = now;
+				} else {
+					document.getElementById("fps").innerHTML = "fps: 0";
+				}
+			}
+			loop( lastFrame );
+		}
+		
+		function findrho0(){
+			var rho0 = 0;
+			for (var i = 0; i< 204; i++){
+				points[i].updaterho();
+				rho0 += points[i].rho;
+			}
+			for (var i = 0; i< points.length; i++){
+				points[i].updatea();
+			}
+			return rho0/=204;
+		}
+	
+		function step(dt){
+			/*var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);
+			var stillmoving = move(dt);*/
+			var stillmoving = move(dt);
+			drawpoints();
+			//alert();
+			return stillmoving>tolerance;
+		}
+	
+		function point(x0 = 40+Math.random()*20,y0 = Math.random()*20,wall0=0){
+			return{
+				x:x0, 
+				y:y0, 
+				m:1,
+				rho:1,
+				P:1,
+				ax:0,
+				ay:0,
+				vx:0,
+				vy:0,
+				wall:wall0,
+				setv:function(){
+				},
+				updaterho:function(){
+					this.rho = 0;
+					for (var i = 0; i < points.length; i++){
+						this.rho +=points[i].m*W(d(this, points[i]),h);
+					}
+					this.P = B*(Math.pow(this.rho/rho0,7)-1)
+				},
+				updatea:function(){
+					if (this.wall){
+						return;
+					}
+					this.ax = -g*00;//*(this.x-x);
+					this.ay = -g*30;//*(this.y-y);
+					for (var i = 0; i < points.length; i++){
+						this.ax -= points[i].m*(this.P/(this.rho*this.rho)+points[i].P/(points[i].rho*points[i].rho))*(points[i].x-this.x)*dW(d(this, points[i]),h);
+						this.ay -= points[i].m*(this.P/(this.rho*this.rho)+points[i].P/(points[i].rho*points[i].rho))*(points[i].y-this.y)*dW(d(this, points[i]),h);
+					}
+				},
+				move:function(dt=.1){
+					if(this.wall){
+						if (this.wall == 2){
+							this.x = x;
+							this.y = y;
+						}
+						return 0;
+					}
+					var xold = this.x; 
+					var yold = this.y; 
+					dt = .05;
+					this.vx = dt*this.ax;
+					this.vy = dt*this.ay;
+					this.x += dt*this.vx+.5*dt*dt*this.ax;
+					this.y += dt*this.vy+.5*dt*dt*this.ay;
+					return Math.sqrt(Math.pow(xold-this.x,2)+Math.pow(yold-this.y,2))
+				}
+			}
+		}
+		
+		function d(a,b){
+			return Math.sqrt(Math.pow(a.x-b.x,2)+Math.pow(a.y-b.y,2));
+		}
+		
+		function W(r,h){
+			var q = r/h;
+			if (q>=0&&q<1){
+				var kernel = (Math.pow(2-q,3)-4*Math.pow(1-q,3));
+			}else if (q>=1&&q<2){
+				var kernel = Math.pow(2-q,3);
+			}else if (q>=2){
+				var kernel = 0;
+			}else {
+				alert('error in W')
+				var kernel = 0;
+			}
+			return 15/(14*Math.PI*h*h)*kernel;
+		}	
+		
+		function dW(r,h){
+			var q = r/h;
+			if (q>=0&&q<1){
+				var dkernel = -3*(Math.pow(2-q,2)-4*Math.pow(1-q,2));
+			}else if (q>=1&&q<2){
+				var dkernel = -3*Math.pow(2-q,2);
+			}else if (q>=2){
+				var dkernel = 0;
+			}else {
+				alert('error in W')
+				var kernel = 0;
+			}
+			return 15/(14*Math.PI*h*h)*dkernel*(1/(h*q))||0;
+		}		
+		
+		function move(dt){
+			maxmove = 0
+			for (var i = 0; i< points.length; i++){
+				points[i].updaterho();
+			}
+			for (var i = 0; i< points.length; i++){
+				points[i].updatea();
+			}
+			for (var i = 0; i< points.length; i++){
+				movei = points[i].move(dt);
+				if (movei>maxmove){
+					maxmove = movei;
+				}
+			}
+			return maxmove;
+		}
+		
+		function averagex(){
+			sum = 0;
+			for (var i = 0; i < points.length; i++){
+				sum += points[i].x;
+			}
+			sum/=points.length
+			return sum;
+		}
+		
+		function averagey(){
+			sum = 0;
+			for (var i = 0; i < points.length; i++){
+				sum += points[i].y;
+			}
+			sum/=points.length
+			return sum;
+		}
+		
+		function drawpoints(){
+			paper.fillStyle = 'rgba(0,0,0,1)';
+			paper.fillRect(0,0,width,height);
+			paper.fillStyle = "#fff"
+			paper.save();
+			paper.scale(height/100,-height/100);
+			paper.translate((width/2)/(height/100)-50,-50);
+			for (var i = 0; i < points.length; i++){
+				paper.beginPath();
+				paper.fillStyle = '#fff';//'rgb('+Math.max(0,Math.floor(.0000025*points[i].vx))+','+-Math.min(0,Math.floor(.0000025*points[i].vx))+',255)';
+				paper.arc(points[i].x,points[i].y,.2,0,2*Math.PI);
+				paper.fill();
+			}
+			paper.beginPath();
+			paper.fillStyle = '#D35';//'rgb('+Math.max(0,Math.floor(.0000025*points[i].vx))+','+-Math.min(0,Math.floor(.0000025*points[i].vx))+',255)';
+			paper.arc(x,y,1.5,0,2*Math.PI);
+			paper.fill();
+			paper.restore()
+		}
+		
+		function resize(){
+			width=window.innerWidth;
+			height=window.innerHeight;
+			c.width = width;
+			c.height = height;
+			paper.fillStyle = '#000';
+			paper.fillRect(0,0,width,height);
+			drawpoints();
+		}
+		
+		function coords(event){
+			x = event.clientX, y = event.clientY;
+			x = (x)*100/height-(width/2)/(height/100)+50;
+			y = -(y)*100/height+50;
+			//alert(points[50].rho)
+		}
+	</script>
+
+</body>
+</html>

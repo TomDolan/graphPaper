@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="graph.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body onmousemove="coords(event)">
+
+
+<script src="jscolor-2.0.4/jscolor.js"></script>
+<div id = "canvasbox">
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<div id = "menu">
+	<p style = "text-align: center;">info</p>
+	<p id = "fps">fps: 0</p>
+	<h1>colours</h1>
+	<p>Grid size:</p>
+	<div style="width:400px;">
+		<p class = "hoverbutton" id = "reset" >reset</p>
+		<p class = "hoverbutton" id = "cc" >5</p>
+		<p class = "hoverbutton" id = "dd" >10</p>
+		<p class = "hoverbutton" id = "ee" style='margin-bottom:20px;'>20</p>
+	</div>
+
+	<button class="jscolor {valueElement:'chosen-value', onFineChange:'setTextColor(this)'}" style = "display:block;float:left;margin:0px;width:169px;height:20px;text-decoration: none;font-family: 'Roboto', sans-serif;cursor: pointer;border:none;">
+		Pick a colour
+	</button>
+
+	HEX value: <input id="chosen-value" value="000000">
+</div>
+
+<div id = "footer">
+	<p style = "text-align:center;"><a href="graph-dragon.html">previous</a> | <a href="index.html">menu</a> | <a href="graph-gol.html">next</a> </p>
+</div>
+
+<script>
+	
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	paper.fillStyle = '#fff';
+	paper.fillRect(0,0,W,H);
+	
+	// Initialise variables
+	var dx = 10;
+	var shift = 0;
+	var clicked = 0;
+	var lines = 1;
+	
+	// Initialise grid
+	var xs = [];
+	var ys = [];
+	for (var i = 0; i < W/dx+2; i++){
+		xs[i]=[];
+		ys[i]=[];
+		for (var j = 0; j < H/dx+2; j++){
+			xs[i][j] = (i-1)*dx+dx/2+.5;
+			ys[i][j] = (j-1)*dx+dx/2+.5;
+		}
+	}
+	drawlines(xs,ys,W,H,dx)
+	// Initialise position, velocity, density and colour
+	var N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
+	var colours = new Array(size);
+	var colour = '#000';
+	setcolours();
+	colours[idx(2,2)] = '#07000F';
+	colours[idx(3,2)] = '#20022F';
+	colours[idx(4,2)] = '#40044E';
+	colours[idx(5,2)] = '#6A006C';
+	colours[idx(6,2)] = '#8C0278';
+	colours[idx(7,2)] = '#AA0676';
+	colours[idx(8,2)] = '#C8086B';
+	colours[idx(9,2)] = '#E90C59';
+	colours[idx(10,2)] = '#FF103C';
+	colours[idx(11,2)] = '#FF292D';
+	colours[idx(12,2)] = '#FF6347';
+	colours[idx(13,2)] = '#FF996B';
+	colours[idx(14,2)] = '#FFC38B';
+	colours[idx(15,2)] = '#FFE0A7';
+	colours[idx(16,2)] = '#FFF4C7';
+	colours[idx(17,2)] = '#FFFEE8';
+	draw();
+	
+	// Begin!
+	function init(){
+		// Re-initialise arrays
+		xs = [];
+		ys = [];
+		for (var i = 0; i < W/dx+2; i++){
+			xs[i]=[];
+			ys[i]=[];
+			for (var j = 0; j < H/dx+2; j++){
+				xs[i][j] = (i-1)*dx+dx/2+.5;
+				ys[i][j] = (j-1)*dx+dx/2+.5;
+			}
+		}
+		drawlines(xs,ys,W,H,dx)
+		N1 = xs.length, N2 = xs[0].length, size = (N1+2)*(N2+2);
+		u = new Array(size), v = new Array(size);
+		setcolours();
+		draw();
+	}
+	
+	function drawlines(xs,ys,W,H,dx){
+		// For each grid point draw a horizontal and vertical line to the neighbouring point
+		if (lines==0){
+		 return;
+		}
+		paper.strokeStyle="#bce";
+		for (var i = 0; i < W/dx+1; i++){
+			for (var j = 0; j < H/dx+1; j++){
+				paper.beginPath();
+				paper.moveTo(xs[i][j],ys[i][j]);
+				paper.lineTo(xs[i+1][j], ys[i+1][j]);
+				paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
+				paper.stroke();
+			}
+		}
+	}
+	
+	function drawsquares(){
+		for (i = 1; i <= N1; i++){
+			for (j = 1; j <= N2; j++){
+				paper.fillStyle = colours[idx(i,j)];
+				paper.fillRect((i-1.5)*dx, (j-1.5)*dx, dx+1, dx+1);	
+			}
+		}
+	}
+	
+	function setcolours(){
+		for (var i = 0; i < colours.length; i++){
+			colours[i] = '#fff';
+		}
+	}
+	
+	function draw(){
+		if (dx>=10){
+			paper.strokeStyle="#bce";
+			drawsquares()
+			drawlines(xs,ys,W,H,dx)
+		}
+	}
+	//housekeeping functions//
+	function idx(i, j){
+		return i+(N1+2)*j;
+	}
+	function copy(to,from){
+		for(var i=0; i<N1+2; i++){
+			for(var j=0; j<N2+2; j++){
+				to[idx(i,j)]=from[idx(i,j)];
+			}
+		}
+	}
+	// Mousekeeping functions
+
+	document.getElementById("canvasbox").onmousemove = coords;
+	document.getElementById("canvasbox").onmousedown = click;
+	document.getElementById("canvasbox").onmouseup = declick;
+
+	function coords(e){
+		x = e.clientX;
+		y = e.clientY;
+		x = Math.ceil((x+dx/2)/dx);
+		y = Math.ceil((y+dx/2)/dx);
+	}
+
+	function click (e){
+		shift = e.shiftKey;
+		//if (clicked == 0){
+			if (shift) {
+				colour = colours[idx(x,y)];
+			} else {
+				colours[idx(x,y)] = colour;
+			}
+		//}
+		clicked = 1;
+		draw();
+	}
+	function declick (e){
+		shift = e.shiftKey;
+		clicked = 0;
+	}
+	
+	window.onload = function() {
+		reset.onmousedown = function() {
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		cc.onmousedown = function() {
+			dx = 5;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		dd.onmousedown = function() {
+			dx = 10;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+		ee.onmousedown = function() {
+			dx = 20;
+			paper.fillStyle = 'rgba(255,255,255,1)';
+			paper.fillRect(0,0,W,H);
+			setTimeout(init, 500);
+			return false;
+		}
+	}
+
+	document.onkeydown = keypressed;
+	document.onkeyup = keydepressed;
+
+	function keypressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '13' || e.keyCode == '32') {
+			lines = 0;
+			draw();
+		}
+	}
+	
+
+	function keydepressed(e) {
+
+		e = e || window.event;
+
+		if (e.keyCode == '13' || e.keyCode == '32') {
+			lines = 1;
+			draw();
+		}
+	}
+	
+	function setTextColor(picker) {
+		colour = '#' + picker.toString()
+	}
+</script>
+
+</body>
+</html>
