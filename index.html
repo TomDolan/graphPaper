@@ -287,7 +287,7 @@
 	}
 	function untouch(e){
 		var touches = e.changedTouches;
-		if (touches.length == 0) {
+		//if (touches.length == 0) {
 			if(bluex.length>0 && bluex[bluex.length-1]!=-1){
 				bluex[bluex.length] = -1;
 				bluey[bluey.length] = -1;
@@ -300,7 +300,7 @@
 				greenx[greenx.length] = -1;
 				greeny[greeny.length] = -1;
 			}
-		}
+		//}
 		clicked = 0;
 	}
 	function click (){
