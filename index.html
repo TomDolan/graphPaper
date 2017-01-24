@@ -2,11 +2,19 @@
 
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="graph.css">
+<link rel="stylesheet" type="text/css" href="graph2.css">
 <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Coming+Soon' rel='stylesheet' type='text/css'>
 <style>
+	#overlay {
+		position:absolute;
+		top:0px;
+		left:0px;
+		overflow:scroll;
+		width:100%;
+		height:100%;
+	}
 	#welcome {
 		font-family: 'Lobster', cursive;
 		position:absolute;
@@ -35,7 +43,7 @@
 	}
 	#infobar {
 		font-family: 'Coming Soon', cursive;
-		position:absolute;
+		position:fixed;
 		top:50px;
 		right:10px;
 		text-align:center;
@@ -50,6 +58,7 @@
 		position: absolute;
 		top:180px;
 		left:120px;
+		overflow:scroll;
 	}
 	li{
 		font-style:normal;
@@ -70,7 +79,7 @@
 	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 
-<div>
+<div id = "overlay">
 	<p id = "welcome">Graph Paper</p>
 	<p id = "description">Programs that take place on grids</p>
 	<div id = "contents">
@@ -130,9 +139,18 @@
 	H=window.innerHeight;
 	c.width = W;
 	c.height = H;
-	paper.fillStyle = '#fff';
-	paper.fillRect(0,0,W,H);
 	var pencolour = '#349';
+	
+	// Store drawn information
+	var bluex = [-1];
+	var bluey = [-1];
+	// Store drawn information
+	var redx = [-1];
+	var redy = [-1];
+	// Store drawn information
+	var greenx = [-1];
+	var greeny = [-1];
+	var pen = "blue";
 	drawpage();
 
 	// Initialise mouse functions
@@ -146,6 +164,9 @@
 	document.onmouseup = unclick;
 
 	function drawpage(){
+		// Draw bg
+		paper.fillStyle = '#fff';
+		paper.fillRect(0,0,W,H);
 		// Draw lines with spacing dx, horizontally and vertically		
 		dx = 20;
 		paper.beginPath();
@@ -177,6 +198,11 @@
 
 		addhole(40,4*H/5);
 		addhole(40,4*H/5-50);
+		
+		// drawings
+		drawlines(bluex,bluey,'#349');
+		drawlines(redx,redy,'#FF5254');
+		drawlines(greenx,greeny,'#33b66F');
 	}
 
 	function addhole(x,y){
@@ -196,45 +222,47 @@
 		paper.fillStyle="white";
 		paper.fill();
 	}
-	
-	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
-	// calculate the difference in time and pass to the given render function, render function returns false to stop, will not render if deltaT is too high
-	function animate( render ) {
-		var running, lastFrame = +new Date;
-		function loop( now ) {
-			// stop the loop if render returned false
-			if ( running !== false ) {
-				requestAnimationFrame( loop );
-				var deltaT = now - lastFrame;
-				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
-				// do not render frame when deltaT is too high
-				if ( deltaT < 160 ) {
-					running = render( deltaT );
-				}
-				lastFrame = now;
+
+	function drawlines(linex,liney,pencolour){
+		if (linex.length==0){
+			return false;
+		}
+		// Draw lines
+		paper.strokeStyle=pencolour;
+		paper.lineWidth=1;
+		paper.beginPath();
+		for (var i = 0; i < linex.length; i++){
+			if (linex[i] == -1){
+				paper.stroke()
+			} else if (linex[i-1] == -1){
+				paper.beginPath();
+				paper.moveTo(linex[i], liney[i])
 			} else {
-				document.getElementById("fps").innerHTML = "fps: 0";
+				paper.lineTo(linex[i], liney[i]);
 			}
 		}
-		loop( lastFrame );
+		paper.stroke();
 	}
 
-	function draw(dt){
-		// Draw if clicked and there is a previous mouse location. else return false
+	function draw(){
+		// Draw if clicked, else return false
 		if(clicked){
-			if (xold != -1 && yold != -1){
-				paper.strokeStyle=pencolour;
-				paper.beginPath();
-				paper.moveTo(xold,yold);
-				paper.lineTo(xpos, ypos);
-				paper.stroke();
+			if (pen == "green") {
+				greenx[greenx.length] = xpos;
+				greeny[greeny.length] = ypos;
+			} else if (pen == "red") {
+				redx[redx.length] = xpos;
+				redy[redy.length] = ypos;
+			} else {
+				bluex[bluex.length] = xpos;
+				bluey[bluey.length] = ypos;
 			}
+			drawpage();
+			setTimeout(draw,5)
 		} else {
 			return false;
 		}
-		// update old mouse position
-		xold = xpos
-		yold = ypos
+		
 	}
 
 	// Mouse and keyboard functions
@@ -244,34 +272,59 @@
 	}
 	function click (){
 		clicked = 1;
-		animate(draw);
+		draw();
 	}
 	function unclick (){
 		clicked = 0;
-		xold = -1;
-		yold = -1;
+		if(bluex.length>0 && bluex[bluex.length-1]!=-1){
+			bluex[bluex.length] = -1;
+			bluey[bluey.length] = -1;
+		}
+		if(redx.length>0 && redx[redx.length-1]!=-1){
+			redx[redx.length] = -1;
+			redy[redy.length] = -1;
+		}
+		if(greenx.length>0 && greenx[greenx.length-1]!=-1){
+			greenx[greenx.length] = -1;
+			greeny[greeny.length] = -1;
+		}
 	}
 	
 	// Button functions
 	window.onload = function() {
 		reset.onmousedown = function() {
-			paper.fillStyle = 'rgba(255,255,255,1)';
-			paper.fillRect(0,0,W,H);
+			bluex = [-1];
+			bluey = [-1];
+			redx = [-1];
+			redy = [-1];
+			greenx = [-1];
+			greeny = [-1];
 			drawpage();
 			return false;
 		}
 		bluepen.onmousedown = function() {
-			pencolour = '#349';
+			pen = "blue";
 			return false;
 		}
 		redpen.onmousedown = function() {
-			pencolour = '#FF5254';
+			pen = "red";
 			return false;
 		}
 		greenpen.onmousedown = function() {
-			pencolour = '#33b66F';
+			pen = "green";
 			return false;
 		}
+	}
+	
+	window.onresize = function() {
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = '#fff';
+		paper.fillRect(0,0,W,H);
+		var pencolour = '#349';
+		drawpage();
 	}
 
 </script>
