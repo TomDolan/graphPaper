@@ -277,13 +277,26 @@
 		var touches = e.changedTouches;
 		xpos = touches[0].pageX;
 		ypos = touches[0].pageY;
+		clicked = 1;
+		draw();
 	}
 	function untouch(e){
 		var touches = e.changedTouches;
 		if (touches.length == 0) {
-			xpos = -1;
-			ypos = -1;
+			if(bluex.length>0 && bluex[bluex.length-1]!=-1){
+				bluex[bluex.length] = -1;
+				bluey[bluey.length] = -1;
+			}
+			if(redx.length>0 && redx[redx.length-1]!=-1){
+				redx[redx.length] = -1;
+				redy[redy.length] = -1;
+			}
+			if(greenx.length>0 && greenx[greenx.length-1]!=-1){
+				greenx[greenx.length] = -1;
+				greeny[greeny.length] = -1;
+			}
 		}
+		clicked = 0;
 	}
 	function click (){
 		clicked = 1;
