@@ -1,7 +1,11 @@
 $(document).ready(function(){
-	$("#canvasbox").click(function(){hideinfo()});
+	$(document).click(function(event) { 
+		if(!$(event.target).closest('#menu').length) {
+			hideinfo();
+		}
+	});
 	$("#menu").click(function(){showinfo()});
-	$("#menu").hover(function(){showinfo()},function(){hideinfo()});
+	//$("#menu").hover(function(){showinfo()},function(){hideinfo()});
 	function showinfo(){
 		$("#menu").css({
 			"position":"absolute",
