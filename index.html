@@ -81,7 +81,7 @@
 
 <div id = "overlay">
 	<p id = "welcome">Graph Paper</p>
-	<p id = "description">Programs that take place on grids</p>
+	<p id = "description">Programs that take place on grids!</p>
 	<div id = "contents">
 		<ul>
 		<li>Draw something on this page</li>
@@ -163,7 +163,7 @@
 	document.onmousedown = click;
 	document.onmouseup = unclick;
 	document.addEventListener("touchstart", touch, false);
-	document.addEventListener("touchmove", touch, false);
+	document.addEventListener("touchmove", touchmove, false);
 	document.addEventListener("touchend", untouch, false);
 
 	function drawpage(){
@@ -261,7 +261,7 @@
 				bluey[bluey.length] = ypos;
 			}
 			drawpage();
-			setTimeout(draw,5)
+			setTimeout(draw,15)
 		} else {
 			return false;
 		}
@@ -279,6 +279,11 @@
 		ypos = touches[0].pageY;
 		clicked = 1;
 		draw();
+	}
+	function touchmove(e){
+		var touches = e.changedTouches;
+		xpos = touches[0].pageX;
+		ypos = touches[0].pageY;
 	}
 	function untouch(e){
 		var touches = e.changedTouches;
