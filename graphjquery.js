@@ -1,11 +1,8 @@
 $(document).ready(function(){
-	$(document).click(function(event) { 
-		if(!$(event.target).closest('#menu').length) {
-			hideinfo();
-		}
-	});
+	$("#canvasbox").click(function(){hideinfo()});
+	$("#overlay").click(function(){hideinfo()});
 	$("#menu").click(function(){showinfo()});
-	//$("#menu").hover(function(){showinfo()},function(){hideinfo()});
+	$("#menu").hover(function(){showinfo()},function(){hideinfo()});
 	function showinfo(){
 		$("#menu").css({
 			"position":"absolute",
