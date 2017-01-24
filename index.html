@@ -11,9 +11,9 @@
 		position:fixed;
 		top:0px;
 		left:0px;
-		overflow:scroll;
-		width:100%;
+		width:500px;
 		height:100%;
+		overflow:scroll;
 	}
 	#welcome {
 		font-family: 'Lobster', cursive;
@@ -58,7 +58,6 @@
 		position: absolute;
 		top:180px;
 		left:120px;
-		overflow:scroll;
 	}
 	li{
 		font-style:normal;
@@ -162,9 +161,9 @@
 	document.onmousemove = coords;
 	document.onmousedown = click;
 	document.onmouseup = unclick;
-	document.addEventListener("touchstart", touch, false);
-	document.addEventListener("touchmove", touchmove, false);
-	document.addEventListener("touchend", untouch, false);
+	c.addEventListener("touchstart", touch, false);
+	c.addEventListener("touchmove", touchmove, false);
+	c.addEventListener("touchend", untouch, false);
 
 	function drawpage(){
 		// Draw bg

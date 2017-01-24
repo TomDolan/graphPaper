@@ -58,9 +58,9 @@
 	document.onmousemove = coords;
 	document.onmousedown = click;
 	document.onmouseup = unclick;
-	document.addEventListener("touchstart", touch, false);
-	document.addEventListener("touchmove", touchmove, false);
-	document.addEventListener("touchend", untouch, false);
+	c.addEventListener("touchstart", touch, false);
+	c.addEventListener("touchmove", touchmove, false);
+	c.addEventListener("touchend", untouch, false);
 
 	function drawpage(){
 		// Draw bg
