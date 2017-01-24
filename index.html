@@ -162,6 +162,9 @@
 	document.onmousemove = coords;
 	document.onmousedown = click;
 	document.onmouseup = unclick;
+	c.addEventListener("touchstart", touch, false);
+	c.addEventListener("touchmove", touch, false);
+	c.addEventListener("touchend", untouch, false);
 
 	function drawpage(){
 		// Draw bg
@@ -269,6 +272,18 @@
 	function coords(e){
 		xpos = e.clientX;
 		ypos = e.clientY;
+	}
+	function touch(e){
+		var touches = e.changedTouches;
+		xpos = touches[0].pageX;
+		ypos = touches[0].pageY;
+	}
+	function untouch(e){
+		var touches = e.changedTouches;
+		if (touches.length == 0) {
+			xpos = -1;
+			ypos = -1;
+		}
 	}
 	function click (){
 		clicked = 1;
