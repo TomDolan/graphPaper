@@ -81,7 +81,7 @@
 
 <div id = "overlay">
 	<p id = "welcome">Graph Paper</p>
-	<p id = "description">Programs that take place on grids!</p>
+	<p id = "description">Programs that take place on grids</p>
 	<div id = "contents">
 		<ul>
 		<li>Draw something on this page</li>
@@ -275,15 +275,15 @@
 	}
 	function touch(e){
 		var touches = e.changedTouches;
-		xpos = touches[0].pageX;
-		ypos = touches[0].pageY;
+		xpos = touches[0].clientX;
+		ypos = touches[0].clientY;
 		clicked = 1;
 		draw();
 	}
 	function touchmove(e){
 		var touches = e.changedTouches;
-		xpos = touches[0].pageX;
-		ypos = touches[0].pageY;
+		xpos = touches[0].clientX;
+		ypos = touches[0].clientY;
 	}
 	function untouch(e){
 		var touches = e.changedTouches;
