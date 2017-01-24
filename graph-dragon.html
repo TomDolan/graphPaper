@@ -278,6 +278,16 @@
 			return false;
 		}
 	}
+	
+	window.onresize = function() {
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = '#fff';
+		paper.fillRect(0,0,W,H);
+		redraw();
+	}
 
 </script>
 
