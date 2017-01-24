@@ -286,6 +286,17 @@
 		c.height = H;
 		paper.fillStyle = '#fff';
 		paper.fillRect(0,0,W,H);
+		if (W-430>H){
+			x0 = (W-430-H/3)/2+40;
+			y0 = 7*H/18;
+			xl = H/3;
+			yl = H/3;
+		} else {
+			x0 = 3*W/8;
+			y0 = H/2-W/12;//(H-2*W/4)/2+2*W/12;
+			xl = W/4;
+			yl = W/4;
+		}
 		redraw();
 	}
 
