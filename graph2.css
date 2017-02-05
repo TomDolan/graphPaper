@@ -107,6 +107,11 @@ a:hover {
 	line-height: 70%;
 }
 
+.slider{
+	padding-left:5px;
+	width:390px;
+}
+
 #winner{
 	position:absolute;
 	top:30%;

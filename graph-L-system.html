@@ -27,17 +27,17 @@
 	<p style="color:#FF5254;">]: Remove state from end of list and revert to this state </p>
 	<p> </br> The rules are written as (FROM => TO). For example (A => AB) means wherever there is an A in the list of instructions, replace it with AB</p>
 	<p style="color:#FF5254;">Change the rules if you want </p>
-	<input type="text" class="text" name="rules" id="rules" value="(X => X+YF+), (Y => -FX-Y)" size = "40" onsubmit = "submit()">
+	<input type="text" class="text" name="rules" id="rules" value="(X => X+YF+), (Y => -FX-Y)" size = "40" onsubmit = "submit()" onchange = "submit()">
 	<p> </br> All thats left is to give the initial list of characters and the turning angle</p>
 	<p style="color:#FF5254;">Initial characters: </p>
-	<input type="text" class="text" name="initial" id="initial" value="FX" size = "40" onsubmit = "submit()">
+	<input type="text" class="text" name="initial" id="initial" value="FX" size = "40" onsubmit = "submit()" onchange = "submit()">
 	<p style="color:#FF5254;"> Angle:</p>
-	<input type="text" class="text" name="angle" id="angle" value="90" size = "40" onsubmit = "submit()">
+	<input type="text" class="text" name="angle" id="angle" value="90" size = "40" onsubmit = "submit()" onchange = "submit()">
 	<p style="color:#FF5254;"> Number of iterations:</p>
-	<input type="range" class="text" name="points" id="points" min="0" max="14" onChange = "submit()">
-	<button type = "button" style = "margin:20px;" onclick = "submit()">play</button>
+	<input type="range" class="slider" name="points" id="points" min="0" max="14" onChange = "submit()">
+	<!--<button type = "button" style = "margin:20px;" onclick = "submit()">play</button>-->
 	<p style="color:#FF5254;"> Initial angle:</p>
-	<input type="range" class="text" name="theta0" id="theta0" step = "5" min="0" max="360" onChange = "submit()">
+	<input type="range" class="slider" name="theta0" id="theta0" step = "5" min="0" max="360" onChange = "submit()">
 	<h3>some examples</h3>
 	<p onclick = "changeto('(X => X+YF+), (Y => -FX-Y)','FX',90,10,0)"> Dragon Curve </br> Rules: (X => X+YF+), (Y => -FX-Y) </br> Initial: FX </br> Angle: 90 </p>
 	<p onclick = "changeto('(A => +B-A-B+), (B => -A+B+A-)','A',60,8,90)"> Sierpinski Triangle </br> Rules: (A => +B-A-B+), (B => -A+B+A-) </br> Initial: A </br> Angle: 60 </p>
