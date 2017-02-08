@@ -212,7 +212,9 @@
 			jtime = t-jump;
 			jheight = .001*jtime*(500-jtime);
 			paper.save();
-			paper.transform(1,0,0,1,W/2,h0-jheight-9-5*Math.abs(Math.sin(x/50*2)));
+			//paper.transform(1,0,0,1,W/2,h0-jheight-9-5*Math.abs(Math.sin(x/50*2)));
+			//paper.rotate(x/50);
+			paper.transform(1,0,0,1,W/2,h0-jheight-9);
 			paper.rotate(x/50);
 			paper.fillStyle = fgc;
 			paper.beginPath();
@@ -282,7 +284,7 @@
 	}
 	
 	function drawlayer(depth,x,colour,an){
-		paper.filter = 'blur('+(depth/5)+'px)';
+		paper.filter = 'blur('+(depth/2)+'px)';
 		scale = 1/(1+depth);
 		paper.fillStyle = colour;
 		paper.beginPath();
@@ -424,25 +426,13 @@
 			running=1;
 			setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
 		}
-	}
+	}*/
 	function untouch(e){
 		var touches = e.changedTouches;
-		if (touches.length == 0) {
-			if(bluex.length>0 && bluex[bluex.length-1]!=-1){
-				bluex[bluex.length] = -1;
-				bluey[bluey.length] = -1;
-			}
-			if(redx.length>0 && redx[redx.length-1]!=-1){
-				redx[redx.length] = -1;
-				redy[redy.length] = -1;
-			}
-			if(greenx.length>0 && greenx[greenx.length-1]!=-1){
-				greenx[greenx.length] = -1;
-				greeny[greeny.length] = -1;
-			}
-		//}
-		clicked = 0;
-	}*/
+		rightkey = 0;
+		leftkey = 0;
+		upkey = 0;
+	}
 </script>
 
 </body>
