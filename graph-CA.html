@@ -175,15 +175,15 @@
 	}
 	function drawlines(xs,ys,W,H,dx){
 		paper.strokeStyle="#bce";
+		paper.beginPath();
 		for (var i = 0; i < W/dx; i++){
 			for (var j = 0; j < H/dx; j++){	
-				paper.beginPath();
 				paper.moveTo(xs[i][j],ys[i][j]);
 				paper.lineTo(xs[i+1][j], ys[i+1][j]);
 				paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
-				paper.stroke();
 			}
 		}
+		paper.stroke();
 	}
 	function drawlife(xs,ys,W,H,dx){
 		for (var i = 0; i < W/dx; i++){

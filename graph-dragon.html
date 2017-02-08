@@ -96,20 +96,19 @@
 	function drawpage(){
 		// Draw lines with spacing dx, horizontally and vertically		
 		dx = 20;
-		paper.beginPath();
 		paper.strokeStyle="#bce";
 		paper.lineCap = 'square';
 		paper.lineWidth=1;
+		paper.beginPath();
 		for (var i = dx/2+.5; i < W; i+=dx){
 			paper.moveTo(i,0);
 			paper.lineTo(i,H);
-			paper.stroke();
 		}
 		for (var i = dx/2+.5; i < H; i+=dx){
 			paper.moveTo(0,i);
 			paper.lineTo(W,i);
-			paper.stroke();
 		}
+		paper.stroke();
 		
 		// Red line down left side
 		paper.beginPath()

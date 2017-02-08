@@ -223,22 +223,20 @@
 
 	function drawlines(xs,ys,W,H,dx){
 		paper.strokeStyle="#bce";
+		paper.beginPath();
 		for (var i = 0; i < W/dx; i++){
 			for (var j = 0; j < H/dx; j++){
 				if(hwall[i][j]){	
-					paper.beginPath();
 					paper.moveTo(xs[i][j],ys[i][j]);
 					paper.lineTo(xs[i+1][j], ys[i+1][j]);
-					paper.stroke();
 				}
-				if(vwall[i][j]){	
-					paper.beginPath();
+				if(vwall[i][j]){
 					paper.moveTo(xs[i][j],ys[i][j]);
 					paper.lineTo(xs[i][j+1],ys[i][j+1]);
-					paper.stroke();
 				}
 			}
 		}
+		paper.stroke();
 	}
 
 	function drawball(ballx,bally){
@@ -804,7 +802,7 @@
 						} else {
 							paper.fillStyle = "#00112c";
 						}
-						paper.fillStyle = "rgba(156,59,66,"+(1-dist/r)+")";
+						//paper.fillStyle = "rgba(156,59,66,"+(1-dist/r)+")";
 						paper.fillRect(i-res/2,j-res/2,res,res);
 					}
 					//alert(j)

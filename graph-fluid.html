@@ -112,15 +112,15 @@
 	function drawlines(xs,ys,W,H,dx){
 		// For each grid point draw a horizontal and vertical line to the neighbouring point
 		paper.strokeStyle="#bce";
+		paper.beginPath();
 		for (var i = 0; i < W/dx+1; i++){
 			for (var j = 0; j < H/dx+1; j++){
-				paper.beginPath();
 				paper.moveTo(xs[i][j],ys[i][j]);
 				paper.lineTo(xs[i+1][j], ys[i+1][j]);
 				paper.lineTo(xs[i+1][j+1],ys[i+1][j+1]);
-				paper.stroke();
 			}
 		}
+		paper.stroke();
 	}
 	
 	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
@@ -147,7 +147,7 @@
 	
 	function draw(deltaT){
 		if (yes){
-			dt = Math.min(.4,deltaT/120);
+			dt = Math.min(.4,deltaT/60);
 			stepVelocity();
 			stepDensity();
 			if (dx>=10){
