@@ -57,6 +57,7 @@
 	var xpos = -1;
 	var ypos = -1;
 	var clicked = 0;
+	var drawing = 0;
 	document.onmousemove = coords;
 	document.onmousedown = click;
 	document.onmouseup = unclick;
@@ -145,6 +146,7 @@
 	}
 
 	function draw(){
+		drawing = 1;
 		// Draw if clicked, else return false
 		if(clicked){
 			if (pen == "green") {
@@ -160,6 +162,7 @@
 			drawpage();
 			setTimeout(draw,15)
 		} else {
+			drawing = 0;
 			return false;
 		}
 		
@@ -175,7 +178,9 @@
 		xpos = touches[0].clientX;
 		ypos = touches[0].clientY;
 		clicked = 1;
-		draw();
+		if (drawing == 0){
+			draw();
+		}
 	}
 	function touchmove(e){
 		var touches = e.changedTouches;
@@ -202,7 +207,9 @@
 	}
 	function click (){
 		clicked = 1;
-		draw();
+		if (drawing == 0){
+			draw();
+		}
 	}
 	function unclick (){
 		clicked = 0;
