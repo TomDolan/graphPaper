@@ -2,8 +2,10 @@
 
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="graph.css">
+<link rel="stylesheet" type="text/css" href="graph2.css">
 <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="graphjquery.js"></script>
 <style>
 #menu:hover {
 	background-color:rgba(255,255,255,0.9);
@@ -20,8 +22,9 @@
 <div id = "menu">
 	<p style = "text-align: center;">info</p>
 	<p id = "fps">fps: 0</p>
-	<h1>Game-background</h1>
-	<p>Adding a more detailed background with randomisation and perspective.  </p>
+	<h1>Last Page</h1>
+	<p>As the final page, heres a game to play!</p>
+	<p>You are a square. Life is simple. Arrow keys move you.</p>
 </div>
 
 <div id = "footer">
@@ -47,8 +50,8 @@
 	var a3 = [.6*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
 	var a4 = [.55*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
 	var a5 = [.5*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-13,13),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-5,5),0,rand(-1,1),0,rand(-5,5),0,rand(-1,1)];
-	var height = H-Math.abs(a5[0])+Math.abs(a5[1])+Math.abs(a5[2])+Math.abs(a5[3])+Math.abs(a5[5])+Math.abs(a5[7])+Math.abs(a5[9])+Math.abs(a5[11])+Math.abs(a5[13])+Math.abs(a5[17])+Math.abs(a5[19]);
-	var ah = [H-height,rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+	var height = H-Math.abs(a5[0])+.5*(Math.abs(a5[1])+Math.abs(a5[2])+Math.abs(a5[3])+Math.abs(a5[5])+Math.abs(a5[7])+Math.abs(a5[9])+Math.abs(a5[11])+Math.abs(a5[13])+Math.abs(a5[17])+Math.abs(a5[19]));
+	var ah = [.4*H,rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
 	
 	/*var bgc1 = '#663366';
 	var bgc2 = '#8C6673';
@@ -65,7 +68,7 @@
 	var bgc3 = '#909A92';
 	var bgc4 = '#744F78';
 	var bgc5 = '#30091E';*/
-	var bgc1 = '#EFD9B4';
+	/*var bgc1 = '#EFD9B4';
 	var bgc2 = '#D6A692';
 	var bgc3 = '#A39081';
 	var bgc4 = '#4D6160';
@@ -73,6 +76,16 @@
 	grd.addColorStop(0,"#292522");
 	grd.addColorStop(1,"#4D6160");
 	var bgc5 = grd;
+	var fgc = "#000"*/
+	var bgc1 = '#fff';
+	var bgc2 = '#cdf';
+	var bgc3 = '#abd';
+	var bgc4 = '#89b';
+	var grd=paper.createLinearGradient(0,height,0,H);
+	grd.addColorStop(0,"#568");
+	grd.addColorStop(1,"#89b");
+	var bgc5 = grd;
+	var fgc = "#235"
 	
 	paper.fillStyle = bgc1;
 	paper.fillRect(0,0,W,H);
@@ -83,6 +96,7 @@
 	var xold = 0;
 	var right = 1;
 	var t = 0;
+	var dt = 10;
 	var jump = 0;
 	var h0 = 0;
 	var pi = 3.14159265;
@@ -91,11 +105,12 @@
 	var downkey = 0;
 	var leftkey = 0;
 	var rightkey = 0;
+	var running = 0;
 
 	// Begin!
-	animate(draw);
+	//animate(draw);
 	//drawlayer(d,0,bgc2,[H/2,400/pi,0,400/(3*pi),0,400/(5*pi),0,400/(7*pi)])
-	
+	setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
 	function init(){
 		
 	}
@@ -103,10 +118,10 @@
 	// Animate function modified from https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
 	// calculate the difference in time and pass to the given render function, render function returns false to stop, will not render if deltaT is too high
 	function animate( render ) {
-		var running, lastFrame = +new Date;
+		running = 1, lastFrame = +new Date;
 		function loop( now ) {
 			// stop the loop if render returned false
-			if ( running !== false ) {
+			if ( running !== 0 ) {
 				requestAnimationFrame( loop );
 				var deltaT = now - lastFrame;
 				document.getElementById("fps").innerHTML = "fps: " + 1000/deltaT;
@@ -122,25 +137,31 @@
 		loop( lastFrame );
 	}
 	
-	function draw(deltaT){
-		t += deltaT/1000;
+	function draw(){
+		t += dt;
 		paper.fillStyle = bgc1;
 		paper.fillRect(0,0,W,H);
 		x = updatepos(t,x);
 		drawlayer(8,x,bgc2,a2);
 		drawlayer(6,x,bgc3,a3);
-		//drawbirds(t,x);
 		drawlayer(4,x,bgc4,a4);
 		drawlayer(2,x,bgc5,a5);
-		drawscene(t,x);
+		if(x<1000 && x>-1000){
+			drawpaper(x);
+		}
+		if (leftkey == 0 && rightkey == 0 && jump == 0 && upkey == 0){
+			running = 0;
+			cancelAnimationFrame(anim);
+			drawflat(t,x);
+		} else {
+			drawscene(t,x);
+			setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
+		}
 	}
 	
+	
+	
 	function updatepos(t,x){
-		if (leftkey){
-			right = 0;
-		} else if (rightkey) {
-			right = 1;
-		}
 		xold = x;
 		speed = 5;
 		xnew=x+speed*(rightkey-leftkey);
@@ -151,8 +172,34 @@
 	}
 	
 	function drawscene(t,x){
-		drawlayer(0,x,'#000',ah);
+		drawlayer(0,x,fgc,ah);
 		drawplayer(t,x,ah);
+	}
+	
+	function drawflat(t,x){
+		drawlayer(0,x,fgc,ah);
+		drawplayerflat(t,x,ah);
+	}
+	
+	function drawpaper(x){
+		paper.fillStyle = "rgba(255,255,255,"+(Math.max(1-Math.abs(x/1000),0))+")";
+		paper.strokeStyle = "rgba(187, 204, 238,"+(Math.max(1-Math.abs(x/1000),0))+")";
+		paper.lineWidth=1;
+		paper.beginPath();
+		paper.rect(0,0,W,H);
+		paper.fill();
+		paper.beginPath();
+			paper.beginPath();
+		for (var i = dx/2+.5; i < W; i+=dx){
+			paper.moveTo(i-mod(x,dx),0);
+			paper.lineTo(i-mod(x,dx),H);
+		}
+		for (var i = dx/2+.5; i < H; i+=dx){
+			paper.moveTo(0,i);
+			paper.lineTo(W,i);
+		}
+			paper.stroke();
+		
 	}
 	
 	function drawplayer(t,x,an){
@@ -164,7 +211,14 @@
 		}
 		if (jump){
 			jtime = t-jump;
-			jheight = -500*jtime*(jtime-.5);
+			jheight = .001*jtime*(500-jtime);
+			paper.save();
+			paper.transform(1,0,0,1,W/2,h0-jheight-9-5*Math.abs(Math.sin(x/50*2)));
+			paper.rotate(x/50);
+			paper.fillStyle = fgc;
+			paper.beginPath();
+			paper.rect(-10,-10,20,20);
+			paper.fill();
 			/*paper.strokeStyle = bgc2;
 			paper.lineWidth = 5;
 			paper.lineCap = 'round';
@@ -172,14 +226,21 @@
 			paper.moveTo(W/2,h0-jheight);
 			paper.lineTo(W/2+5*(rightkey-leftkey),h0-3-jheight);
 			paper.stroke();*/
-			if(jump){
+			/*if(jump){
 				var img=document.getElementById("rock4");
-			}
+			}*/
 			if(h0-jheight>h){
 				jump = 0;
 			}
 			h1 = h0-jheight;
 		} else {
+			paper.save();
+			paper.transform(1,0,0,1,W/2,h-9-5*Math.abs(Math.sin(x/50*2)));
+			paper.rotate(x/50);
+			paper.fillStyle = fgc;
+			paper.beginPath();
+			paper.rect(-10,-10,20,20);
+			paper.fill();
 			/*paper.strokeStyle = bgc2;
 			paper.lineWidth = 5;
 			paper.lineCap = 'round';
@@ -187,7 +248,7 @@
 			paper.moveTo(W/2,h);
 			paper.lineTo(W/2+5*(rightkey-leftkey),h-5+2*(leftkey+rightkey));
 			paper.stroke();*/
-			if(xold == x){
+			/*if(xold == x){
 				var img=document.getElementById("rock");
 			}else{
 				if (mod(Math.floor(t*5),2)){
@@ -195,9 +256,9 @@
 				} else {
 					var img=document.getElementById("rock3");
 				}
-			}
+			}*/
 		}
-		paper.save();
+		/*paper.save();
 		paper.translate(W/2-25,h1-25); 
 		if (right == 0){
 			paper.scale(-1, 1);
@@ -206,19 +267,23 @@
 			paper.rotate(Math.atan((pos(x+25,an)-pos(x-25,an))/50));
 		}
 		paper.drawImage(img, -(img.width/2), -(img.height/2)+10);
-		paper.restore(); 
+		paper.restore(); */
+		paper.restore();
 	}
 	
-	function drawbirds(t,x){
-		paper.fillStyle = '#000'
-		a = mod(50*t-x/6,W*2);
-		b = .55*H-fourier(t*200,a2);
+	function drawplayerflat(t,x,an){
+		h = pos(x,an)
+		paper.save();
+		paper.transform(1,0,0,1,W/2,h-9);
+		paper.fillStyle = fgc;
 		paper.beginPath();
-		paper.arc(a,b,4,0,2*pi);
+		paper.rect(-10,-10,20,20);
 		paper.fill();
+		paper.restore();
 	}
 	
 	function drawlayer(depth,x,colour,an){
+		paper.filter = 'blur('+(depth/5)+'px)';
 		scale = 1/(1+depth);
 		paper.fillStyle = colour;
 		paper.beginPath();
@@ -230,6 +295,18 @@
 		paper.lineTo(0,H);
 		paper.moveTo(0,H-(dx*Math.floor(an[0]+scale*fourier(x-W*.5/scale,an)))/dx);
 		paper.fill();
+		
+		paper.filter = 'blur(0px)';
+	}
+		
+	window.onresize = function() {
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = '#fff';
+		paper.fillRect(0,0,W,H);
+		setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
 	}
 	
 	function fourier(y,an){
@@ -260,6 +337,9 @@
 
 	document.onkeydown = keypressed;
 	document.onkeyup = keydepressed;
+	c.addEventListener("touchstart", touch, false);
+	c.addEventListener("touchmove", touch, false);
+	c.addEventListener("touchend", touch, false);
 
 	function keypressed(e) {
 
@@ -267,6 +347,10 @@
 
 		if (e.keyCode == '87'||e.keyCode == '38') {
 			// up arrow
+		   	if (running == 0){
+		   		running=1;
+				setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
+		   	}
 			upkey = 1;
 		}
 		else if (e.keyCode == '83'||e.keyCode == '40') {
@@ -275,10 +359,18 @@
 		}
 		else if (e.keyCode == '65'||e.keyCode == '37') {
 		   // left arrow
+		   	if (running == 0){
+		   		running=1;
+	   			setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
+		   	}
 			leftkey = 1;
 		}
 		else if (e.keyCode == '68'||e.keyCode == '39') {
 		   // right arrow
+		   	if (running == 0){
+		   		running=1;
+				setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
+		   	}
 			rightkey = 1;
 		}
 	}
@@ -304,6 +396,53 @@
 		}
 	}
 	
+	function touch(e){
+		var touches = e.changedTouches;
+		rightkey = 0;
+		leftkey = 0;
+		upkey = 0;
+		for (var i = 0; i<touches.length; i++){
+			if (touches[0].clientX>W/2){
+				rightkey = 1;
+			} else if (touches[0].clientX<W/2){
+				leftkey = 1;
+			} else if (touches[0].clientY<H/2){
+				rightkey = 1;
+			}
+		}
+		if (running == 0){
+			running=1;
+			setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
+		}
+	}
+	/*function touchmove(e){
+		var touches = e.changedTouches;
+		xpos = touches[0].clientX;
+		ypos = touches[0].clientY;
+		
+		if (running == 0){
+			running=1;
+			setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
+		}
+	}
+	function untouch(e){
+		var touches = e.changedTouches;
+		if (touches.length == 0) {
+			if(bluex.length>0 && bluex[bluex.length-1]!=-1){
+				bluex[bluex.length] = -1;
+				bluey[bluey.length] = -1;
+			}
+			if(redx.length>0 && redx[redx.length-1]!=-1){
+				redx[redx.length] = -1;
+				redy[redy.length] = -1;
+			}
+			if(greenx.length>0 && greenx[greenx.length-1]!=-1){
+				greenx[greenx.length] = -1;
+				greeny[greeny.length] = -1;
+			}
+		//}
+		clicked = 0;
+	}*/
 </script>
 
 </body>
