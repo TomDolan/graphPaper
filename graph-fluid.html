@@ -447,6 +447,56 @@
 			vxy=0;
 		}
 	}
+	c.addEventListener("touchstart", touch, false);
+	c.addEventListener("touchmove", touch, false);
+	c.addEventListener("touchend", touch, false);
+	function touch(e){
+		if (yes) {
+			xOld = x, yOld = y;
+			x = touches[0].clientX, y = touches[0].clientY;		
+			x = Math.ceil((x)/dx);
+			y = Math.ceil((y)/dx);
+			uxy = (x-xOld)*dt;
+			vxy = (y-yOld)*dt;
+		} else {
+			xOld=-1;
+			yOld=-1;
+			x=-1;
+			y=-1;
+			uxy=0;
+			vxy=0;
+		}
+		/*var touches = e.changedTouches;
+		xpos = touches[0].clientX;
+		ypos = touches[0].clientY;
+		clicked = 1;
+		if (drawing == 0){
+			draw();
+		}*/
+	}
+	function touchmove(e){
+		/*var touches = e.changedTouches;
+		xpos = touches[0].clientX;
+		ypos = touches[0].clientY;*/
+	}
+	function untouch(e){
+		/*var touches = e.changedTouches;
+		//if (touches.length == 0) {
+			if(bluex.length>0 && bluex[bluex.length-1]!=-1){
+				bluex[bluex.length] = -1;
+				bluey[bluey.length] = -1;
+			}
+			if(redx.length>0 && redx[redx.length-1]!=-1){
+				redx[redx.length] = -1;
+				redy[redy.length] = -1;
+			}
+			if(greenx.length>0 && greenx[greenx.length-1]!=-1){
+				greenx[greenx.length] = -1;
+				greeny[greeny.length] = -1;
+			}
+		//}
+		clicked = 0;*/
+	}
 	window.onload = function() {
 		reset.onmousedown = function() {
 			yes = 0;
