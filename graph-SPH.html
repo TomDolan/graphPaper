@@ -98,10 +98,12 @@
 		var g = 0.2;
 		var rho0 = 10;//findrho0();
 		var B = 100*rho0*v0*v0/7;
+		var dt = 10;
 		drawpoints();
-		animate(step);
+		//animate(step);
+		step();
 		
-		function animate( render ) {
+		/*function animate( render ) {
 			var running, lastFrame = +new Date;
 			function loop( now ) {
 				// stop the loop if render returned false
@@ -120,7 +122,7 @@
 				}
 			}
 			loop( lastFrame );
-		}
+		}*/
 		
 		function findrho0(){
 			var rho0 = 0;
@@ -134,7 +136,7 @@
 			return rho0/=204;
 		}
 	
-		function step(dt){
+		function step(){
 			/*var stillmoving = move(dt);
 			var stillmoving = move(dt);
 			var stillmoving = move(dt);
@@ -152,6 +154,7 @@
 			var stillmoving = move(dt);
 			drawpoints();
 			//alert();
+			setTimeout(function(){anim = window.requestAnimationFrame(step)},dt);
 			return stillmoving>tolerance;
 		}
 	
