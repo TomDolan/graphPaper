@@ -10,6 +10,12 @@
 #menu:hover {
 	background-color:rgba(255,255,255,0.9);
 }
+li {
+	font-style:normal;
+	font-weight:normal;
+	color:#78a;
+	font-family: 'Roboto', sans-serif;
+}
 </style>
 </head>
 
@@ -24,6 +30,10 @@
 	<h1>Last Page</h1>
 	<p>As the final page, heres a game to play!</p>
 	<p>You are a square. Life is simple. Arrow keys move you.</p>
+	<br>
+	<p>Some technical information if you're interested: </p>
+	<ul><li>The background is a bunch of randomly generated Fourier series <a  onclick = "resetfourier()">(click here to randomise)</a></li></ul>
+	<ul><li>The blur effect uses HTML5 Canvas filters and isn't compatible with all browsers yet. If nothing you see is blurred, hello from the future! </li></ul>
 </div>
 
 <div id = "footer">
@@ -164,7 +174,7 @@
 		xold = x;
 		speed = 5;
 		xnew=x+speed*(rightkey-leftkey);
-		if (!jump&&Math.abs(pos(x,ah)-pos(x+(dx+1)*(rightkey-leftkey),ah))>10) {
+		if (!jump&&Math.abs(pos(x,ah)-pos(x+(dx+1)*(rightkey-leftkey),ah))>20) {
 			return x;
 		}
 		return xnew;
@@ -188,7 +198,7 @@
 		paper.rect(0,0,W,H);
 		paper.fill();
 		paper.beginPath();
-			paper.beginPath();
+		paper.beginPath();
 		for (var i = dx/2+.5; i < W; i+=dx){
 			paper.moveTo(i-mod(x,dx),0);
 			paper.lineTo(i-mod(x,dx),H);
@@ -197,7 +207,7 @@
 			paper.moveTo(0,i);
 			paper.lineTo(W,i);
 		}
-			paper.stroke();
+		paper.stroke();
 		
 	}
 	
@@ -432,6 +442,17 @@
 		rightkey = 0;
 		leftkey = 0;
 		upkey = 0;
+	}
+	
+	function resetfourier(){
+		x = 1000;		
+		a2 = [.65*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+		a3 = [.6*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+		a4 = [.55*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];
+		a5 = [.5*H+rand(-H/30,H/30),rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-13,13),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-5,5),0,rand(-1,1),0,rand(-5,5),0,rand(-1,1)];
+		height = H-Math.abs(a5[0])+.5*(Math.abs(a5[1])+Math.abs(a5[2])+Math.abs(a5[3])+Math.abs(a5[5])+Math.abs(a5[7])+Math.abs(a5[9])+Math.abs(a5[11])+Math.abs(a5[13])+Math.abs(a5[17])+Math.abs(a5[19]));
+		ah = [.4*H,rand(-50,50),rand(-20,20),rand(-40,40),0,rand(-3,3),0,rand(-3,3),0,0,0,rand(-10,10),0,rand(-8,8),0,0,0,rand(-1,1),0,rand(-1,1)];	
+		draw();
 	}
 </script>
 
