@@ -412,7 +412,8 @@ li {
 		rightkey = 0;
 		leftkey = 0;
 		upkey = 0;
-		for (var i = 0; i<touches.length; i++){
+		//for (var i = 0; i<touches.length; i++){
+		var i = 0;
 			if (touches[0].clientX>W/2){
 				rightkey = 1;
 			} else if (touches[0].clientX<W/2){
@@ -421,7 +422,7 @@ li {
 			if (touches[0].clientY<H/2){
 				upkey = 1;
 			}
-		}
+		//}
 		if (running == 0){
 			running=1;
 			setTimeout(function(){anim = window.requestAnimationFrame(draw)},dt);
