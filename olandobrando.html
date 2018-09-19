@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="logo.css">
+</head>
+
+<body>
+
+<div id = "canvasbox">
+	<canvas id = "graph">Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+
+<button onclick="brandoornot()" id = "brando">&#9790;</button>
+<button onclick="randomise()" id = "random">&#9728;</button>
+<button onclick="grey()" id = "grey">&#9730;</button>
+<button onclick="colour()" id = "colour">&#9729;</button>
+
+<script>
+
+	// Initialise canvas
+	var c = document.getElementById("graph");
+	var paper = c.getContext("2d");
+	W=window.innerWidth;
+	H=window.innerHeight;
+	c.width = W;
+	c.height = H;
+	bgc = '#ccc'
+	fgc = '#F86C7E'
+	paper.fillStyle = bgc;
+	paper.fillRect(0,0,W,H);
+	pi = Math.PI;
+	
+	scale = 40;
+	brando = 0;
+	
+	randomise();
+	
+	function draw(){
+		
+		paper.fillStyle = bgc;
+		paper.fillRect(0,0,W,H);
+		
+		paper.transform(1,0,0,-1,W/2,H/2);
+		
+		paper.fillStyle= fgc;
+		/*paper.beginPath();
+		paper.arc(0,100,100,0,Math.PI)
+		paper.arc(-85,15,15,Math.PI,3*Math.PI/2)
+		paper.arc(-85,-15,15,Math.PI/2,Math.PI)
+		paper.arc(0,-100,100,Math.PI,5*Math.PI/4)
+		paper.arc(0,-100,100,7*Math.PI/4,2*Math.PI)
+		paper.arc(85,-15,15,0,Math.PI/2)
+		paper.arc(85,15,15,-Math.PI/2,0)
+		paper.fill();*/
+		
+		/*paper.beginPath();
+		paper.moveTo(-boxwidth/2,-H/2);
+		paper.lineTo(-boxwidth/2,H/2);
+		paper.moveTo(boxwidth/2,-H/2);
+		paper.lineTo(boxwidth/2,H/2);
+		paper.moveTo(-W/2,-letterradius);
+		paper.lineTo(W/2,-letterradius);
+		paper.moveTo(-W/2,letterheight-letterradius);
+		paper.lineTo(W/2,letterheight-letterradius);
+		paper.stroke();*/
+		
+		if (brando){
+			boxwidth = 21*letterradius + 1*letterwidth + 11*letterspacing;
+			//letters
+			paper.beginPath();
+			//o
+			paper.arc(-boxwidth/2+letterradius,0,letterradius,0,2*pi);
+			//l
+			paper.rect(-boxwidth/2+2*letterradius+letterspacing,-letterradius,letterwidth,letterheight);
+			paper.moveTo(boxwidth/2-7*letterradius-3*letterspacing,0);
+			//a
+			paper.arc(-boxwidth/2+3*letterradius+2*letterspacing+letterwidth,0,letterradius,0,2*pi);
+			paper.rect(-boxwidth/2+3*letterradius+2*letterspacing+letterwidth,-letterradius,letterradius,letterradius*2);
+			paper.moveTo(-boxwidth/2-5*letterradius-2*letterspacing,0);
+			//n
+			paper.arc(-boxwidth/2+5*letterradius+3*letterspacing+letterwidth,0,letterradius,0,2*pi);
+			paper.rect(-boxwidth/2+4*letterradius+3*letterspacing+letterwidth,-letterradius,letterradius*2,letterradius);
+			paper.moveTo(-boxwidth/2-3*letterradius-letterspacing,0);
+			//d
+			paper.arc(-boxwidth/2+7*letterradius+4*letterspacing+letterwidth,0,letterradius,0,2*pi);
+			paper.rect(-boxwidth/2+7*letterradius+4*letterspacing+letterwidth,-letterradius,letterradius,letterradius*2);
+			paper.rect(-boxwidth/2+8*letterradius+4*letterspacing,-letterradius,letterwidth,letterheight);
+			paper.moveTo(-boxwidth/2-letterradius,0);
+			//o
+			paper.arc(-boxwidth/2+9*letterradius+5*letterspacing+letterwidth,0,letterradius,0,2*pi);
+			//b
+			paper.arc(-boxwidth/2+11*letterradius+6*letterspacing+letterwidth,0,letterradius,0,2*pi);
+			paper.rect(-boxwidth/2+10*letterradius+6*letterspacing+letterwidth,-letterradius,letterradius,letterradius*2);
+			paper.rect(-boxwidth/2+10*letterradius+6*letterspacing+letterwidth,-letterradius,letterwidth,letterheight);
+			paper.moveTo(-boxwidth/2-letterradius,0);
+			//r
+			paper.moveTo(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0);
+			paper.arc(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0,letterradius,pi/2,3*pi/2);
+			paper.rect(-boxwidth/2+12*letterradius+7*letterspacing+letterwidth,-letterradius,letterradius,letterradius);
+			paper.moveTo(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0);
+			//a
+			paper.arc(boxwidth/2-7*letterradius-3*letterspacing,0,letterradius,0,2*pi);
+			paper.rect(boxwidth/2-7*letterradius-3*letterspacing,-letterradius,letterradius,letterradius*2);
+			paper.moveTo(boxwidth/2-5*letterradius-2*letterspacing,0);
+			//n
+			paper.arc(boxwidth/2-5*letterradius-2*letterspacing,0,letterradius,0,2*pi);
+			paper.rect(boxwidth/2-6*letterradius-2*letterspacing,-letterradius,letterradius*2,letterradius);
+			paper.moveTo(boxwidth/2-3*letterradius-letterspacing,0);
+			//d
+			paper.arc(boxwidth/2-3*letterradius-letterspacing,0,letterradius,0,2*pi);
+			paper.rect(boxwidth/2-3*letterradius-letterspacing,-letterradius,letterradius,letterradius*2);
+			paper.rect(boxwidth/2-2*letterradius-letterspacing-letterwidth,-letterradius,letterwidth,letterheight);
+			paper.moveTo(boxwidth/2-letterradius,0);
+			//o
+			paper.arc(boxwidth/2-letterradius,0,letterradius,0,2*pi);
+			paper.fill();
+		
+			if (letterhole){
+			//letters holes
+			paper.fillStyle = bgc;
+			paper.beginPath();
+			//o
+			paper.arc(-boxwidth/2+letterradius,0,letterradius-letterwidth,0,2*pi);
+			//l
+			//a
+			paper.arc(-boxwidth/2+3*letterradius+2*letterspacing+letterwidth,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(-boxwidth/2+3*letterradius+2*letterspacing+letterwidth,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(-boxwidth/2-5*letterradius-2*letterspacing,0);
+			//n
+			paper.arc(-boxwidth/2+5*letterradius+3*letterspacing+letterwidth,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(-boxwidth/2+4*letterradius+3*letterspacing+2*letterwidth,-letterradius-1,letterradius*2-letterwidth*2,letterradius+1);
+			paper.moveTo(-boxwidth/2-3*letterradius-letterspacing,0);
+			//d
+			paper.arc(-boxwidth/2+7*letterradius+4*letterspacing+letterwidth,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(-boxwidth/2+7*letterradius+4*letterspacing+letterwidth,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(-boxwidth/2-letterradius,0);
+			//o
+			paper.arc(-boxwidth/2+9*letterradius+5*letterspacing+letterwidth,0,letterradius-letterwidth,0,2*pi);
+			//b
+			paper.arc(-boxwidth/2+11*letterradius+6*letterspacing+letterwidth,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(-boxwidth/2+10*letterradius+6*letterspacing+2*letterwidth,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(-boxwidth/2-letterradius,0);
+			//r
+			paper.moveTo(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0);
+			paper.arc(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0,letterradius-letterwidth,pi/2,3*pi/2);
+			paper.rect(-boxwidth/2+12*letterradius+7*letterspacing+letterwidth+letterwidth,-letterradius-1,letterradius-letterwidth+1,letterradius+1);
+			paper.rect(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0,1,letterradius-letterwidth);
+			paper.moveTo(-boxwidth/2+13*letterradius+7*letterspacing+letterwidth,0);
+			//a
+			paper.arc(boxwidth/2-7*letterradius-3*letterspacing,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(boxwidth/2-7*letterradius-3*letterspacing,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(boxwidth/2-5*letterradius-2*letterspacing,0);
+			//n
+			paper.arc(boxwidth/2-5*letterradius-2*letterspacing,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(boxwidth/2-6*letterradius-2*letterspacing+letterwidth,-letterradius-1,letterradius*2-letterwidth*2,letterradius+1);
+			paper.moveTo(boxwidth/2-3*letterradius-letterspacing,0);
+			//d
+			paper.arc(boxwidth/2-3*letterradius-letterspacing,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(boxwidth/2-3*letterradius-letterspacing,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(boxwidth/2-letterradius,0);
+			//o
+			paper.arc(boxwidth/2-letterradius,0,letterradius-letterwidth,0,2*pi);
+			paper.fill();
+			}
+		} else {
+			boxwidth = 5*letterradius*2 + letterwidth + 5*letterspacing;
+			//letters
+			paper.beginPath();
+			//o
+			paper.arc(-boxwidth/2+letterradius,0,letterradius,0,2*pi);
+			//l
+			paper.rect(-boxwidth/2+2*letterradius+letterspacing,-letterradius,letterwidth,letterheight);
+			paper.moveTo(boxwidth/2-7*letterradius-3*letterspacing,0);
+			//a
+			paper.arc(boxwidth/2-7*letterradius-3*letterspacing,0,letterradius,0,2*pi);
+			paper.rect(boxwidth/2-7*letterradius-3*letterspacing,-letterradius,letterradius,letterradius*2);
+			paper.moveTo(boxwidth/2-5*letterradius-2*letterspacing,0);
+			//n
+			paper.arc(boxwidth/2-5*letterradius-2*letterspacing,0,letterradius,0,2*pi);
+			paper.rect(boxwidth/2-6*letterradius-2*letterspacing,-letterradius,letterradius*2,letterradius);
+			paper.moveTo(boxwidth/2-3*letterradius-letterspacing,0);
+			//d
+			paper.arc(boxwidth/2-3*letterradius-letterspacing,0,letterradius,0,2*pi);
+			paper.rect(boxwidth/2-3*letterradius-letterspacing,-letterradius,letterradius,letterradius*2);
+			paper.rect(boxwidth/2-2*letterradius-letterspacing-letterwidth,-letterradius,letterwidth,letterheight);
+			paper.moveTo(boxwidth/2-letterradius,0);
+			//o
+			paper.arc(boxwidth/2-letterradius,0,letterradius,0,2*pi);
+			paper.fill();
+		
+			if (letterhole){
+			//letters holes
+			paper.fillStyle = bgc;
+			paper.beginPath();
+			//o
+			paper.arc(-boxwidth/2+letterradius,0,letterradius-letterwidth,0,2*pi);
+			//l
+			//a
+			paper.arc(boxwidth/2-7*letterradius-3*letterspacing,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(boxwidth/2-7*letterradius-3*letterspacing,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(boxwidth/2-5*letterradius-2*letterspacing,0);
+			//n
+			paper.arc(boxwidth/2-5*letterradius-2*letterspacing,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(boxwidth/2-6*letterradius-2*letterspacing+letterwidth,-letterradius-1,letterradius*2-letterwidth*2,letterradius+1);
+			paper.moveTo(boxwidth/2-3*letterradius-letterspacing,0);
+			//d
+			paper.arc(boxwidth/2-3*letterradius-letterspacing,0,letterradius-letterwidth,0,2*pi);
+			paper.rect(boxwidth/2-3*letterradius-letterspacing,-letterradius+letterwidth,letterradius-letterwidth,letterradius*2-letterwidth*2);
+			paper.moveTo(boxwidth/2-letterradius,0);
+			//o
+			paper.arc(boxwidth/2-letterradius,0,letterradius-letterwidth,0,2*pi);
+			paper.fill();
+			}
+		}
+		
+		paper.resetTransform();
+	}
+	
+	window.onresize = function() {
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = bgc;
+		paper.fillRect(0,0,W,H);
+		
+		/*letterspacing += 10*(Math.random()-.5);
+		letterradius += 10*(Math.random()-.5);
+		letterheight += 10*(Math.random()-.5);
+		letterwidth += 10*(Math.random()-.5);
+		boxwidth = 5*letterradius*2 + letterwidth + 5*letterspacing;*/
+
+		draw()
+	}
+	
+	function randomise(){
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = bgc;
+		paper.fillRect(0,0,W,H);
+		
+		
+		letterspacing = Math.random()*(scale-1)+1;
+		letterradius = scale;
+		letterheight = letterradius*2+Math.random()*(scale-1)+1;
+		letterwidth = Math.max(1,Math.random()*letterradius);
+		letterhole = Math.random()>.5;
+		
+		boxwidth = 21*letterradius + 1*letterwidth + 11*letterspacing;
+		
+		
+		draw()
+	}
+	
+	function grey(){
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = bgc;
+		paper.fillRect(0,0,W,H);
+		
+		bgc = '#ccc';
+		
+		draw()
+	}
+	
+	function colour(){
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = bgc;
+		paper.fillRect(0,0,W,H);
+		
+		bgc = getRandomColor();
+		
+		draw()
+	}
+	
+	function brandoornot(){
+		W=window.innerWidth;
+		H=window.innerHeight;
+		c.width = W;
+		c.height = H;
+		paper.fillStyle = bgc;
+		paper.fillRect(0,0,W,H);
+		
+		brando = 1-brando;
+		
+		draw()
+	}
+	
+	function getRandomColor() {
+		var letters = '0123456789ABCDEF'.split('');
+		var color = '#';
+		for (var i = 0; i < 6; i++ ) {
+			color += letters[Math.round(Math.random() * 15)];
+		}
+		return color;
+	}
+
+</script>
+
+</body>
+</html>
