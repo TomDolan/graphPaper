@@ -1,0 +1,106 @@
+html {
+    margin:0px;
+	padding:0px;
+}
+
+body {
+    margin:0px;
+	padding:0px;
+	height:5000px;
+	width:5000px;
+	cursor: crosshair;
+	background-color: #34d;
+	font-family: "Lucida Console", Courier, monospace;
+}
+
+#main {
+	margin:10px;
+	height:4980px;
+	width:4980px;
+	color:white;
+	background-color: #45e;
+}
+
+#centrepoint {
+	margin:0px;
+	height:30px;
+	width:30px;
+	background-color:white;
+	color: #45e;
+	position: absolute;
+	top:2485px;
+	left:2485px;
+}
+
+#img1 {
+	position:absolute;
+	top:1000px;
+	left:1500px;
+	width:1000px;
+}
+
+#randombox {
+	width:1000px;
+	height:1000px;
+	position:absolute;
+	/*position defined randomly in danny.js*/
+	background-color:lightgreen;
+    border: 10px dashed lightpink;
+}
+
+#textbox {
+	background-color:black;
+	position:absolute;
+	top:2000px;
+	left:3000px;
+	font-size:50px;
+	width:400px;
+}
+
+#lens {
+	z-index:100;
+	height:100%;
+	width:100%;
+	position:fixed;
+	top:0px;
+	left:0px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: 20px solid #fff;
+}
+
+#lenslabel {
+	background-color:yellow;
+	position:fixed;
+	bottom:10%;
+	left:10%;
+	font-size:50px;
+}
+
+
+h1 {
+	color:#568;
+}
+
+p {
+	color:#78a;
+}
+
+a {
+    color: #55f;
+}
+
+a:visited {
+    color: #349;
+}
+a:hover {
+    color: #FF5254;
+}
+
+::selection {
+  background: hotpink; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: hotpink; /* Gecko Browsers */
+}
