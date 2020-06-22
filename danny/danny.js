@@ -14,33 +14,27 @@ wDown=0;
 aDown=0;
 sDown=0;
 dDown=0;
-speed=10;
+speed=8;
 
 function keypressed(e) {
-
 	e = e || window.event;
-
 	if (e.keyCode == '87'||e.keyCode == '38') {
 		// up arrow
-    	//window.scrollTo(window.scrollX,window.scrollY+1);
     	wDown=1;
     	e.preventDefault();
 	}
 	else if (e.keyCode == '83'||e.keyCode == '40') {
 		// down arrow
-    	//window.scrollTo(window.scrollX,window.scrollY-1);
     	sDown=1;
     	e.preventDefault();
 	}
 	else if (e.keyCode == '65'||e.keyCode == '37') {
 	   // left arrow
-    	//window.scrollTo(window.scrollX+1,window.scrollY);
     	aDown=1;
     	e.preventDefault();
 	}
 	else if (e.keyCode == '68'||e.keyCode == '39') {
 	   // right arrow
-    	//window.scrollTo(window.scrollX-1,window.scrollY);
     	dDown=1;
     	e.preventDefault();
 	}
@@ -51,9 +45,7 @@ function keypressed(e) {
 }
 
 function keydepressed(e) {
-
 	e = e || window.event;
-
 	if (e.keyCode == '87'||e.keyCode == '38') {
 		// up arrow
     	wDown=0;
